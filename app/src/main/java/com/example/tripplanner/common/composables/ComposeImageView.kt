@@ -48,16 +48,12 @@ object ComposeImageView {
     @Composable
     fun ImageViewWitDrawable(
         imageId: Int,
-        width: Dp,
-        height: Dp,
         modifier: Modifier = Modifier,
         contentDescription: String = ""
     ) {
         Image(
             modifier = modifier
-                .padding(0.dp)
-                .width(width)
-                .height(height),
+                .padding(0.dp),
             painter = painterResource(id = imageId),
             contentDescription = contentDescription
         )

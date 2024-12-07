@@ -3,4 +3,5 @@
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="titleTextColor">#141414</color>
+    <color name="primaryAccent">#FF00BFA6</color>
 </resources>

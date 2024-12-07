@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -39,14 +40,15 @@ object ComposeTextView {
         modifier: Modifier = Modifier,
         textAlign: TextAlign = TextAlign.Left,
         fontSize: TextUnit = 16.sp,
-        textColor: Color = LocalCustomColors.current.titleTextColor
+        textColor: Color = LocalCustomColors.current.textColor,
+        fontWeight: FontWeight = CustomTypography.bodyLarge.fontWeight ?: FontWeight.W500
     ) {
         Text(
             text = text,
             modifier = modifier,
             color = textColor,
             fontSize = fontSize,
-            fontWeight = CustomTypography.bodyLarge.fontWeight,
+            fontWeight = fontWeight,
             textAlign = textAlign,
             fontStyle = CustomTypography.titleLarge.fontStyle
         )

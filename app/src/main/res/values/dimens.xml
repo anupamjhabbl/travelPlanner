@@ -11,4 +11,8 @@
     <dimen name="module_16sp">16sp</dimen>
     <dimen name="module_18sp">18sp</dimen>
     <dimen name="module_24sp">24sp</dimen>
+    <dimen name="module_20sp">20sp</dimen>
+    <dimen name="module_2">2dp</dimen>
+    <dimen name="module_1">1dp</dimen>
+    <dimen name="module_half">0.5dp</dimen>
 </resources>
