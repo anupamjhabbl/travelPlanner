@@ -11,12 +11,13 @@ class DarkColor {
         val textColor = Color(0xFFE0E0E0)
         val secondaryTextColor = Color(0xFFBDBDBD)
         val highlightTextColor = Color(0xFFFFAB91)
-        val primaryButtonBg = Color(0xFF64FFDA)
+        val primaryButtonBg = Color(0xFF2b2d42)
         val secondaryButtonBorder = Color(0xFF64FFDA)
         val primaryButtonText = Color(0xFFFFFFFF)
         val secondaryButtonText = Color(0xFF64FFDA)
         val error = Color(0xFFF81F1A)
         val warning = Color(0xFFFFCA28)
         val success = Color(0xFF66BB6A)
+        val buttonOutline = Color(0xFF51525E)
     }
 }

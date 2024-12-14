@@ -14,5 +14,23 @@
     <dimen name="module_20sp">20sp</dimen>
     <dimen name="module_2">2dp</dimen>
     <dimen name="module_1">1dp</dimen>
+    <dimen name="module_4">4dp</dimen>
     <dimen name="module_half">0.5dp</dimen>
+    <dimen name="module_36">36dp</dimen>
+    <dimen name="module_32">32dp</dimen>
+    <dimen name="module_26">26dp</dimen>
+    <dimen name="module_30">30dp</dimen>
+    <dimen name="module_20">20dp</dimen>
+    <dimen name="module_6half">6.5dp</dimen>
+    <dimen name="module_7">7dp</dimen>
+    <dimen name="module_6">6dp</dimen>
+    <dimen name="module_5">5dp</dimen>
+    <dimen name="module_22">22dp</dimen>
+    <dimen name="module_3">3dp</dimen>
+    <dimen name="module_28">28dp</dimen>
+    <dimen name="module_180">180dp</dimen>
+    <dimen name="module_436">436dp</dimen>
+    <dimen name="module_18">18dp</dimen>
+    <dimen name="module_14">14dp</dimen>
+    <dimen name="module_136">136dp</dimen>
 </resources>

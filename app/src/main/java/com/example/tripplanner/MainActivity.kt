@@ -17,7 +17,7 @@ import androidx.core.view.WindowCompat
 import com.example.tripplanner.common.composables.ComposeTextView
 import com.example.tripplanner.ui.theme.LocalCustomColors
 import com.example.tripplanner.ui.theme.TripPlannerTheme
-import com.example.tripplanner.user.myacount.composables.MyAccountView
+import com.example.tripplanner.user.profile.composables.MyProfileView
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,28 +34,9 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(LocalCustomColors.current.primaryBackground)
                 ){
-                    MyAccountView()
+                    MyProfileView()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    val customColors = LocalCustomColors.current
-    ComposeTextView.TitleTextView(
-        text = "Hello $name!",
-        modifier = modifier.padding(16.dp),
-        textAlign = TextAlign.Center,
-        textColor = customColors.titleTextColor
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TripPlannerTheme {
-        Greeting("Android")
     }
 }

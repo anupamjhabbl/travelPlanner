@@ -1,4 +1,18 @@
 <resources>
     <string name="app_name">TripPlanner</string>
     <string name="profile">Profile</string>
+    <string name="profile_details">Profile Details</string>
+    <string name="notifications">Notifications</string>
+    <string name="settings">Settings</string>
+    <string name="help_support">Help &amp; Support</string>
+    <string name="logout">Logout</string>
+    <string name="profile_details_subtitle">View and edit your profile</string>
+    <string name="notifications_subtitle">View notifications</string>
+    <string name="settings_subtitle">Review and Update profile Settings</string>
+    <string name="help_support_subtitle">Help centre and legal terms</string>
+    <string name="logout_subtitle">Logout your profile</string>
+    <string name="follow">Follow</string>
+    <string name="followers">Followers</string>
+    <string name="followings">Followings</string>
+    <string name="expeditions">Expeditions</string>
 </resources>

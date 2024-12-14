@@ -18,7 +18,8 @@ data class CustomColors(
     val secondaryButtonText: Color,
     val warning: Color,
     val error: Color,
-    val success: Color
+    val success: Color,
+    val buttonOutline: Color
 )
 
 val LocalCustomColors = staticCompositionLocalOf {
@@ -36,7 +37,8 @@ val LocalCustomColors = staticCompositionLocalOf {
         secondaryButtonText = Color.Unspecified,
         warning = Color.Unspecified,
         error = Color.Unspecified,
-        success = Color.Unspecified
+        success = Color.Unspecified,
+        buttonOutline = Color.Unspecified
     )
 }
 
@@ -56,7 +58,8 @@ fun getCustomColor(isDarkTheme: Boolean): CustomColors {
             secondaryButtonText = DarkColor.secondaryButtonText,
             warning = DarkColor.warning,
             error = DarkColor.error,
-            success = DarkColor.success
+            success = DarkColor.success,
+            buttonOutline = DarkColor.buttonOutline
         )
     } else {
         CustomColors(
@@ -73,7 +76,8 @@ fun getCustomColor(isDarkTheme: Boolean): CustomColors {
             secondaryButtonText = LightColor.secondaryButtonText,
             warning = DarkColor.warning,
             error = DarkColor.error,
-            success = DarkColor.success
+            success = DarkColor.success,
+            buttonOutline = LightColor.buttonOutline
         )
     }
 }
