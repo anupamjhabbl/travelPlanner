@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "345145060189",
+    "project_id": "bbl-trip-planner",
+    "storage_bucket": "bbl-trip-planner.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:345145060189:android:483530751c13c82c9016b4",
+        "android_client_info": {
+          "package_name": "com.example.bbltripplanner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYfjXF8yllh2D1VH-OojZ_5fLOMio2WKI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

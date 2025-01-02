@@ -1,14 +1,16 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.ksp.plugin)
+    alias(libs.plugins.google.services)
 }
 
 android {
-    namespace = "com.example.tripplanner"
+    namespace = "com.example.bbltripplanner"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.tripplanner"
+        applicationId = "com.example.bbltripplanner"
         minSdk = 23
         targetSdk = 35
         versionCode = 1
@@ -62,6 +64,18 @@ dependencies {
     implementation(libs.google.fonts)
     implementation(libs.io.coil)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.io.insert.koin)
+    implementation(libs.koin.annotations)
+    implementation(libs.com.squareup.retrofit)
+    implementation(libs.com.squareup.convertor)
+    implementation(libs.gson.impl)
+    implementation(libs.androidx.room)
+    implementation(libs.androidx.room.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    ksp(libs.ksp.room)
+    ksp(libs.koin.ksp.compiler)
+    testImplementation(libs.io.insert.koin.test)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
