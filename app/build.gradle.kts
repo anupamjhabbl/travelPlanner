@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.io.coil)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.io.insert.koin)
+    implementation(libs.io.koin.compose)
     implementation(libs.koin.annotations)
     implementation(libs.com.squareup.retrofit)
     implementation(libs.com.squareup.convertor)

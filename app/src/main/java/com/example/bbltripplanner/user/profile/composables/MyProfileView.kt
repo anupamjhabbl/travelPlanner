@@ -21,6 +21,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -33,12 +39,36 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.user.profile.viewModels.OtherProfileIntent
+import com.example.bbltripplanner.user.profile.viewModels.OtherProfileViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun MyProfileView (
 
 ) {
+    val viewModel: OtherProfileViewModel = koinViewModel()
+    val viewEffect by viewModel.viewEffect.collectAsState(initial = null)
+    var user by remember {
+        mutableStateOf<User?>(null)
+    }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.processEvent(OtherProfileIntent.ViewEvent.FetchUserData)
+    }
+
+    LaunchedEffect(key1 = viewEffect) {
+        when (viewEffect) {
+            is OtherProfileIntent.ViewEffect.ShowUser -> {
+                user = (viewEffect as OtherProfileIntent.ViewEffect.ShowUser).user
+            }
+            OtherProfileIntent.ViewEffect.UserFailure -> {}  // TODO
+            null -> {}  // TODO
+        }
+    }
+
     Scaffold (
         modifier = Modifier
             .fillMaxSize(),
@@ -180,8 +210,8 @@ fun CustomUIForToolbar() {
     com.example.bbltripplanner.common.composables.ComposeButtonView.IconButtonView(
         modifier = Modifier
             .padding(dimensionResource(id = R.dimen.module_4))
-            .width(dimensionResource(id = R.dimen.module_26))
-            .height(dimensionResource(id = R.dimen.module_26)),
+            .width(dimensionResource(id = R.dimen.module_22))
+            .height(dimensionResource(id = R.dimen.module_22)),
         iconDrawable = R.drawable.ic_edit
     )
     com.example.bbltripplanner.common.composables.ComposeButtonView.IconButtonView(
@@ -193,7 +223,7 @@ fun CustomUIForToolbar() {
                 dimensionResource(id = R.dimen.module_4)
             )
             .width(dimensionResource(id = R.dimen.module_6))
-            .height(dimensionResource(id = R.dimen.module_18)),
+            .height(dimensionResource(id = R.dimen.module_16)),
         iconDrawable = R.drawable.ic_menu
     )
 }
@@ -203,7 +233,7 @@ fun ProfileUpperSection() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(dimensionResource(id = R.dimen.module_436))
+            .height(dimensionResource(id = R.dimen.module_420))
             .background(
                 LocalCustomColors.current.primaryBackground,
                 RoundedCornerShape(0, 0, 15, 15)
@@ -227,14 +257,15 @@ fun ProfileUpperSection() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 com.example.bbltripplanner.common.composables.ComposeImageView.CircularImageView(
-                    imageURI = "https://delasign.com/delasignBlack.png",
-                    diameter = dimensionResource(id = R.dimen.module_180)
+                    imageURI = "https://www.orbitmedia.com/wp-content/uploads/2023/06/Andy-Profile-600.png",
+                    diameter = dimensionResource(id = R.dimen.module_160)
                 )
                 com.example.bbltripplanner.common.composables.ComposeTextView.TitleTextView(
                     text = "Anupam Kumar",
                     fontSize = with(LocalDensity.current) {
-                        dimensionResource(id = R.dimen.module_24sp).toSp()
-                    }
+                        dimensionResource(id = R.dimen.module_22sp).toSp()
+                    },
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.module_6), dimensionResource(id = R.dimen.module_10), 0.dp, 0.dp)
                 )
                 FollowViewGroup(
                     Modifier.padding(
@@ -327,6 +358,7 @@ fun TravelEntityClickable(
             .padding(dimensionResource(id = R.dimen.module_8))
     ) {
         com.example.bbltripplanner.common.composables.ComposeTextView.TitleTextView(
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.module_4), 0.dp),
             text = "RaJagir Tour",
         )
         com.example.bbltripplanner.common.composables.ComposeTextView.TextView(

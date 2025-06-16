@@ -1,6 +1,5 @@
 package com.example.bbltripplanner.common.composables
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -10,10 +9,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.dp
+import com.example.bbltripplanner.R
 import com.example.bbltripplanner.ui.theme.CustomTypography
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
-import com.example.bbltripplanner.R
 
 object ComposeTextView {
     @Composable
@@ -28,8 +26,7 @@ object ComposeTextView {
     ) {
         Text(
             text = text,
-            modifier = modifier
-                .padding(dimensionResource(id = R.dimen.module_4), 0.dp),
+            modifier = modifier,
             color = textColor,
             fontSize = fontSize,
             fontWeight = CustomTypography.titleLarge.fontWeight,

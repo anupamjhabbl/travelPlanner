@@ -29,8 +29,14 @@
     <dimen name="module_3">3dp</dimen>
     <dimen name="module_28">28dp</dimen>
     <dimen name="module_180">180dp</dimen>
-    <dimen name="module_436">436dp</dimen>
+    <dimen name="module_400">400dp</dimen>
     <dimen name="module_18">18dp</dimen>
     <dimen name="module_14">14dp</dimen>
     <dimen name="module_136">136dp</dimen>
+    <dimen name="module_160">160dp</dimen>
+    <dimen name="module_22sp">22sp</dimen>
+    <dimen name="module_425">425dp</dimen>
+    <dimen name="module_415">415dp</dimen>
+    <dimen name="module_10">10dp</dimen>
+    <dimen name="module_420">420dp</dimen>
 </resources>

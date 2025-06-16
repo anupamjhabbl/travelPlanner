@@ -102,7 +102,7 @@ fun ProfileContainer() {
                 .align(Alignment.Center)
         ){
             com.example.bbltripplanner.common.composables.ComposeImageView.CircularImageView(
-                imageURI = "https://delasign.com/delasignBlack.png",
+                imageURI = "https://www.orbitmedia.com/wp-content/uploads/2023/06/Andy-Profile-600.png",
                 diameter = dimensionResource(id = R.dimen.module_90)
             )
             ProfileNameAndTravelsContainer(
