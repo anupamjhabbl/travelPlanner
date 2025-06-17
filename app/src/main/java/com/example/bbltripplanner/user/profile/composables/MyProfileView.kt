@@ -214,10 +214,10 @@ fun CustomUIForToolbar() {
                 dimensionResource(id = R.dimen.module_8),
                 dimensionResource(id = R.dimen.module_4),
                 dimensionResource(id = R.dimen.module_16),
-                dimensionResource(id = R.dimen.module_4)
+                dimensionResource(id = R.dimen.module_8)
             )
-            .width(dimensionResource(id = R.dimen.module_10))
-            .height(dimensionResource(id = R.dimen.module_25)),
+            .width(dimensionResource(id = R.dimen.module_8))
+            .height(dimensionResource(id = R.dimen.module_22)),
         iconDrawable = R.drawable.ic_menu
     )
 }
