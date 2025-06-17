@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import com.example.bbltripplanner.navigation.HomeNavigationComposable
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.example.bbltripplanner.ui.theme.TripPlannerTheme
-import com.example.bbltripplanner.user.profile.composables.MyProfileView
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(LocalCustomColors.current.primaryBackground)
                 ){
-                    MyProfileView()
+                    HomeNavigationComposable()
                 }
             }
         }

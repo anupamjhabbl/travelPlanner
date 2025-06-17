@@ -19,6 +19,7 @@ retrofitVersion = "2.11.0"
 roomVersion = "2.6.1"
 google-services = "4.4.2"
 firebase-bom = "33.7.0"
+navigationComposeVersion = "2.6.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +52,7 @@ ksp-room = { group = "androidx.room", name = "room-compiler", version.ref = "roo
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVersion" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom"}
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics"}
+navigation-compose = {group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationComposeVersion"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

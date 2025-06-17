@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.user.myacount.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,21 +29,31 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.Constants
+import com.example.bbltripplanner.navigation.HomeNavigationScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import com.example.bbltripplanner.user.myacount.entity.ProfileActionItem
 import com.example.bbltripplanner.user.myacount.entity.ProfileActionResourceMapper
 import com.example.bbltripplanner.user.myacount.viewModels.MyAccountViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MyAccountView() {
-    val viewModel = MyAccountViewModel()
+fun MyAccountView(
+    navController: NavController
+) {
+    val viewModel: MyAccountViewModel = koinViewModel()
+
     Scaffold (
         topBar = {
             com.example.bbltripplanner.common.composables.ToolBarView.TitleBackButtonTitleBar(
                 modifier = Modifier,
                 title = stringResource(id = R.string.profile),
                 backgroundColor = Color.Transparent
-            ) {}
+            ) {
+                navController.popBackStack()
+            }
         }
     ) { innerPadding ->
         Box(
@@ -60,18 +71,16 @@ fun MyAccountView() {
                     modifier = Modifier
                         .padding(
                             0.dp,
-                            dimensionResource(id = R.dimen.module_30),
+                            dimensionResource(id = R.dimen.module_20),
                             0.dp, 
                             dimensionResource(id = R.dimen.module_16)
                         )
                 ) {
                     items(ProfileActionResourceMapper.getProfileActions()) { item ->
                         ProfileActionTile(
-                            vectorId = item.vectorId,
-                            title = stringResource(id = item.title),
-                            subTitle = stringResource(id = item.subTitle)
+                            item
                         ) { key ->
-                            takeAction(key)
+                            takeAction(navController, key)
                         }
                     }
                 }
@@ -81,7 +90,19 @@ fun MyAccountView() {
     }
 }
 
-fun takeAction(key: String) {}
+fun takeAction(navController: NavController, key: String) {     // TODO: All the tiles action on myAccount page
+    when (key) {
+        Constants.PROFILE_DETAILS -> openMyProfilePage(navController)
+        Constants.NOTIFICATIONS -> {}
+        Constants.SETTINGS -> {}
+        Constants.HELP_SUPPORT -> {}
+        Constants.LOGOUT -> {}
+    }
+}
+
+fun openMyProfilePage(navController: NavController) {
+    navController.navigate(HomeNavigationScreen.MyProfileScreen.route)
+}
 
 
 @Composable
@@ -107,7 +128,7 @@ fun ProfileContainer() {
             )
             ProfileNameAndTravelsContainer(
                 modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.module_8), 0.dp)
+                    .padding(dimensionResource(id = R.dimen.module_16), 0.dp)
                     .fillMaxHeight()
             )
         }
@@ -141,15 +162,14 @@ fun ProfileNameAndTravelsContainer(
 
 @Composable
 fun ProfileActionTile (
-    vectorId: Int,
-    title: String,
-    subTitle: String,
+    item: ProfileActionItem,
     onClick: (key: String) -> Unit
 ) {
     Column (
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
+            .clickable { onClick(item.key) }
     ) {
         Row(
             modifier = Modifier
@@ -164,9 +184,9 @@ fun ProfileActionTile (
             verticalAlignment = Alignment.CenterVertically
         ) {
             com.example.bbltripplanner.common.composables.ComposeImageView.ImageViewWitDrawableId(
-                imageId = vectorId,
+                imageId = item.vectorId,
                 modifier = Modifier.height(dimensionResource(id = R.dimen.module_36)),
-                contentDescription = title
+                contentDescription = stringResource(id = item.title)
             )
 
             Column(
@@ -178,14 +198,14 @@ fun ProfileActionTile (
                     )
             ) {
                 com.example.bbltripplanner.common.composables.ComposeTextView.TextView(
-                    text = title,
+                    text = stringResource(id = item.title),
                     fontSize = with(LocalDensity.current) {
                         dimensionResource(id = R.dimen.module_18sp).toSp()
                     },
-                    fontWeight = FontWeight.W400
+                    fontWeight = FontWeight.W500
                 )
                 com.example.bbltripplanner.common.composables.ComposeTextView.TextView(
-                    text = subTitle,
+                    text = stringResource(id = item.title),
                     fontSize = with(LocalDensity.current) {
                         dimensionResource(id = R.dimen.module_16sp).toSp()
                     },

@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.common.di_modules
 
 import com.example.bbltripplanner.common.infra.Network
+import com.example.bbltripplanner.user.myacount.viewModels.MyAccountViewModel
 import com.example.bbltripplanner.user.profile.clients.UserClient
 import com.example.bbltripplanner.user.profile.repositories.GetProfileRepository
 import com.example.bbltripplanner.user.profile.repositoryimpl.GetProfileNetwork
@@ -14,4 +15,5 @@ val appModule = module {
     single<GetProfileRepository> { GetProfileNetwork(get()) }
     single<ProfileUseCase> { ProfileUseCase(get()) }
     viewModel { OtherProfileViewModel(get()) }
+    viewModel { MyAccountViewModel() }
 }

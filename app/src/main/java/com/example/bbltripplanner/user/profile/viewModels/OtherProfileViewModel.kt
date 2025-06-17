@@ -7,9 +7,7 @@ import com.example.bbltripplanner.user.profile.usecases.ProfileUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.koin.android.annotation.KoinViewModel
 
-@KoinViewModel
 class OtherProfileViewModel(
     private val profileUseCase: ProfileUseCase
 ): ViewModel(), BaseMVIVPresenter<OtherProfileIntent.ViewEvent> {

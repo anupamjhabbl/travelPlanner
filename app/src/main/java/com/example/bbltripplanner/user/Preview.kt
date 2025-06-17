@@ -7,5 +7,5 @@ import com.example.bbltripplanner.user.myacount.composables.MyAccountView
 @Preview
 @Composable
 fun MyAccountPreview() {
-    MyAccountView()
+
 }

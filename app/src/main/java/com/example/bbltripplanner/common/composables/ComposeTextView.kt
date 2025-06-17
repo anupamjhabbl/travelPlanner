@@ -20,7 +20,7 @@ object ComposeTextView {
         modifier: Modifier = Modifier,
         textAlign: TextAlign = TextAlign.Left,
         fontSize: TextUnit = with(LocalDensity.current) {
-            dimensionResource(id = R.dimen.module_18sp).toSp()
+            dimensionResource(id = R.dimen.module_20sp).toSp()
         },
         textColor: Color = LocalCustomColors.current.titleTextColor
     ) {

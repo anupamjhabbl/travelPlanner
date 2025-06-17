@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavController
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.entity.User
@@ -47,7 +48,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun MyProfileView (
-
+    navController: NavController
 ) {
     val viewModel: OtherProfileViewModel = koinViewModel()
     val viewEffect by viewModel.viewEffect.collectAsState(initial = null)
@@ -75,7 +76,7 @@ fun MyProfileView (
         topBar = {}
     ) {
         Column {
-            ProfileUpperSection()
+            ProfileUpperSection(navController)
             ProfileBottomSection()
         }
     }
@@ -209,27 +210,20 @@ fun TravelPointViewLeft(
 fun CustomUIForToolbar() {
     com.example.bbltripplanner.common.composables.ComposeButtonView.IconButtonView(
         modifier = Modifier
-            .padding(dimensionResource(id = R.dimen.module_4))
-            .width(dimensionResource(id = R.dimen.module_22))
-            .height(dimensionResource(id = R.dimen.module_22)),
-        iconDrawable = R.drawable.ic_edit
-    )
-    com.example.bbltripplanner.common.composables.ComposeButtonView.IconButtonView(
-        modifier = Modifier
             .padding(
                 dimensionResource(id = R.dimen.module_8),
                 dimensionResource(id = R.dimen.module_4),
                 dimensionResource(id = R.dimen.module_16),
                 dimensionResource(id = R.dimen.module_4)
             )
-            .width(dimensionResource(id = R.dimen.module_6))
-            .height(dimensionResource(id = R.dimen.module_16)),
+            .width(dimensionResource(id = R.dimen.module_10))
+            .height(dimensionResource(id = R.dimen.module_25)),
         iconDrawable = R.drawable.ic_menu
     )
 }
 
 @Composable
-fun ProfileUpperSection() {
+fun ProfileUpperSection(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -244,11 +238,13 @@ fun ProfileUpperSection() {
                 customUI = {
                     CustomUIForToolbar()
                 }
-            ) {}
+            ) {
+                navController.popBackStack()
+            }
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(dimensionResource(id = R.dimen.module_20))
+                    .height(dimensionResource(id = R.dimen.module_16))
             )
             Column (
                 modifier = Modifier

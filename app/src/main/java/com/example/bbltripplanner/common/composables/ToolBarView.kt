@@ -35,6 +35,7 @@ object ToolBarView {
             modifier = modifier
                 .statusBarsPadding()
                 .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.module_8), dimensionResource(id = R.dimen.module_16))
                 .height(dimensionResource(id = R.dimen.module_36)),
             title = {
                 Column (
@@ -42,7 +43,7 @@ object ToolBarView {
                     verticalArrangement = Arrangement.Center
                 ) {
                     ComposeTextView.TitleTextView(
-                        modifier = Modifier.padding(dimensionResource(id = R.dimen.module_4), 0.dp),
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.module_6), 0.dp),
                         text = title
                     )
                 }
@@ -74,8 +75,8 @@ object ToolBarView {
             ImageViewWitDrawableId(
                 imageId = backButton,
                 modifier = Modifier
-                    .width(dimensionResource(id = R.dimen.module_26))
-                    .height(dimensionResource(id = R.dimen.module_24))
+                    .width(dimensionResource(id = R.dimen.module_36))
+                    .height(dimensionResource(id = R.dimen.module_32))
             )
         }
     }
@@ -93,6 +94,7 @@ object ToolBarView {
             modifier = Modifier
                 .statusBarsPadding()
                 .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.module_8), dimensionResource(id = R.dimen.module_16))
                 .height(dimensionResource(id = R.dimen.module_36)),
             title = {
                 Column (
@@ -100,7 +102,7 @@ object ToolBarView {
                     verticalArrangement = Arrangement.Center
                 ) {
                     ComposeTextView.TitleTextView(
-                        modifier = Modifier.padding(dimensionResource(id = R.dimen.module_4), 0.dp),
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.module_6), 0.dp),
                         text = title
                     )
                 }

@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation(libs.navigation.compose)
     ksp(libs.ksp.room)
     ksp(libs.koin.ksp.compiler)
     testImplementation(libs.io.insert.koin.test)
