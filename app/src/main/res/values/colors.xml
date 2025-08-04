@@ -4,4 +4,5 @@
     <color name="black">#000000</color>
     <color name="titleTextColor">#141414</color>
     <color name="primaryAccent">#FF00BFA6</color>
+    <color name="primary">#6851EB</color>
 </resources>

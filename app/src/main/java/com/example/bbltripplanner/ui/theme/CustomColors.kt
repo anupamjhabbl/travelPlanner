@@ -19,7 +19,8 @@ data class CustomColors(
     val warning: Color,
     val error: Color,
     val success: Color,
-    val buttonOutline: Color
+    val buttonOutline: Color,
+    val primary: Color
 )
 
 val LocalCustomColors = staticCompositionLocalOf {
@@ -38,7 +39,8 @@ val LocalCustomColors = staticCompositionLocalOf {
         warning = Color.Unspecified,
         error = Color.Unspecified,
         success = Color.Unspecified,
-        buttonOutline = Color.Unspecified
+        buttonOutline = Color.Unspecified,
+        primary = Color.Unspecified
     )
 }
 
@@ -59,7 +61,8 @@ fun getCustomColor(isDarkTheme: Boolean): CustomColors {
             warning = DarkColor.warning,
             error = DarkColor.error,
             success = DarkColor.success,
-            buttonOutline = DarkColor.buttonOutline
+            buttonOutline = DarkColor.buttonOutline,
+            primary = DarkColor.primary
         )
     } else {
         CustomColors(
@@ -77,7 +80,8 @@ fun getCustomColor(isDarkTheme: Boolean): CustomColors {
             warning = DarkColor.warning,
             error = DarkColor.error,
             success = DarkColor.success,
-            buttonOutline = LightColor.buttonOutline
+            buttonOutline = LightColor.buttonOutline,
+            primary = DarkColor.primary
         )
     }
 }

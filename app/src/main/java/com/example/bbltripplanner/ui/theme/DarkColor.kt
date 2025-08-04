@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 class DarkColor {
     companion object {
-        val primaryBackGround = Color(0xFF1E1E1E)
+        val primaryBackGround = Color(0xFF000000)
         val primaryAccent = Color(0xFF00BFA6)
         val secondaryAccent = Color(0xFFFF6F61)
         val titleTextColor = Color(0xFFFFFFFF)
@@ -19,5 +19,6 @@ class DarkColor {
         val warning = Color(0xFFFFCA28)
         val success = Color(0xFF66BB6A)
         val buttonOutline = Color(0xFF51525E)
+        val primary = Color(0xFF6851EB)
     }
 }
