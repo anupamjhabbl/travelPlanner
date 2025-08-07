@@ -9,7 +9,7 @@ class DarkColor {
         val secondaryAccent = Color(0xFFFF6F61)
         val titleTextColor = Color(0xFFFFFFFF)
         val textColor = Color(0xFFE0E0E0)
-        val secondaryTextColor = Color(0xFFBDBDBD)
+        val secondaryTextColor = Color(0xFFFFFEFE)
         val highlightTextColor = Color(0xFFFFAB91)
         val primaryButtonBg = Color(0xFF2b2d42)
         val secondaryButtonBorder = Color(0xFF64FFDA)

@@ -112,7 +112,7 @@ fun ProfileContainer() {
             .wrapContentHeight()
             .fillMaxWidth()
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.module_8)))
-            .background(LocalCustomColors.current.primaryAccent)
+            .background(LocalCustomColors.current.primary)
             .padding(dimensionResource(id = R.dimen.module_24))
     ) {
         Row (
@@ -148,14 +148,14 @@ fun ProfileNameAndTravelsContainer(
             fontSize = with(LocalDensity.current) {
                 dimensionResource(id = R.dimen.module_20sp).toSp()
             },
-            textColor = LocalCustomColors.current.textColor
+            textColor = LocalCustomColors.current.secondaryTextColor
         )
         com.example.bbltripplanner.common.composables.ComposeTextView.TextView(
             text = "8 Travels",
             fontSize = with(LocalDensity.current) {
                 dimensionResource(id = R.dimen.module_18sp).toSp()
             },
-            textColor = LocalCustomColors.current.textColor
+            textColor = LocalCustomColors.current.secondaryTextColor
         )
     }
 }
@@ -192,10 +192,7 @@ fun ProfileActionTile (
             Column(
                 modifier = Modifier
                     .wrapContentWidth()
-                    .padding(
-                        dimensionResource(id = R.dimen.module_16),
-                        0.dp
-                    )
+                    .padding(32.dp, 0.dp, 0.dp, 0.dp)
             ) {
                 com.example.bbltripplanner.common.composables.ComposeTextView.TextView(
                     text = stringResource(id = item.title),

@@ -9,7 +9,7 @@ class LightColor {
         val secondaryAccent = Color(0xFFFF6F61)
         val titleTextColor = Color(0xFF141414)
         val textColor = Color(0xFF212121)
-        val secondaryTextColor = Color(0xFF757575)
+        val secondaryTextColor = Color(0xFFFFFDFD)
         val highlightTextColor = Color(0xFF90CAF9)
         val primaryButtonBg = Color(0xFF1E1E1E)
         val secondaryButtonBorder = Color(0xFF00BFA6)

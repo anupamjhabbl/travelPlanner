@@ -41,7 +41,9 @@ fun AppNavigationComposable() {
         val currentRoute = navBackStackEntry?.route
         val parentRoute = navBackStackEntry?.parent?.route
         if (bottomNavigationItems[index].route == (parentRoute ?: currentRoute)) {
-            selectedTabIndex.intValue = index
+            if (selectedTabIndex.intValue != index) {
+                selectedTabIndex.intValue = index
+            }
         }
     }
 
