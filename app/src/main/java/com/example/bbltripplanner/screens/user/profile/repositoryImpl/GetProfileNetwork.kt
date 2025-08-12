@@ -1,4 +1,4 @@
-package com.example.bbltripplanner.screens.user.profile.repositoryimpl
+package com.example.bbltripplanner.screens.user.profile.repositoryImpl
 
 import com.example.bbltripplanner.common.entity.ApiFailureException
 import com.example.bbltripplanner.common.entity.BaseResponse

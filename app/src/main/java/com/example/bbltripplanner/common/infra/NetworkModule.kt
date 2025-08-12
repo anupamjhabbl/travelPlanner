@@ -1,24 +1,21 @@
 package com.example.bbltripplanner.common.infra
 
-import com.example.bbltripplanner.common.entity.NetworkConfiguration
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class NetworkModule(
-    private val networkConfiguration: NetworkConfiguration
-) {
+class NetworkModule {
 
     fun provideRetrofitClient(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(networkConfiguration.baseURL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(InfraProvider.getNetworkConfiguration.baseURL)
+            .addConverterFactory(GsonConverterFactory.create(InfraProvider.gson))
             .build()
     }
 
     fun provideRetrofitClient(baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(InfraProvider.gson))
             .build()
     }
 }
