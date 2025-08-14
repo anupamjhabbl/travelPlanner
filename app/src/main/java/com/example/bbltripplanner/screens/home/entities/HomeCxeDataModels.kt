@@ -54,4 +54,10 @@ sealed class HomeCxeWidget(
     data class TopPicksByLocationCtaWidget(
         val data: TopPicksByLocationCtaWidgetData
     ): HomeCxeWidget("")
+
+    fun getWidgetType(): HomeCxeWidgetTypes {
+        return HomeCxeWidgetTypes.entries.find {
+            it.templateName == templateName
+        } ?: HomeCxeWidgetTypes.INVALID
+    }
 }

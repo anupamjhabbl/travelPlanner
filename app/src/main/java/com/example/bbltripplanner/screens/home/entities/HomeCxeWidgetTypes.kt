@@ -5,5 +5,6 @@ enum class HomeCxeWidgetTypes(val templateName: String) {
     IMAGE_CARROUSEL("ImageCarousal"),
     BUNDLE_ITEMS_WIDGET("BundleItemsWidget"),
     NEWS_BANNER("NewsBanner"),
-    LOCATION_FEED_CTA("LocationFeedCta")
+    LOCATION_FEED_CTA("LocationFeedCta"),
+    INVALID("invalid")
 }
