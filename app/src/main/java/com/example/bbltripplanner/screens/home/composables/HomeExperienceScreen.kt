@@ -2,11 +2,15 @@ package com.example.bbltripplanner.screens.home.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,7 +24,6 @@ import com.example.bbltripplanner.screens.home.composables.widgets.HomeLocationF
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeNewsBannerComposable
 import com.example.bbltripplanner.screens.home.entities.CxeResponseError
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
-import com.example.bbltripplanner.screens.home.entities.HomeCxeWidgetTypes
 import com.example.bbltripplanner.screens.home.viewModels.HomeExperienceIntent
 import com.example.bbltripplanner.screens.home.viewModels.HomeExperienceViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -40,7 +43,7 @@ fun HomeExperienceScreen(
         launch {
             viewModel.viewEffectLiveData.collect { viewEffect ->
                 when (viewEffect) {
-                    HomeExperienceIntent.ViewEffect.GoToLocationFeedScreen -> {} // TODO: Navigate to location feed screen
+                    HomeExperienceIntent.ViewEffect.GoToLocationFeedScreen -> {}
                 }
             }
         }
@@ -51,9 +54,9 @@ fun HomeExperienceScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(LocalCustomColors.current.primaryBackground)
+            .windowInsetsPadding(WindowInsets.statusBars)
     ) {
-        val state =  viewState
-        when (state) {
+        when (val state =  viewState) {
             HomeExperienceIntent.ViewState.ShowFullScreenLoading -> FullScreenLoading()
             is HomeExperienceIntent.ViewState.ShowCxeResponseError -> ShowCxeResponseErrorComposable(state.error)
             else -> ShowItems(widgets, widgetsListState)
@@ -67,13 +70,12 @@ fun ShowItems(widgets: List<HomeCxeWidget>, widgetsListState: LazyListState) {
         state = widgetsListState
     ) {
         items(widgets) { homeCxeWidget ->
-            when (homeCxeWidget.getWidgetType()) {
-                HomeCxeWidgetTypes.GREETING -> HomeGreetingComposable(homeCxeWidget as HomeCxeWidget.GreetingWidget)
-                HomeCxeWidgetTypes.IMAGE_CARROUSEL -> HomeImageCarouselComposable(homeCxeWidget as HomeCxeWidget.ImageCarouselWidget)
-                HomeCxeWidgetTypes.BUNDLE_ITEMS_WIDGET -> HomeBundleItemComposable(homeCxeWidget as HomeCxeWidget.BundleItemsWidget)
-                HomeCxeWidgetTypes.NEWS_BANNER -> HomeNewsBannerComposable(homeCxeWidget as HomeCxeWidget.NewsBannerWidget)
-                HomeCxeWidgetTypes.LOCATION_FEED_CTA -> HomeLocationFeedCtaComposable(homeCxeWidget as HomeCxeWidget.TopPicksByLocationCtaWidget)
-                HomeCxeWidgetTypes.INVALID -> {}
+            when (homeCxeWidget) {
+                is HomeCxeWidget.GreetingWidget -> HomeGreetingComposable(homeCxeWidget)
+                is  HomeCxeWidget.ImageCarouselWidget -> HomeImageCarouselComposable(homeCxeWidget)
+                is HomeCxeWidget.BundleItemsWidget -> HomeBundleItemComposable(homeCxeWidget)
+                is HomeCxeWidget.NewsBannerWidget -> HomeNewsBannerComposable(homeCxeWidget)
+                is HomeCxeWidget.TopPicksByLocationCtaWidget -> HomeLocationFeedCtaComposable(homeCxeWidget)
             }
         }
     }
@@ -81,10 +83,10 @@ fun ShowItems(widgets: List<HomeCxeWidget>, widgetsListState: LazyListState) {
 
 @Composable
 fun ShowCxeResponseErrorComposable(error: CxeResponseError) {
-    // TODO: Handle error
+    Text("Error")
 }
 
 @Composable
 fun FullScreenLoading() {
-    // TODO: Show loading
+    Text("Loaadimg")
 }

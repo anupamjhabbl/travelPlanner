@@ -53,7 +53,6 @@ class HomeExperienceViewModel(
                 }
             }
             result.onSuccess { response ->
-                _viewStateLiveData.value = null
                  processResponse(response)
             }.onFailure { exception ->
                 if (exception is IOException) {
@@ -71,6 +70,7 @@ class HomeExperienceViewModel(
             _viewStateLiveData.value = HomeExperienceIntent.ViewState.ShowCxeResponseError(CxeResponseError.NO_DATA_ERROR)
         } else {
             _widgetsLiveData.value = widgetList
+            _viewStateLiveData.value = null
         }
     }
 }
