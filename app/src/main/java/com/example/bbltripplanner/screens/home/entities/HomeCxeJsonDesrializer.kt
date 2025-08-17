@@ -23,6 +23,8 @@ class HomeCxeJsonDeserializer: JsonDeserializer<HomeCxeWidget> {
             HomeCxeWidgetTypes.BUNDLE_ITEMS_WIDGET.templateName -> context.deserialize(json, HomeCxeWidget.BundleItemsWidget::class.java)
             HomeCxeWidgetTypes.NEWS_BANNER.templateName -> context.deserialize(json, HomeCxeWidget.NewsBannerWidget::class.java)
             HomeCxeWidgetTypes.LOCATION_FEED_CTA.templateName -> context.deserialize(json, HomeCxeWidget.TopPicksByLocationCtaWidget::class.java)
+            HomeCxeWidgetTypes.USER_TRIP_BUNDLE_WIDGET.templateName -> context.deserialize(json, HomeCxeWidget.UserTripBundleWidget::class.java)
+            HomeCxeWidgetTypes.TRAVEL_THREADS_BUNDLE_WIDGET.templateName -> context.deserialize(json, HomeCxeWidget.TravelThreadsBundleWidget::class.java)
             else -> throw JsonParseException("Unknown template name: $templateName")
         }
     }

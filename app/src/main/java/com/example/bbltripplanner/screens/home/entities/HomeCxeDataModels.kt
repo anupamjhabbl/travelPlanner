@@ -37,23 +37,31 @@ sealed class HomeCxeWidget(
 ) {
     data class GreetingWidget(
         val  data: GreetingWidgetData
-    ): HomeCxeWidget("")
+    ): HomeCxeWidget("", HomeCxeWidgetTypes.GREETING.templateName)
 
     data class ImageCarouselWidget(
         val data: ImageCarouselWidgetData
-    ): HomeCxeWidget("")
+    ): HomeCxeWidget("", HomeCxeWidgetTypes.IMAGE_CARROUSEL.templateName)
 
     data class BundleItemsWidget(
         val data: BundleItemsWidgetData
-    ): HomeCxeWidget("")
+    ): HomeCxeWidget("", HomeCxeWidgetTypes.BUNDLE_ITEMS_WIDGET.templateName)
 
     data class NewsBannerWidget(
         val data: NewsBannerWidgetData
-    ): HomeCxeWidget("")
+    ): HomeCxeWidget("", HomeCxeWidgetTypes.NEWS_BANNER.templateName)
 
     data class TopPicksByLocationCtaWidget(
         val data: TopPicksByLocationCtaWidgetData
-    ): HomeCxeWidget("")
+    ): HomeCxeWidget("", HomeCxeWidgetTypes.LOCATION_FEED_CTA.templateName)
+
+    data class TravelThreadsBundleWidget(
+        val data: TravelThreadsBundleWidgetData
+    ): HomeCxeWidget("", HomeCxeWidgetTypes.TRAVEL_THREADS_BUNDLE_WIDGET.templateName)
+
+    data class UserTripBundleWidget(
+        val data: UserTripBundleWidgetData
+    ): HomeCxeWidget("", HomeCxeWidgetTypes.USER_TRIP_BUNDLE_WIDGET.templateName)
 
     fun getWidgetType(): HomeCxeWidgetTypes {
         return HomeCxeWidgetTypes.entries.find {

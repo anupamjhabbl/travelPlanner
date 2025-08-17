@@ -22,6 +22,8 @@ import com.example.bbltripplanner.screens.home.composables.widgets.HomeGreetingC
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeImageCarouselComposable
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeLocationFeedCtaComposable
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeNewsBannerComposable
+import com.example.bbltripplanner.screens.home.composables.widgets.HomeTravelThreadsBundleComposable
+import com.example.bbltripplanner.screens.home.composables.widgets.HomeUserTripBundleWidgetComposable
 import com.example.bbltripplanner.screens.home.entities.CxeResponseError
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
 import com.example.bbltripplanner.screens.home.viewModels.HomeExperienceIntent
@@ -76,6 +78,8 @@ fun ShowItems(widgets: List<HomeCxeWidget>, widgetsListState: LazyListState) {
                 is HomeCxeWidget.BundleItemsWidget -> HomeBundleItemComposable(homeCxeWidget)
                 is HomeCxeWidget.NewsBannerWidget -> HomeNewsBannerComposable(homeCxeWidget)
                 is HomeCxeWidget.TopPicksByLocationCtaWidget -> HomeLocationFeedCtaComposable(homeCxeWidget)
+                is HomeCxeWidget.TravelThreadsBundleWidget -> HomeTravelThreadsBundleComposable(homeCxeWidget)
+                is HomeCxeWidget.UserTripBundleWidget -> HomeUserTripBundleWidgetComposable(homeCxeWidget)
             }
         }
     }

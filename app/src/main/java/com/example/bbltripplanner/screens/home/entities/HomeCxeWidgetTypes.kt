@@ -6,5 +6,7 @@ enum class HomeCxeWidgetTypes(val templateName: String) {
     BUNDLE_ITEMS_WIDGET("BundleItemsWidget"),
     NEWS_BANNER("NewsBanner"),
     LOCATION_FEED_CTA("LocationFeedCta"),
+    TRAVEL_THREADS_BUNDLE_WIDGET("TravelThreadsBundleWidget"),
+    USER_TRIP_BUNDLE_WIDGET("UserTripBundleWidget"),
     INVALID("invalid")
 }
