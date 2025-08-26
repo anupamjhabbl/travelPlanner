@@ -15,4 +15,5 @@
     <string name="followers">Followers</string>
     <string name="followings">Followings</string>
     <string name="expeditions">Expeditions</string>
+    <string name="user_greeting_hi">Hi %1$s!</string>
 </resources>

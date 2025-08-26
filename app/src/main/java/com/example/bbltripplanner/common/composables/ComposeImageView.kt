@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -59,6 +60,25 @@ object ComposeImageView {
                 .padding(0.dp),
             painter = painterResource(id = imageId),
             contentDescription = contentDescription
+        )
+    }
+
+    @Composable
+    fun ImageViewWithUrl(
+        imageURI: String,
+        modifier: Modifier = Modifier,
+        contentDescription: String = "",
+        onError: Int = R.drawable.ic_launcher_background,
+        onLoading: Int = R.drawable.ic_launcher_foreground,
+        contentScale: ContentScale = ContentScale.Crop
+    ) {
+        AsyncImage(
+            modifier = modifier,
+            model = imageURI,
+            placeholder = painterResource(id = onLoading),
+            error = painterResource(id = onError),
+            contentDescription = contentDescription,
+            contentScale = contentScale
         )
     }
 }

@@ -76,6 +76,8 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.navigation.compose)
     implementation(libs.android.material)
+    implementation(libs.androidx.window)
+    implementation(libs.google.accompanist)
     ksp(libs.ksp.room)
     ksp(libs.koin.ksp.compiler)
     testImplementation(libs.io.insert.koin.test)

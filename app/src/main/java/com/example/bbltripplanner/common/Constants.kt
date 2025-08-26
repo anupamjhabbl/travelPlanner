@@ -9,6 +9,8 @@ object Constants {
     const val SETTINGS = "settings"
     const val HELP_SUPPORT = "help_support"
     const val LOGOUT = "logout"
+    const val DEFAULT_USER = "Traveller"
+    const val APP_NAME = "TripPlanner"
 
     enum class Theme {
         @SerializedName("dark") DARK,

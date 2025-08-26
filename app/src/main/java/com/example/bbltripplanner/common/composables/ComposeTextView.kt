@@ -5,13 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.ui.theme.CustomTypography
-import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 object ComposeTextView {
     @Composable
@@ -22,16 +23,17 @@ object ComposeTextView {
         fontSize: TextUnit = with(LocalDensity.current) {
             dimensionResource(id = R.dimen.module_20sp).toSp()
         },
-        textColor: Color = LocalCustomColors.current.titleTextColor
+        textColor: Color = colorResource(R.color.textPrimary)
     ) {
         Text(
             text = text,
             modifier = modifier,
             color = textColor,
             fontSize = fontSize,
-            fontWeight = CustomTypography.titleLarge.fontWeight,
+            fontWeight = FontWeight.W600,
             textAlign = textAlign,
-            fontStyle = CustomTypography.titleLarge.fontStyle
+            fontStyle = CustomTypography.titleLarge.fontStyle,
+            fontFamily = FontFamily.SansSerif
         )
     }
 
@@ -41,10 +43,10 @@ object ComposeTextView {
         modifier: Modifier = Modifier,
         textAlign: TextAlign = TextAlign.Left,
         fontSize: TextUnit = with(LocalDensity.current) {
-            dimensionResource(id = R.dimen.module_16sp).toSp()
+            dimensionResource(id = R.dimen.module_12sp).toSp()
         },
-        textColor: Color = LocalCustomColors.current.textColor,
-        fontWeight: FontWeight = CustomTypography.bodyLarge.fontWeight ?: FontWeight.W500,
+        textColor: Color = colorResource(R.color.textSecondary),
+        fontWeight: FontWeight = FontWeight.W400,
         maxLines: Int = Int.MAX_VALUE
     ) {
         Text(
@@ -55,7 +57,8 @@ object ComposeTextView {
             fontWeight = fontWeight,
             textAlign = textAlign,
             fontStyle = CustomTypography.titleLarge.fontStyle,
-            maxLines = maxLines
+            maxLines = maxLines,
+            fontFamily = FontFamily.SansSerif
         )
     }
 }
