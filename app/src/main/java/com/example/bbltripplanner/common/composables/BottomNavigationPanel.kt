@@ -46,7 +46,8 @@ fun BottomNavigationPanel(
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
-                label = {Text(navigationItem.title)})
+                label = { ComposeTextView.TextView(navigationItem.title) }
+            )
         }
     }
 }
