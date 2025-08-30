@@ -83,5 +83,4 @@ fun HomeNewsBannerComposable(widget: HomeCxeWidget.NewsBannerWidget) {
     }
 }
 
-private fun openNewsPage(context: Context) {
-}
+private fun openNewsPage(context: Context) {}

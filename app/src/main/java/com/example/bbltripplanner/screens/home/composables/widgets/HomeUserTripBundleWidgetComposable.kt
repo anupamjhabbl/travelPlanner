@@ -56,7 +56,7 @@ fun HomeUserTripBundleWidgetComposable(widget: HomeCxeWidget.UserTripBundleWidge
             ComposeTextView.TitleTextView(
                 modifier = Modifier.weight(1f),
                 text = widget.data.header?.text ?: "",
-                fontSize = 16.sp,
+                fontSize = 18.sp,
             )
 
             Box(

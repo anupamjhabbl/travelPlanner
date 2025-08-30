@@ -52,7 +52,7 @@ fun HomeBundleItemComposable(widget: HomeCxeWidget.BundleItemsWidget) {
         ComposeTextView.TitleTextView(
             modifier = Modifier.fillMaxWidth().padding(16.dp, 0.dp),
             text = widget.data.header?.text ?: "",
-            fontSize = 16.sp,
+            fontSize = 18.sp,
         )
 
         Spacer(Modifier.height(8.dp))
@@ -95,7 +95,6 @@ fun BundleItemView(
                 openBundleItem(context, bundleWidgetItem.itemId)
             }
     ) {
-
         Box {
             ComposeImageView.ImageViewWithUrl(
                 imageURI = imageList[currentIndex],
@@ -129,7 +128,7 @@ fun BundleItemView(
                 text = bundleWidgetItem.tripName,
                 textColor = colorResource(R.color.primary),
                 textAlign = TextAlign.Center,
-                fontSize = 20.sp
+                fontSize = 16.sp
             )
         }
     }

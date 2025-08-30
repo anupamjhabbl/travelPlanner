@@ -52,7 +52,7 @@ fun HomeTravelThreadsBundleComposable(widget: HomeCxeWidget.TravelThreadsBundleW
         ComposeTextView.TitleTextView(
             modifier = Modifier.fillMaxWidth().padding(16.dp, 0.dp),
             text = widget.data.header?.text ?: "",
-            fontSize = 16.sp,
+            fontSize = 18.sp,
         )
 
         Spacer(Modifier.height(8.dp))

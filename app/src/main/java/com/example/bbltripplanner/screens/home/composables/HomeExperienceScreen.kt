@@ -106,7 +106,7 @@ fun ShowItems(widgets: List<HomeCxeWidget>, widgetsListState: LazyListState) {
         item { HomeToolbar() }
 
         items(widgets) { homeCxeWidget ->
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             when (homeCxeWidget) {
                 is HomeCxeWidget.GreetingWidget -> HomeGreetingComposable(homeCxeWidget, "Jeevesh")
@@ -118,7 +118,7 @@ fun ShowItems(widgets: List<HomeCxeWidget>, widgetsListState: LazyListState) {
                 is HomeCxeWidget.UserTripBundleWidget -> HomeUserTripBundleWidgetComposable(homeCxeWidget)
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
         }
 
         item {
