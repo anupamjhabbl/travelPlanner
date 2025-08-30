@@ -8,5 +8,7 @@ data class UserTripBundleWidgetData(
     val backgroundColor: List<String>?,
     val content: BundleContent?,
     @SerializedName(value = "action_header", alternate = ["actionHeader"])
-    val actionHeader: HomeBundleWidgetActionHeader?
+    val actionHeader: HomeBundleWidgetActionHeader?,
+    @SerializedName(value = "widget_list", alternate = ["widgetList"])
+    var widgetList: List<UserTripWidgetItem>? = null
 )

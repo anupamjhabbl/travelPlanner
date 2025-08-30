@@ -4,15 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -72,7 +69,6 @@ fun HomeExperienceScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.statusBars)
             .background(LocalCustomColors.current.primaryBackground)
     ) {
         when (val state = viewState) {
@@ -80,8 +76,22 @@ fun HomeExperienceScreen(
             is HomeExperienceIntent.ViewState.ShowCxeResponseError -> ShowCxeResponseErrorComposable(
                 state.error
             )
+            else -> {
+                val uiWidgetList = filterWidgetsForUI(widgets)
+                ShowItems(uiWidgetList, widgetsListState)
+            }
+        }
+    }
+}
 
-            else -> ShowItems(widgets, widgetsListState)
+fun filterWidgetsForUI(widgets: List<HomeCxeWidget>): List<HomeCxeWidget> {
+    return widgets.filter {
+        when (it) {
+            is HomeCxeWidget.TopPicksByLocationCtaWidget -> true
+            is HomeCxeWidget.BundleItemsWidget -> it.data.widgetList?.isEmpty() != true
+            is HomeCxeWidget.GreetingWidget, is HomeCxeWidget.ImageCarouselWidget, is HomeCxeWidget.NewsBannerWidget -> true
+            is HomeCxeWidget.TravelThreadsBundleWidget -> it.data.widgetList?.isEmpty() != true
+            is HomeCxeWidget.UserTripBundleWidget -> it.data.widgetList?.isEmpty() != true
         }
     }
 }
@@ -96,7 +106,7 @@ fun ShowItems(widgets: List<HomeCxeWidget>, widgetsListState: LazyListState) {
         item { HomeToolbar() }
 
         items(widgets) { homeCxeWidget ->
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             when (homeCxeWidget) {
                 is HomeCxeWidget.GreetingWidget -> HomeGreetingComposable(homeCxeWidget, "Jeevesh")
@@ -108,7 +118,11 @@ fun ShowItems(widgets: List<HomeCxeWidget>, widgetsListState: LazyListState) {
                 is HomeCxeWidget.UserTripBundleWidget -> HomeUserTripBundleWidgetComposable(homeCxeWidget)
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        item {
+            Spacer(Modifier.height(12.dp))
         }
     }
 }

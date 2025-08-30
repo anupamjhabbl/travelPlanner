@@ -90,7 +90,7 @@ fun HomeImageCarouselComposable(widget: HomeCxeWidget.ImageCarouselWidget) {
 
 @Composable
 fun ImageCarouselItem(itemSrc: CarouselItemSrc, aspectRatio: String?, onClick: (actionDeeplink: String) -> Unit) {
-    val width = (WindowSizeUtils.getWindowWidth(LocalContext.current).toFloat() /  LocalContext.current.resources.displayMetrics.density) - 64
+    val width = (WindowSizeUtils.getWindowWidth(LocalContext.current).toFloat() /  LocalContext.current.resources.displayMetrics.density) - 32
     val ratioPair = getRatio(aspectRatio)
     val height = (width * ratioPair.second) / ratioPair.first
     Box(

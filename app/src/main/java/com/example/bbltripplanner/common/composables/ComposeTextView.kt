@@ -11,6 +11,8 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.ui.theme.CustomTypography
@@ -48,7 +50,8 @@ object ComposeTextView {
         },
         textColor: Color = colorResource(R.color.textSecondary),
         fontWeight: FontWeight = FontWeight.W400,
-        maxLines: Int = Int.MAX_VALUE
+        maxLines: Int = Int.MAX_VALUE,
+        textDecoration: TextDecoration = TextDecoration.None
     ) {
         Text(
             text = text,
@@ -59,11 +62,13 @@ object ComposeTextView {
             textAlign = textAlign,
             fontStyle = CustomTypography.titleLarge.fontStyle,
             maxLines = maxLines,
-            fontFamily = primaryFontFamily
+            fontFamily = primaryFontFamily,
+            textDecoration = textDecoration,
+            overflow = TextOverflow.Ellipsis
         )
     }
 
-    val primaryFontFamily = FontFamily(
+    private val primaryFontFamily = FontFamily(
         Font(R.font.lato_regular, FontWeight.Normal),
         Font(R.font.lato_bold, FontWeight.Bold),
         Font(R.font.lato_light, FontWeight.Light)

@@ -6,6 +6,17 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <dist:module dist:instant="true"/>
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="http" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
     <application
         android:name="com.example.bbltripplanner.application.TripPlannerBaseApplication"
         android:allowBackup="true"

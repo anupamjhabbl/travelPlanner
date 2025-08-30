@@ -8,4 +8,5 @@
     <color name="faded_primary">#B6ACE0</color>
     <color name="textPrimary">#070821</color>
     <color name="textSecondary">#1a1c34</color>
+    <color name="bg_default_image">#E3DFEF</color>
 </resources>

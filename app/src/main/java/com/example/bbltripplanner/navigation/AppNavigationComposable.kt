@@ -1,8 +1,9 @@
 package com.example.bbltripplanner.navigation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -56,15 +57,16 @@ fun AppNavigationComposable() {
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
-        HomeNavigationComposable(homeNavController, snackbarHostState, padding)
+        Box(modifier = Modifier.padding(padding)) {
+            HomeNavigationComposable(homeNavController, snackbarHostState)
+        }
     }
 }
 
 @Composable
 fun HomeNavigationComposable(
     homeNavController: NavHostController,
-    snackbarHostState: SnackbarHostState,
-    paddingValues: PaddingValues
+    snackbarHostState: SnackbarHostState
 ) {
     NavHost(
         navController = homeNavController,

@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.screens.home.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVPresenter
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -66,11 +68,113 @@ class HomeExperienceViewModel(
 
     private fun processResponse(response: HomeCxeResponse) {
         val widgetList = response.sections.firstOrNull()?.widgets
+        fetchBundleData(widgetList)
         if (widgetList == null) {
             _viewStateLiveData.value = HomeExperienceIntent.ViewState.ShowCxeResponseError(CxeResponseError.NO_DATA_ERROR)
         } else {
             _widgetsLiveData.value = widgetList
             _viewStateLiveData.value = null
+        }
+    }
+
+    private fun fetchBundleData(widgetList: List<HomeCxeWidget>?) {
+        widgetList?.forEachIndexed { index, widget ->
+            when(widget) {
+                is HomeCxeWidget.GreetingWidget, is HomeCxeWidget.ImageCarouselWidget, is HomeCxeWidget.NewsBannerWidget, is HomeCxeWidget.TopPicksByLocationCtaWidget -> {}
+                is HomeCxeWidget.TravelThreadsBundleWidget -> getTravelThreadBundleData(widget.data.content?.bundleData, index)
+                is HomeCxeWidget.UserTripBundleWidget -> getUserTripBundleData(widget.data.content?.bundleData, index)
+                is HomeCxeWidget.BundleItemsWidget -> getBundleWidgetData(widget.data.content?.bundleData, index)
+            }
+        }
+    }
+
+    private fun getBundleWidgetData(bundleData: String?, index: Int) {
+        if (bundleData.isNullOrEmpty()) {
+            return
+        }
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    homeCxeUseCase.getBundleWidgetData(bundleData)
+                }
+            }
+            result.onSuccess { newData ->
+                if (newData.isNotEmpty()) {
+                    _widgetsLiveData.update { currentList ->
+                        currentList.toMutableList().apply {
+                            val widget = this[index]
+                            if (widget is HomeCxeWidget.BundleItemsWidget) {
+                                this[index] = widget.copy(
+                                    data = widget.data.copy(widgetList = newData)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            result.onFailure {
+                Log.d("ELLOR", it.message.toString() )
+            }
+        }
+    }
+
+    private fun getUserTripBundleData(bundleData: String?, index: Int) {
+        if (bundleData.isNullOrEmpty()) {
+            return
+        }
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    homeCxeUseCase.getUserTripBundleData(bundleData)
+                }
+            }
+            result.onSuccess { newData ->
+                if (newData.isNotEmpty()) {
+                    _widgetsLiveData.update { currentList ->
+                        currentList.toMutableList().apply {
+                            val widget = this[index]
+                            if (widget is HomeCxeWidget.UserTripBundleWidget) {
+                                this[index] = widget.copy(
+                                    data = widget.data.copy(widgetList = newData)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            result.onFailure {
+                Log.d("ELLOR", it.message.toString() )
+            }
+        }
+    }
+
+    private fun getTravelThreadBundleData(bundleData: String?, index: Int) {
+        if (bundleData.isNullOrEmpty()) {
+            return
+        }
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    homeCxeUseCase.getTravelThreadBundleData(bundleData)
+                }
+            }
+            result.onSuccess { newData ->
+                if (newData.isNotEmpty()) {
+                    _widgetsLiveData.update { currentList ->
+                        currentList.toMutableList().apply {
+                            val widget = this[index]
+                            if (widget is HomeCxeWidget.TravelThreadsBundleWidget) {
+                                this[index] = widget.copy(
+                                    data = widget.data.copy(widgetList = newData)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            result.onFailure {
+                Log.d("ELLOR", it.message.toString() )
+            }
         }
     }
 }

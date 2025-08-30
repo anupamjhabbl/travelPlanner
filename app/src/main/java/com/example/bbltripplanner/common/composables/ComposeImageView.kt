@@ -68,15 +68,13 @@ object ComposeImageView {
         imageURI: String,
         modifier: Modifier = Modifier,
         contentDescription: String = "",
-        onError: Int = R.drawable.ic_launcher_background,
-        onLoading: Int = R.drawable.ic_launcher_foreground,
         contentScale: ContentScale = ContentScale.Crop
     ) {
         AsyncImage(
             modifier = modifier,
             model = imageURI,
-            placeholder = painterResource(id = onLoading),
-            error = painterResource(id = onError),
+            placeholder = painterResource(id = R.drawable.default_image),
+            error = painterResource(id = R.drawable.default_image),
             contentDescription = contentDescription,
             contentScale = contentScale
         )
