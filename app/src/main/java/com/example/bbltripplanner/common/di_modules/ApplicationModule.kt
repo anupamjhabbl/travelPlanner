@@ -6,6 +6,11 @@ import com.example.bbltripplanner.screens.home.repositories.HomeCxeLayoutReposit
 import com.example.bbltripplanner.screens.home.repositoryImpl.HomeCxeLayoutNetwork
 import com.example.bbltripplanner.screens.home.usecases.HomeCxeUseCase
 import com.example.bbltripplanner.screens.home.viewModels.HomeExperienceViewModel
+import com.example.bbltripplanner.screens.posting.clients.PostingClient
+import com.example.bbltripplanner.screens.posting.repositories.PostingRepository
+import com.example.bbltripplanner.screens.posting.repositoryImpl.PostingNetwork
+import com.example.bbltripplanner.screens.posting.usecases.PostingUseCase
+import com.example.bbltripplanner.screens.posting.viewModels.PostingInitViewModel
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountViewModel
 import com.example.bbltripplanner.screens.user.profile.clients.UserClient
 import com.example.bbltripplanner.screens.user.profile.repositories.GetProfileRepository
@@ -22,7 +27,11 @@ val appModule = module {
     single<ProfileUseCase> { ProfileUseCase(get()) }
     single<HomeCxeLayoutRepository> { HomeCxeLayoutNetwork(get()) }
     single<HomeCxeUseCase> { HomeCxeUseCase(get()) }
+    single<PostingClient> { Network.create(PostingClient::class.java) }
+    single<PostingRepository> { PostingNetwork(get()) }
+    single<PostingUseCase> { PostingUseCase(get()) }
     viewModel { OtherProfileViewModel(get()) }
     viewModel { MyAccountViewModel() }
     viewModel { HomeExperienceViewModel(get()) }
+    viewModel { PostingInitViewModel(get()) }
 }

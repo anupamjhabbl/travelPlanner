@@ -9,4 +9,5 @@
     <color name="textPrimary">#070821</color>
     <color name="textSecondary">#1a1c34</color>
     <color name="bg_default_image">#E3DFEF</color>
+    <color name="error_red">#F60E1E</color>
 </resources>

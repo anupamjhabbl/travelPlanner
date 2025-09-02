@@ -17,4 +17,14 @@
     <string name="expeditions">Expeditions</string>
     <string name="user_greeting_hi">Hi %1$s!</string>
     <string name="views_count">%1$d views</string>
+    <string name="save_trip">Save and Continue</string>
+    <string name="posting_heading">Where We Heading</string>
+    <string name="posting_subheading">Set the destination, lock the dates, and bring the crew.</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="where_to">Where to?</string>
+    <string name="trip_name">Name your trip</string>
+    <string name="invite_tripmates">Invite Tripmates</string>
+    <string name="add">Add</string>
+    <string name="generic_error">Something went wrong</string>
 </resources>

@@ -37,10 +37,10 @@ fun AppNavigationComposable() {
     val bottomNavigationItems = getNavigationItemList()
     val navStackElements by homeNavController.visibleEntries.collectAsState()
     val selectedTabIndex = remember { mutableIntStateOf(0) }
+    val navBackStackEntry = navStackElements.lastOrNull()?.destination
+    val currentRoute = navBackStackEntry?.route
+    val parentRoute = navBackStackEntry?.parent?.route
     for (index in bottomNavigationItems.indices) {
-        val navBackStackEntry = navStackElements.lastOrNull()?.destination
-        val currentRoute = navBackStackEntry?.route
-        val parentRoute = navBackStackEntry?.parent?.route
         if (bottomNavigationItems[index].route == (parentRoute ?: currentRoute)) {
             if (selectedTabIndex.intValue != index) {
                 selectedTabIndex.intValue = index
@@ -53,7 +53,13 @@ fun AppNavigationComposable() {
             .fillMaxSize()
             .background(LocalCustomColors.current.primaryBackground),
         bottomBar = {
-            BottomNavigationPanel(homeNavController, selectedTabIndex.intValue, bottomNavigationItems)
+            if (navBackStackEntry.toAppNavigationScreen()?.hasBottomBar == true) {
+                BottomNavigationPanel(
+                    homeNavController,
+                    selectedTabIndex.intValue,
+                    bottomNavigationItems
+                )
+            }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
