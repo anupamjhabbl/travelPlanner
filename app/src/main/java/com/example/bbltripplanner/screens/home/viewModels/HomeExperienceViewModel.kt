@@ -1,9 +1,8 @@
 package com.example.bbltripplanner.screens.home.viewModels
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bbltripplanner.common.baseClasses.BaseMVIVPresenter
+import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.screens.home.entities.CxeResponseError
 import com.example.bbltripplanner.screens.home.entities.HomeCxeResponse
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
@@ -20,7 +19,7 @@ import java.io.IOException
 
 class HomeExperienceViewModel(
     private val homeCxeUseCase: HomeCxeUseCase
-) : ViewModel(), BaseMVIVPresenter<HomeExperienceIntent.ViewEvent> {
+): BaseMVIVViewModel<HomeExperienceIntent.ViewEvent>() {
 
     private val _widgetsLiveData: MutableStateFlow<List<HomeCxeWidget>> = MutableStateFlow(emptyList())
     val widgetsLiveData: StateFlow<List<HomeCxeWidget>> = _widgetsLiveData

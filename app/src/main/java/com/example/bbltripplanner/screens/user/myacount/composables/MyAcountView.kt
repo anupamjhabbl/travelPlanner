@@ -90,7 +90,7 @@ fun MyAccountView(
     }
 }
 
-fun takeAction(navController: NavController, key: String) {     // TODO: All the tiles action on myAccount page
+private fun takeAction(navController: NavController, key: String) {     // TODO: All the tiles action on myAccount page
     when (key) {
         Constants.PROFILE_DETAILS -> openMyProfilePage(navController)
         Constants.NOTIFICATIONS -> {}

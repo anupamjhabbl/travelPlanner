@@ -11,6 +11,9 @@ sealed class AppNavigationScreen(val route: String, val hasBottomBar: Boolean) {
     data object BuzzScreen: AppNavigationScreen(route = Constants.NavigationScreen.BUZZ_SCREEN, hasBottomBar = true)
     data object ProfileScreen: AppNavigationScreen(route = Constants.NavigationScreen.PROFILE_SCREEN, hasBottomBar = true)
     data object UserScreenGraph: AppNavigationScreen(route = Constants.NavigationScreen.USER_SCREEN_GRAPH, hasBottomBar = true)
+    data object UserTripDetailScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.USER_TRIP_DETAIL_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}", hasBottomBar = false) {
+        fun createRoute(tripId: String) = "${Constants.NavigationScreen.USER_TRIP_DETAIL_SCREEN}/$tripId"
+    }
 }
 
 fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
@@ -23,6 +26,7 @@ fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
         Constants.NavigationScreen.BUZZ_SCREEN -> AppNavigationScreen.BuzzScreen
         Constants.NavigationScreen.PROFILE_SCREEN -> AppNavigationScreen.ProfileScreen
         Constants.NavigationScreen.USER_SCREEN_GRAPH -> AppNavigationScreen.UserScreenGraph
+        Constants.NavigationScreen.USER_TRIP_DETAIL_SCREEN -> AppNavigationScreen.UserTripDetailScreen
         else -> null
     }
 }

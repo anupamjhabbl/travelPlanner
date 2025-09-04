@@ -25,6 +25,7 @@ import com.example.bbltripplanner.common.entity.BottomNavigationItem
 import com.example.bbltripplanner.screens.buzz.composables.BuzzScreen
 import com.example.bbltripplanner.screens.home.composables.HomeExperienceScreen
 import com.example.bbltripplanner.screens.posting.composables.PostingInitScreen
+import com.example.bbltripplanner.screens.posting.composables.UserTripDetailScreen
 import com.example.bbltripplanner.screens.user.myacount.composables.MyAccountView
 import com.example.bbltripplanner.screens.user.profile.composables.MyProfileView
 import com.example.bbltripplanner.screens.vault.composables.UserVaultScreen
@@ -105,6 +106,11 @@ fun HomeNavigationComposable(
 
         composable(route = AppNavigationScreen.BuzzScreen.route) {
             BuzzScreen(homeNavController)
+        }
+
+        composable(route = AppNavigationScreen.UserTripDetailScreen.route) { navBackStackEntry ->
+            val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+            UserTripDetailScreen(homeNavController, tripId)
         }
     }
 }

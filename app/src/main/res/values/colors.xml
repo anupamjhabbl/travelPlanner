@@ -10,4 +10,6 @@
     <color name="textSecondary">#1a1c34</color>
     <color name="bg_default_image">#E3DFEF</color>
     <color name="error_red">#F60E1E</color>
+    <color name="ongoing_green">#67ea68</color>
+    <color name="planned_yellow">#f6ec07</color>
 </resources>

@@ -17,9 +17,14 @@ data class TripData(
     val endDate: String? = null,
     @SerializedName(value = "tripMates", alternate = ["trip_mates"])
     val tripMates: List<User> = emptyList(),
-    val visibility: TripVisibility = TripVisibility.PRIVATE
+    val visibility: TripVisibility = TripVisibility.PRIVATE,
+    val status: TripStatus = TripStatus.PLANNED
 )
 
 enum class TripVisibility(val value: String) {
     PRIVATE("Private"), TRIP_MATES("TripMates"), PUBLIC("Public")
+}
+
+enum class TripStatus(val value: String) {
+    ONGOING("OnGoing"), PLANNED("Planned"), COMPLETED("Completed")
 }

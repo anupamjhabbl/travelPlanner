@@ -20,8 +20,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -57,14 +59,15 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.screens.posting.entity.TripVisibility
 import com.example.bbltripplanner.screens.posting.viewModels.PostingInitIntent
 import com.example.bbltripplanner.screens.posting.viewModels.PostingInitViewModel
@@ -79,7 +82,7 @@ fun PostingInitScreen(
     val viewModel: PostingInitViewModel = koinViewModel()
     val postingFormData by viewModel.tripFormData.collectAsState()
     val context = LocalContext.current
-    val generiMessage = stringResource(R.string.generic_error)
+    val genericMessage = stringResource(R.string.generic_error)
 
     val startDate = stringResource(R.string.start_date)
     val endDate = stringResource(R.string.end_date)
@@ -88,12 +91,16 @@ fun PostingInitScreen(
     var showBottomSheet: BottomSheetType? by remember {
         mutableStateOf(null)
     }
-    
+    val scrollState = rememberScrollState()
+    val bottomHeight = 80f
+
     LaunchedEffect(Unit) { 
         viewModel.viewEffect.collectLatest { viewEffect ->
             when (viewEffect) {
-                is PostingInitIntent.ViewEffect.GoNext -> moveToNextPage(navController)
-                PostingInitIntent.ViewEffect.ShowError -> showError(context, generiMessage)
+                is PostingInitIntent.ViewEffect.GoNext -> moveToNextPage(navController, viewEffect.tripData.tripId) {
+                    showError(context, genericMessage)
+                }
+                PostingInitIntent.ViewEffect.ShowError -> showError(context, genericMessage)
             }
         }
     }
@@ -146,7 +153,7 @@ fun PostingInitScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp, 16.dp),
+                .padding(16.dp, 16.dp,16.dp, Dp(bottomHeight)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(60.dp))
@@ -247,7 +254,9 @@ fun PostingInitScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             FlowRow(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 postingFormData.tripMates.forEach { user ->
@@ -294,7 +303,9 @@ fun PostingInitScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter)
+                .height(Dp(bottomHeight))
+                .align(Alignment.BottomCenter),
+            contentAlignment = Alignment.Center
         ) {
             BottomSaveButton {
                 viewModel.processEvent(PostingInitIntent.ViewEvent.SaveAndContinue)
@@ -464,8 +475,12 @@ enum class BottomSheetType {
     LOCATION_SELECTION
 }
 
-fun moveToNextPage(navController: NavController) {
-
+fun moveToNextPage(navController: NavController, tripId: String?, showError: () -> Unit) {
+    if (tripId == null) {
+        showError()
+        return
+    }
+    navController.navigate(AppNavigationScreen.UserTripDetailScreen.createRoute(tripId))
 }
 
 fun showError(context: Context, stringResource: String) {

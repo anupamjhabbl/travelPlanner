@@ -19,11 +19,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeTextView
-import com.example.bbltripplanner.common.entity.Contact
 import com.example.bbltripplanner.common.entity.User
-import com.example.bbltripplanner.common.entity.UserSettings
 
 @Composable
 fun InviteBottomSheet(
@@ -34,60 +31,7 @@ fun InviteBottomSheet(
             .fillMaxWidth()
             .padding(16.dp, 0.dp, 16.dp, 16.dp)
     ) {
-        val userList = listOf(
-            User(
-                id = 1,
-                name = "Robert Hunt",
-                contact = Contact(listOf("angelarasmussen@herrera.com"), "001-396-200-8778"),
-                bio = "Service your movie up eye light vote.",
-                followCount = 672,
-                followersCount = 99,
-                tripCount = 42,
-                createdAt = "2022-08-28T08:08:58",
-                updatedAt = "2022-11-06T10:53:13",
-                userSettings = UserSettings(Constants.Theme.DARK),
-                profilePicture = "https://placeimg.com/967/1007/any"
-            ),
-            User(
-                id = 2,
-                name = "Cole Adams",
-                contact = Contact(listOf("haley17@yahoo.com"), "+1-788-055-3737"),
-                bio = "Mission deal yes inside agent around.",
-                followCount = 212,
-                followersCount = 3682,
-                tripCount = 9,
-                createdAt = "2024-11-25T11:03:37",
-                updatedAt = "2020-09-07T01:51:57",
-                userSettings = UserSettings(Constants.Theme.DARK),
-                profilePicture = "https://placeimg.com/729/117/any"
-            ),
-            User(
-                id = 3,
-                name = "Amanda Phillips",
-                contact = Contact(listOf("zsims@gmail.com"), "569.628.5394x204"),
-                bio = "Same during interview inside course fly despite.",
-                followCount = 752,
-                followersCount = 701,
-                tripCount = 44,
-                createdAt = "2023-10-28T10:24:07",
-                updatedAt = "2021-05-16T12:06:23",
-                userSettings = UserSettings(Constants.Theme.DARK),
-                profilePicture = "https://dummyimage.com/67x468"
-            ),
-            User(
-                id = 4,
-                name = "Katherine Shaffer",
-                contact = Contact(listOf("brian26@gmail.com"), "(668)666-0287x4544"),
-                bio = "Whether interest but education.",
-                followCount = 598,
-                followersCount = 671,
-                tripCount = 12,
-                createdAt = "2022-07-13T18:38:32",
-                updatedAt = "2024-08-28T12:35:52",
-                userSettings = UserSettings(Constants.Theme.DARK),
-                profilePicture = "https://dummyimage.com/631x600"
-            )
-        )
+        val userList = emptyList<User>()
         OutlinedTextField(
             value = "",
             onValueChange = { },

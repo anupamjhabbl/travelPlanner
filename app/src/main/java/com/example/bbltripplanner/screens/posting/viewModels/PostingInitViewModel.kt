@@ -1,8 +1,7 @@
 package com.example.bbltripplanner.screens.posting.viewModels
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bbltripplanner.common.baseClasses.BaseMVIVPresenter
+import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.screens.home.entities.Location
 import com.example.bbltripplanner.screens.posting.entity.TripData
@@ -20,7 +19,7 @@ import kotlinx.coroutines.withContext
 
 class PostingInitViewModel(
     private val postingUseCase: PostingUseCase
-): ViewModel(), BaseMVIVPresenter<PostingInitIntent.ViewEvent> {
+): BaseMVIVViewModel<PostingInitIntent.ViewEvent>() {
     private val _tripFormData: MutableStateFlow<TripData> = MutableStateFlow(TripData())
     val tripFormData: StateFlow<TripData> = _tripFormData.asStateFlow()
 

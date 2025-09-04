@@ -25,6 +25,11 @@ object Constants {
         const val PROFILE_SCREEN = "profile_screen"
         const val ACCOUNT_SCREEN = "my_account_screen"
         const val USER_SCREEN_GRAPH = "user_screen_graph"
+        const val USER_TRIP_DETAIL_SCREEN = "user_trip_detail_screen"
+    }
+
+    object NavigationArgs {
+        const val TRIP_ID = "tripId"
     }
 
     object BottomNavigationItem {
@@ -33,5 +38,13 @@ object Constants {
         const val ADD = "Add"
         const val BUZZ = "Buzz"
         const val PROFILE = "Profile"
+    }
+
+    object TripDetailScreen {
+        const val GENERAL = "General"
+        const val ATTACHMENTS = "Attachments"
+        const val ITINERARY = "Itinerary"
+        const val EXPENSES = "Expenses"
+        const val GROUP = "Group"
     }
 }
