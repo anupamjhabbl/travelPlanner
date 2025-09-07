@@ -6,8 +6,10 @@ import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.utils.StringUtils.isValidEmail
+import com.example.bbltripplanner.screens.user.auth.entity.AuthToken
 import com.example.bbltripplanner.screens.user.auth.entity.UserLoginBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserLoginFormState
+import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,7 +23,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class UserLoginAuthViewModel(
-    private val userAuthUseCase: UserAuthUseCase
+    private val userAuthUseCase: UserAuthUseCase,
+    private val authPreferencesUseCase: AuthPreferencesUseCase
 ): BaseMVIVViewModel<UserAuthIntent.LoginAuth.ViewEvent>() {
     private val _state: MutableStateFlow<UserLoginFormState> = MutableStateFlow(UserLoginFormState())
     val state: StateFlow<UserLoginFormState> = _state.asStateFlow()
@@ -45,8 +48,8 @@ class UserLoginAuthViewModel(
                     userAuthUseCase.loginUser(getLoginUserBody())
                 }
             }
-            registerUserResult.onSuccess {
-                // TODO: Save the authToken
+            registerUserResult.onSuccess {  result ->
+                saveTheToken(result)
                 _userLoginRequestStatus.emit(RequestStatus.Success(""))
             }
             registerUserResult.onFailure { exception ->
@@ -60,6 +63,11 @@ class UserLoginAuthViewModel(
                 }
             }
         }
+    }
+
+    private fun saveTheToken(authToken: AuthToken) {
+        authPreferencesUseCase.saveAccessToken(authToken.accessToken)
+        authPreferencesUseCase.saveRefreshToken(authToken.refreshToken)
     }
 
     private fun getLoginUserBody(): UserLoginBody {

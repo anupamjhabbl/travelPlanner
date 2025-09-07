@@ -9,11 +9,13 @@ import com.example.bbltripplanner.screens.user.auth.entity.UserOTPVerifyBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserRegistrationBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserPasswordResetBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserRegisteredId
+import retrofit2.Call
 
 interface UserAuthRepository {
     suspend fun registerUser(userRegistrationBody: UserRegistrationBody): BaseResponse<UserRegisteredId>
     suspend fun loginUser(userLoginBody: UserLoginBody): BaseResponse<AuthToken>
     suspend fun verifyOTP(userOTPVerifyBody: UserOTPVerifyBody): BaseResponse<AuthToken>
     suspend fun forgetPasswordRequestOTP(userForgetPasswordBody: UserForgetPasswordBody): BaseResponse<UserRegisteredId>
-    suspend fun resetPassword(userResetBody: UserPasswordResetBody): BaseResponse<PasswordResetResponse>
+    suspend fun resetPassword(userResetBody: UserPasswordResetBody, accessToken: String): BaseResponse<PasswordResetResponse>
+    fun getNewAccessToken(refreshToken: String): Call<BaseResponse<AuthToken>>
 }

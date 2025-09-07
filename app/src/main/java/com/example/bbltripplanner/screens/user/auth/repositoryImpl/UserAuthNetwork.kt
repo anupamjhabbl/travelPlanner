@@ -11,6 +11,7 @@ import com.example.bbltripplanner.screens.user.auth.entity.UserPasswordResetBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserRegisteredId
 import com.example.bbltripplanner.screens.user.auth.entity.UserRegistrationBody
 import com.example.bbltripplanner.screens.user.auth.repositories.UserAuthRepository
+import retrofit2.Call
 
 class UserAuthNetwork(
     private val userAuthClient: UserAuthClient
@@ -31,7 +32,11 @@ class UserAuthNetwork(
         return userAuthClient.forgetPasswordRequestOTP(userForgetPasswordBody)
     }
 
-    override suspend fun resetPassword(userResetBody: UserPasswordResetBody): BaseResponse<PasswordResetResponse> {
-        return userAuthClient.resetPassword(userResetBody)
+    override suspend fun resetPassword(userResetBody: UserPasswordResetBody, accessToken: String): BaseResponse<PasswordResetResponse> {
+        return userAuthClient.resetPassword(userResetBody, accessToken)
+    }
+
+    override fun getNewAccessToken(refreshToken: String): Call<BaseResponse<AuthToken>> {
+        return userAuthClient.getNewAccessToken(refreshToken)
     }
 }

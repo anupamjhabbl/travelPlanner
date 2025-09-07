@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.common.di_modules
 
+import com.example.bbltripplanner.common.infra.EncryptedPreferenceManager
 import com.example.bbltripplanner.common.infra.Network
 import com.example.bbltripplanner.screens.home.clients.HomeCxeClient
 import com.example.bbltripplanner.screens.home.repositories.HomeCxeLayoutRepository
@@ -19,6 +20,7 @@ import com.example.bbltripplanner.screens.posting.viewModels.UserTripDetailViewM
 import com.example.bbltripplanner.screens.user.auth.clients.UserAuthClient
 import com.example.bbltripplanner.screens.user.auth.repositories.UserAuthRepository
 import com.example.bbltripplanner.screens.user.auth.repositoryImpl.UserAuthNetwork
+import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
 import com.example.bbltripplanner.screens.user.auth.viewModels.ForgotPasswordAuthViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.OTPAuthViewModel
@@ -31,12 +33,16 @@ import com.example.bbltripplanner.screens.user.profile.repositories.GetProfileRe
 import com.example.bbltripplanner.screens.user.profile.repositoryImpl.GetProfileNetwork
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
 import com.example.bbltripplanner.screens.user.profile.viewModels.OtherProfileViewModel
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
+    // infra
+    single<EncryptedPreferenceManager> { EncryptedPreferenceManager(androidContext()) }
+
     // User
-    single<UserClient> { Network.create(UserClient::class.java) }
+    single<UserClient> { Network.createWithAuth(UserClient::class.java, get(), get()) }
     single<GetProfileRepository> { GetProfileNetwork(get()) }
     single<ProfileUseCase> { ProfileUseCase(get()) }
     viewModel { OtherProfileViewModel(get()) }
@@ -45,16 +51,16 @@ val appModule = module {
     // Home & Listing
     single<HomeCxeLayoutRepository> { HomeCxeLayoutNetwork(get()) }
     single<HomeCxeUseCase> { HomeCxeUseCase(get()) }
-    single<HomeCxeClient> { Network.create(HomeCxeClient::class.java) }
+    single<HomeCxeClient> { Network.createWithAuth(HomeCxeClient::class.java, get(), get()) }
     viewModel { HomeExperienceViewModel(get()) }
 
     // Posting & Trips
-    single<PostingClient> { Network.create(PostingClient::class.java) }
+    single<PostingClient> { Network.createWithAuth(PostingClient::class.java, get(), get()) }
     single<PostingRepository> { PostingNetwork(get()) }
     single<PostingUseCase> { PostingUseCase(get()) }
     single<UserTripDetailUseCase> { UserTripDetailUseCase(get()) }
     single<UserTripDetailRepository> { UseTripDetailNetwork(get()) }
-    single<UserTripDetailClient> { Network.create(UserTripDetailClient::class.java) }
+    single<UserTripDetailClient> { Network.createWithAuth(UserTripDetailClient::class.java, get(), get()) }
     viewModel { PostingInitViewModel(get()) }
     viewModel { UserTripDetailViewModel(get()) }
 
@@ -62,9 +68,10 @@ val appModule = module {
     single<UserAuthClient> { Network.create(UserAuthClient::class.java) }
     single<UserAuthRepository> { UserAuthNetwork(get()) }
     single<UserAuthUseCase> { UserAuthUseCase(get()) }
-    viewModel { OTPAuthViewModel(get()) }
-    viewModel { UserLoginAuthViewModel(get()) }
+    single<AuthPreferencesUseCase> { AuthPreferencesUseCase(get()) }
+    viewModel { OTPAuthViewModel(get(), get()) }
+    viewModel { UserLoginAuthViewModel(get(), get()) }
     viewModel { UseRegistrationViewModel(get()) }
     viewModel { ForgotPasswordAuthViewModel(get()) }
-    viewModel { PasswordResetVieModel(get()) }
+    viewModel { PasswordResetVieModel(get(), get()) }
 }

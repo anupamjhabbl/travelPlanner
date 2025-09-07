@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.android.material)
     implementation(libs.androidx.window)
     implementation(libs.google.accompanist)
+    implementation(libs.androidx.security.crypto)
     ksp(libs.ksp.room)
     ksp(libs.koin.ksp.compiler)
     testImplementation(libs.io.insert.koin.test)

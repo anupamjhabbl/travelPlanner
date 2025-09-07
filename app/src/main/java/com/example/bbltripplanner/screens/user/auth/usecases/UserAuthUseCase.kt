@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.screens.user.auth.usecases
 
+import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.screens.user.auth.entity.AuthToken
 import com.example.bbltripplanner.screens.user.auth.entity.PasswordResetResponse
 import com.example.bbltripplanner.screens.user.auth.entity.UserForgetPasswordBody
@@ -9,6 +10,7 @@ import com.example.bbltripplanner.screens.user.auth.entity.UserPasswordResetBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserRegisteredId
 import com.example.bbltripplanner.screens.user.auth.entity.UserRegistrationBody
 import com.example.bbltripplanner.screens.user.auth.repositories.UserAuthRepository
+import retrofit2.Call
 
 class UserAuthUseCase(
     private val userAuthRepository: UserAuthRepository
@@ -29,7 +31,11 @@ class UserAuthUseCase(
        return userAuthRepository.forgetPasswordRequestOTP(userForgetPasswordBody).processResponse()
     }
 
-    suspend fun resetPassword(userResetBody: UserPasswordResetBody): PasswordResetResponse {
-        return userAuthRepository.resetPassword(userResetBody).processResponse()
+    suspend fun resetPassword(userResetBody: UserPasswordResetBody, accessToken: String): PasswordResetResponse {
+        return userAuthRepository.resetPassword(userResetBody, accessToken).processResponse()
+    }
+
+    fun getNewAccessToken(refreshToken: String): Call<BaseResponse<AuthToken>> {
+        return userAuthRepository.getNewAccessToken(refreshToken)
     }
 }

@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.screens.user.auth.clients
 
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.screens.user.auth.entity.AuthToken
 import com.example.bbltripplanner.screens.user.auth.entity.PasswordResetResponse
@@ -9,7 +10,9 @@ import com.example.bbltripplanner.screens.user.auth.entity.UserOTPVerifyBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserPasswordResetBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserRegisteredId
 import com.example.bbltripplanner.screens.user.auth.entity.UserRegistrationBody
+import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface UserAuthClient {
@@ -26,5 +29,8 @@ interface UserAuthClient {
     suspend fun forgetPasswordRequestOTP(@Body userForgetPasswordBody: UserForgetPasswordBody): BaseResponse<UserRegisteredId>
 
     @POST("auth/resetPassword")
-    suspend fun resetPassword(@Body userResetBody: UserPasswordResetBody): BaseResponse<PasswordResetResponse>
+    suspend fun resetPassword(@Body userResetBody: UserPasswordResetBody, @Header(Constants.HTTPHeaders.AUTHORIZATION) accessToken: String): BaseResponse<PasswordResetResponse>
+
+    @POST("auth/refresh")
+    fun getNewAccessToken(refreshToken: String): Call<BaseResponse<AuthToken>>
 }

@@ -8,6 +8,7 @@ import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.utils.StringUtils.isStrongPassword
 import com.example.bbltripplanner.screens.user.auth.entity.UserPasswordResetBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserResetPasswordFormState
+import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,7 +22,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PasswordResetVieModel(
-    private val userAuthUseCase: UserAuthUseCase
+    private val userAuthUseCase: UserAuthUseCase,
+    private val authPreferencesUseCase: AuthPreferencesUseCase
 ): BaseMVIVViewModel<UserAuthIntent.ResetPasswordAuth.ViewEvent>() {
     private val _state: MutableStateFlow<UserResetPasswordFormState> = MutableStateFlow(UserResetPasswordFormState())
     val state: StateFlow<UserResetPasswordFormState> = _state.asStateFlow()
@@ -42,7 +44,7 @@ class PasswordResetVieModel(
             _userResetPasswordRequestStatus.emit(RequestStatus.Loading)
             val registerUserResult = withContext(Dispatchers.IO) {
                 kotlin.runCatching {
-                    userAuthUseCase.resetPassword(getResetPasswordBody())
+                    userAuthUseCase.resetPassword(getResetPasswordBody(), "${Constants.HTTPHeaders.AUTHORIZATION_BEARER} ${authPreferencesUseCase.getAccessToken()}")
                 }
             }
             registerUserResult.onSuccess {

@@ -5,10 +5,12 @@ import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
+import com.example.bbltripplanner.screens.user.auth.entity.AuthToken
 import com.example.bbltripplanner.screens.user.auth.entity.OTPAction
 import com.example.bbltripplanner.screens.user.auth.entity.OTPState
 import com.example.bbltripplanner.screens.user.auth.entity.UserForgetPasswordBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserOTPVerifyBody
+import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,7 +24,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class OTPAuthViewModel(
-    private val userAuthUseCase: UserAuthUseCase
+    private val userAuthUseCase: UserAuthUseCase,
+    private val authPreferencesUseCase: AuthPreferencesUseCase
 ): BaseMVIVViewModel<UserAuthIntent.OTPAuth.ViewEvent>() {
     private val _otpState: MutableStateFlow<OTPState> = MutableStateFlow(OTPState(OTP_SIZE))
     val otpState: StateFlow<OTPState> = _otpState.asStateFlow()
@@ -60,8 +63,8 @@ class OTPAuthViewModel(
                     userAuthUseCase.verifyOTP(getOTPVerifyBody())
                 }
             }
-            registerUserResult.onSuccess {
-                // TODO: Save the authToken
+            registerUserResult.onSuccess { result ->
+                saveTheToken(result)
                 _userOTPVerifyRequestStatus.emit(RequestStatus.Success(""))
             }
             registerUserResult.onFailure { exception ->
@@ -75,6 +78,11 @@ class OTPAuthViewModel(
                 }
             }
         }
+    }
+
+    private fun saveTheToken(authToken: AuthToken) {
+        authPreferencesUseCase.saveAccessToken(authToken.accessToken)
+        authPreferencesUseCase.saveRefreshToken(authToken.refreshToken)
     }
 
     private fun getOTPVerifyBody(): UserOTPVerifyBody {
@@ -203,7 +211,7 @@ class OTPAuthViewModel(
 
 
     private fun stringifyOtp(code: List<Int?>): String {
-        return code.filterNotNull().joinToString { it.toString() }
+        return code.filterNotNull().joinToString("") { it.toString() }
     }
 
     companion object {

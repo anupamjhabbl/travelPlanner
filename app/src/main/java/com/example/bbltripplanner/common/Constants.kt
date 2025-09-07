@@ -12,6 +12,12 @@ object Constants {
     const val DEFAULT_USER = "Traveller"
     const val APP_NAME = "TripPlanner"
     const val DEFAULT_ERROR = "default_error"
+    const val TRIP_PLANNER_LOG_KEY = "TRIP_PLANNER_CURL"
+
+    object HTTPHeaders {
+        const val AUTHORIZATION_BEARER = "Bearer"
+        const val AUTHORIZATION = "Authorization"
+    }
 
     enum class Theme {
         @SerializedName("dark") DARK,
