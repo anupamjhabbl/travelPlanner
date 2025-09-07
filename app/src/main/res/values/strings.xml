@@ -73,4 +73,10 @@
     <string name="resend_email">Resend email</string>
     <string name="both_password_not_matching_alert">Password and Confirm Password do not match</string>
     <string name="otp_resend_success_message">OTP resent successfully. Please check your inbox.</string>
+    <string name="nothing_to_show">Nothing to show</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="server_error">Oops! That’s on us</string>
+    <string name="noting_to_show_subtitle">We couldn’t find any data for now. Try refreshing or add a new trip.</string>
+    <string name="no_internet_connection_subtitle">Please check your Wi-Fi or mobile data and try again.</string>
+    <string name="server_error_subtitle">The server isn’t responding right now. We’re fixing it, please try again soon.</string>
 </resources>
