@@ -1,7 +1,9 @@
 package com.example.bbltripplanner.screens.home.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +33,7 @@ import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeBundleItemComposable
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeGreetingComposable
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeImageCarouselComposable
@@ -66,11 +69,13 @@ fun HomeExperienceScreen(
         viewModel.processEvent(HomeExperienceIntent.ViewEvent.Initialize)
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(LocalCustomColors.current.primaryBackground)
     ) {
+        HomeToolbar(navController = navController)
+
         when (val state = viewState) {
             HomeExperienceIntent.ViewState.ShowFullScreenLoading -> FullScreenLoading()
             is HomeExperienceIntent.ViewState.ShowCxeResponseError -> ShowCxeResponseErrorComposable(
@@ -103,8 +108,6 @@ fun ShowItems(widgets: List<HomeCxeWidget>, widgetsListState: LazyListState) {
             .fillMaxSize(),
         state = widgetsListState
     ) {
-        item { HomeToolbar() }
-
         items(widgets) { homeCxeWidget ->
             Spacer(modifier = Modifier.height(14.dp))
 
@@ -128,7 +131,9 @@ fun ShowItems(widgets: List<HomeCxeWidget>, widgetsListState: LazyListState) {
 }
 
 @Composable
-fun HomeToolbar() {
+fun HomeToolbar(
+    navController: NavController
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -173,7 +178,10 @@ fun HomeToolbar() {
 
             ComposeImageView.ImageViewWitDrawableId(
                 imageId = R.drawable.ic_notification_action,
-                modifier = Modifier.size(30.dp),
+                modifier = Modifier.size(30.dp)
+                    .clickable {
+                        navController.navigate(AppNavigationScreen.AuthGraph.route)
+                    },
                 contentDescription = "search"
             )
         }

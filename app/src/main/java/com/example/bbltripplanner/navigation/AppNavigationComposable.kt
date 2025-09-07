@@ -26,6 +26,10 @@ import com.example.bbltripplanner.screens.buzz.composables.BuzzScreen
 import com.example.bbltripplanner.screens.home.composables.HomeExperienceScreen
 import com.example.bbltripplanner.screens.posting.composables.PostingInitScreen
 import com.example.bbltripplanner.screens.posting.composables.UserTripDetailScreen
+import com.example.bbltripplanner.screens.user.auth.composables.AuthenticationFormScreen
+import com.example.bbltripplanner.screens.user.auth.composables.ForgotPasswordScreen
+import com.example.bbltripplanner.screens.user.auth.composables.OTPVerificationScreen
+import com.example.bbltripplanner.screens.user.auth.composables.PasswordResetScreen
 import com.example.bbltripplanner.screens.user.myacount.composables.MyAccountView
 import com.example.bbltripplanner.screens.user.profile.composables.MyProfileView
 import com.example.bbltripplanner.screens.vault.composables.UserVaultScreen
@@ -89,6 +93,30 @@ fun HomeNavigationComposable(
 
             composable(route = AppNavigationScreen.ProfileScreen.route) {
                 MyProfileView(homeNavController)
+            }
+        }
+
+        navigation(
+            route = AppNavigationScreen.AuthGraph.route,
+            startDestination = AppNavigationScreen.AuthenticationFormScreen.route
+        ) {
+            composable(route = AppNavigationScreen.AuthenticationFormScreen.route) {
+                AuthenticationFormScreen(homeNavController)
+            }
+
+            composable(route = AppNavigationScreen.ForgotPasswordScreen.route) {
+                ForgotPasswordScreen(homeNavController)
+            }
+
+            composable(route = AppNavigationScreen.ResetPasswordScreen.route) {
+                PasswordResetScreen(homeNavController)
+            }
+
+            composable(route = AppNavigationScreen.OtpVerificationScreen.route) { navBackStackEntry ->
+                val userEmail =  navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_EMAIL)
+                val origin = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.ORIGIN)
+                val userId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_ID)
+                OTPVerificationScreen(homeNavController, userEmail, origin, userId)
             }
         }
 

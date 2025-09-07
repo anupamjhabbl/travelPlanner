@@ -1,0 +1,126 @@
+package com.example.bbltripplanner.screens.user.auth.composables
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun AuthenticationFormScreen(
+    navController: NavController
+) {
+    val pagerState = rememberPagerState(0)
+    val scope = rememberCoroutineScope()
+    val logInPageIndex = 0
+    val registerPageIndex = 1
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            divider = {},
+            indicator = { tabPositions ->
+                SecondaryIndicator(
+                    Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
+                    height = 2.dp,
+                    color = colorResource(R.color.primary)
+                )
+            }
+        ) {
+            Tab(
+                modifier = Modifier.padding(16.dp, 0.dp),
+                selected = pagerState.currentPage == logInPageIndex,
+                onClick = {
+                    if (pagerState.currentPage != logInPageIndex) {
+                        scope.launch {
+                            pagerState.scrollToPage(logInPageIndex)
+                        }
+                    }
+                },
+                text = {
+                    ComposeTextView.TitleTextView(
+                        text = stringResource(R.string.login),
+                        textColor = if (pagerState.currentPage == logInPageIndex) colorResource(R.color.primary) else colorResource(R.color.input_hint_color)
+                    )
+                }
+            )
+
+            Tab(
+                selected = pagerState.currentPage == registerPageIndex,
+                onClick = {
+                    if (pagerState.currentPage != registerPageIndex) {
+                    scope.launch {
+                        pagerState.scrollToPage(registerPageIndex)
+                    }
+                        }
+                },
+                text = {
+                    ComposeTextView.TitleTextView(
+                        text = stringResource(R.string.sign_up),
+                        textColor = if (pagerState.currentPage == registerPageIndex) colorResource(R.color.primary) else colorResource(R.color.input_hint_color)
+                    )
+                }
+            )
+        }
+
+        Spacer(Modifier.height(48.dp))
+
+        HorizontalPager(
+            count = 2,
+            state = pagerState
+        ) { index ->
+            when (index) {
+                logInPageIndex ->  {
+                    AuthLoginScreen(
+                        navController = navController,
+                        onSignUpClick = {
+                            scope.launch {
+                                pagerState.scrollToPage(registerPageIndex)
+                            }
+                        },
+                        onForgotPasswordClick = {
+                            navController.navigate(AppNavigationScreen.ForgotPasswordScreen.route)
+                        },
+                        onAppleLoginClick = {},
+                        onGoogleLoginClick = {}
+                    )
+                }
+                registerPageIndex -> {
+                    AuthRegistrationScreen(
+                        navController = navController,
+                        onLoginClick = {
+                            scope.launch {
+                                pagerState.scrollToPage(logInPageIndex)
+                            }
+                        },
+                        onAppleLoginClick = {},
+                        onGoogleLoginClick = {}
+                    )
+                }
+            }
+        }
+    }
+}

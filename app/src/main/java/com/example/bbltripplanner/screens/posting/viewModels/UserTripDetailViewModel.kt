@@ -2,7 +2,6 @@ package com.example.bbltripplanner.screens.posting.viewModels
 
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
-import com.example.bbltripplanner.common.entity.ApiFailureException
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
 import com.example.bbltripplanner.screens.posting.entity.TripData
 import com.example.bbltripplanner.screens.posting.usecases.UserTripDetailUseCase
@@ -37,7 +36,7 @@ class UserTripDetailViewModel(
                 _userTripDetailFetchStatus.value =  userTripDetailFetchStatus.value.copy(isLoading = false, data = tripData)
             }
             tripDetailResult.onFailure {
-                _userTripDetailFetchStatus.value = userTripDetailFetchStatus.value.copy(isLoading = false, error = ApiFailureException(it.message))
+                _userTripDetailFetchStatus.value = userTripDetailFetchStatus.value.copy(isLoading = false, error = it.message)
             }
         }
     }

@@ -98,9 +98,9 @@ fun PostingInitScreen(
         viewModel.viewEffect.collectLatest { viewEffect ->
             when (viewEffect) {
                 is PostingInitIntent.ViewEffect.GoNext -> moveToNextPage(navController, viewEffect.tripData.tripId) {
-                    showError(context, genericMessage)
+                    showToast(context, genericMessage)
                 }
-                PostingInitIntent.ViewEffect.ShowError -> showError(context, genericMessage)
+                PostingInitIntent.ViewEffect.ShowError -> showToast(context, genericMessage)
             }
         }
     }
@@ -483,6 +483,6 @@ fun moveToNextPage(navController: NavController, tripId: String?, showError: () 
     navController.navigate(AppNavigationScreen.UserTripDetailScreen.createRoute(tripId))
 }
 
-fun showError(context: Context, stringResource: String) {
+fun showToast(context: Context, stringResource: String) {
     Toast.makeText(context, stringResource, Toast.LENGTH_SHORT).show()
 }
