@@ -280,7 +280,7 @@ fun OTPVerificationScreen(
                 )
             ) {
                 ComposeTextView.TitleTextView(
-                    text = stringResource(R.string.reset_password),
+                    text = stringResource(R.string.verify_otp),
                     textColor = colorResource(R.color.white),
                     fontSize = 16.sp
                 )

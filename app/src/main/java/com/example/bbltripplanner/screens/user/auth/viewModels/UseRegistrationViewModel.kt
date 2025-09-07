@@ -49,7 +49,9 @@ class UseRegistrationViewModel(
                }
            }
            registerUserResult.onSuccess { result ->
-                _userRegisterRequestStatus.emit(RequestStatus.Success(result))
+                result?.let {
+                    _userRegisterRequestStatus.emit(RequestStatus.Success(result))
+                } ?: _userRegisterRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
            }
            registerUserResult.onFailure { exception ->
                when (exception) {

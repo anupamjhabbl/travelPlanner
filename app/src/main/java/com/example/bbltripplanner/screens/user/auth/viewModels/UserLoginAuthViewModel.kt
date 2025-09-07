@@ -49,8 +49,10 @@ class UserLoginAuthViewModel(
                 }
             }
             registerUserResult.onSuccess {  result ->
-                saveTheToken(result)
-                _userLoginRequestStatus.emit(RequestStatus.Success(""))
+                result?.let {
+                    saveTheToken(result)
+                    _userLoginRequestStatus.emit(RequestStatus.Success(""))
+                } ?: _userLoginRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
             }
             registerUserResult.onFailure { exception ->
                 when (exception) {

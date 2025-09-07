@@ -66,8 +66,10 @@ class OTPAuthViewModel(
                 }
             }
             registerUserResult.onSuccess { result ->
-                saveTheToken(result)
-                _userOTPVerifyRequestStatus.emit(RequestStatus.Success(""))
+                result?.let {
+                    saveTheToken(result)
+                    _userOTPVerifyRequestStatus.emit(RequestStatus.Success(""))
+                } ?: _userOTPVerifyRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
             }
             registerUserResult.onFailure { exception ->
                 when (exception) {
@@ -104,7 +106,9 @@ class OTPAuthViewModel(
                 }
             }
             registerUserResult.onSuccess { response ->
-                _userOTPResendRequestStatus.emit(RequestStatus.Success(response.userId))
+                response?.let {
+                    _userOTPResendRequestStatus.emit(RequestStatus.Success(response.userId))
+                } ?: _userOTPResendRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
             }
             registerUserResult.onFailure { exception ->
                 when (exception) {

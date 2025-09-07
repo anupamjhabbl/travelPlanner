@@ -52,7 +52,9 @@ class ForgotPasswordAuthViewModel(
                 }
             }
             registerUserResult.onSuccess { result ->
-                _userForgetPasswordRequestStatus.emit(RequestStatus.Success(result))
+                result?.let {
+                    _userForgetPasswordRequestStatus.emit(RequestStatus.Success(result))
+                } ?: _userForgetPasswordRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
             }
             registerUserResult.onFailure { exception ->
                 when (exception) {

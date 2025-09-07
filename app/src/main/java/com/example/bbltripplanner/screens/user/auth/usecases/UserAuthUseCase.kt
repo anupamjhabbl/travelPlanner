@@ -15,23 +15,23 @@ import retrofit2.Call
 class UserAuthUseCase(
     private val userAuthRepository: UserAuthRepository
 ) {
-    suspend fun registerUser(userRegistrationBody: UserRegistrationBody): UserRegisteredId {
+    suspend fun registerUser(userRegistrationBody: UserRegistrationBody): UserRegisteredId? {
         return userAuthRepository.registerUser(userRegistrationBody).processResponse()
     }
 
-    suspend fun loginUser(userLoginBody: UserLoginBody): AuthToken {
+    suspend fun loginUser(userLoginBody: UserLoginBody): AuthToken? {
         return userAuthRepository.loginUser(userLoginBody).processResponse()
     }
 
-    suspend fun verifyOTP(userOTPVerifyBody: UserOTPVerifyBody, origin: String): AuthToken {
+    suspend fun verifyOTP(userOTPVerifyBody: UserOTPVerifyBody, origin: String): AuthToken? {
         return userAuthRepository.verifyOTP(userOTPVerifyBody, origin).processResponse()
     }
 
-    suspend fun forgetPasswordRequestOTP(userForgetPasswordBody: UserForgetPasswordBody): UserRegisteredId {
+    suspend fun forgetPasswordRequestOTP(userForgetPasswordBody: UserForgetPasswordBody): UserRegisteredId? {
        return userAuthRepository.forgetPasswordRequestOTP(userForgetPasswordBody).processResponse()
     }
 
-    suspend fun resetPassword(userResetBody: UserPasswordResetBody, accessToken: String): PasswordResetResponse {
+    suspend fun resetPassword(userResetBody: UserPasswordResetBody, accessToken: String): PasswordResetResponse? {
         return userAuthRepository.resetPassword(userResetBody, accessToken).processResponse()
     }
 

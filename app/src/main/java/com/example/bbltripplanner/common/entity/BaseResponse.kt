@@ -6,8 +6,8 @@ data class BaseResponse<T>(
     val isSuccess: Boolean,
     val errorMessage: String? = null
 ) {
-    fun processResponse(): T {
-        if (this.isSuccess && this.data != null) {
+    fun processResponse(): T? {
+        if (this.isSuccess) {
             return this.data
         } else {
             throw TripPlannerException(
