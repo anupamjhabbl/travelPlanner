@@ -31,33 +31,7 @@ fun LocationBottomSheet (
         .fillMaxWidth()
         .padding(16.dp, 0.dp, 16.dp, 16.dp)
     ) {
-        val locationList = listOf(
-            Location(cityName = "Jasonstad"),
-            Location(cityName = "Joshuamouth"),
-            Location(cityName = "South Melissahaven"),
-            Location(cityName = "North Jeffrey"),
-            Location(cityName = "East Heatherland"),
-            Location(cityName = "Michaelton"),
-            Location(cityName = "Robertbury"),
-            Location(cityName = "Sarahbury"),
-            Location(cityName = "Lake Sarah"),
-            Location(cityName = "North Kevin"),
-            Location(cityName = "South Carolyn"),
-            Location(cityName = "Lake Robert"),
-            Location(cityName = "Lindahaven"),
-            Location(cityName = "South Zacharyshire"),
-            Location(cityName = "Port Nicole"),
-            Location(cityName = "Lake Deborah"),
-            Location(cityName = "West Aaron"),
-            Location(cityName = "Aguilartown"),
-            Location(cityName = "West Tiffany"),
-            Location(cityName = "North Jason"),
-            Location(cityName = "North Williamstad"),
-            Location(cityName = "Lake Brett"),
-            Location(cityName = "Williamhaven"),
-            Location(cityName = "South Anitabury"),
-            Location(cityName = "Tinaside")
-        )
+        val locationList = listOf<Location>()
 
         OutlinedTextField(
             value = "",

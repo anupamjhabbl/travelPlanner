@@ -38,19 +38,21 @@ class OTPAuthViewModel(
 
     private lateinit var userEmail: String
     private lateinit var userId: String
+    private lateinit var origin: String
 
     override fun processEvent(viewEvent: UserAuthIntent.OTPAuth.ViewEvent) {
         when (viewEvent) {
             is UserAuthIntent.OTPAuth.ViewEvent.OnAction -> onAction(viewEvent.action)
-            is UserAuthIntent.OTPAuth.ViewEvent.SetData -> setEmail(viewEvent.email, viewEvent.userId)
+            is UserAuthIntent.OTPAuth.ViewEvent.SetData -> setEmail(viewEvent.email, viewEvent.userId, viewEvent.origin)
             UserAuthIntent.OTPAuth.ViewEvent.ResendOTP -> resendOTP()
             UserAuthIntent.OTPAuth.ViewEvent.VerifyOTP -> verifyOTP()
         }
     }
 
-    private fun setEmail(email: String, id: String) {
+    private fun setEmail(email: String, id: String, origin: String) {
         userEmail = email
         userId = id
+        this.origin = origin
     }
 
     fun getOTPLength() = OTP_SIZE
@@ -60,7 +62,7 @@ class OTPAuthViewModel(
             _userOTPVerifyRequestStatus.emit(RequestStatus.Loading)
             val registerUserResult = withContext(Dispatchers.IO) {
                 kotlin.runCatching {
-                    userAuthUseCase.verifyOTP(getOTPVerifyBody())
+                    userAuthUseCase.verifyOTP(getOTPVerifyBody(), origin)
                 }
             }
             registerUserResult.onSuccess { result ->

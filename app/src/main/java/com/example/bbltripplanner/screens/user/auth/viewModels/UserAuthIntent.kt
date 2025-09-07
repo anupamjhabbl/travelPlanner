@@ -8,7 +8,7 @@ class UserAuthIntent {
             data object ResendOTP : ViewEvent
             data object VerifyOTP : ViewEvent
             data class OnAction(val action: OTPAction) : ViewEvent
-            data class SetData(val email: String, val userId: String): ViewEvent
+            data class SetData(val email: String, val userId: String, val origin: String): ViewEvent
         }
 
         sealed interface ViewEffect {}

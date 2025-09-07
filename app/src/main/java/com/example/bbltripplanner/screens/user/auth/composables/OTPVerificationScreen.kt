@@ -134,11 +134,12 @@ fun OTPVerificationScreen(
 
                 is RequestStatus.Success -> {
                     isLoading = false
-                    if (userEmail != null) {
+                    if (userEmail != null && origin != null) {
                         viewModel.processEvent(
                             UserAuthIntent.OTPAuth.ViewEvent.SetData(
                                 userEmail,
-                                otpResendRequestStatus.data
+                                otpResendRequestStatus.data,
+                                origin
                             )
                         )
                     }
@@ -149,8 +150,8 @@ fun OTPVerificationScreen(
     }
 
     LaunchedEffect(Unit) {
-        if (userEmail != null && userId != null) {
-            viewModel.processEvent(UserAuthIntent.OTPAuth.ViewEvent.SetData(userEmail, userId))
+        if (userEmail != null && userId != null && origin != null) {
+            viewModel.processEvent(UserAuthIntent.OTPAuth.ViewEvent.SetData(userEmail, userId, origin))
         }
         launch {
             viewModel.userOTPVerifyRequestStatus.collectLatest { otpVerifyRequestStatus ->

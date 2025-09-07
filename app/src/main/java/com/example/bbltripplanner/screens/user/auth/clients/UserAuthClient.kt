@@ -14,6 +14,7 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface UserAuthClient {
     @POST("auth/register")
@@ -23,9 +24,9 @@ interface UserAuthClient {
     suspend fun loginUser(@Body userLoginBody: UserLoginBody): BaseResponse<AuthToken>
 
     @POST("auth/verifyOtp")
-    suspend fun verifyOTP(@Body userOTPVerifyBody: UserOTPVerifyBody): BaseResponse<AuthToken>
+    suspend fun verifyOTP(@Body userOTPVerifyBody: UserOTPVerifyBody, @Query("origin") origin: String): BaseResponse<AuthToken>
 
-    @POST("auth/forgetPassword")
+    @POST("auth/forgotPassword")
     suspend fun forgetPasswordRequestOTP(@Body userForgetPasswordBody: UserForgetPasswordBody): BaseResponse<UserRegisteredId>
 
     @POST("auth/resetPassword")

@@ -23,8 +23,8 @@ class UserAuthUseCase(
         return userAuthRepository.loginUser(userLoginBody).processResponse()
     }
 
-    suspend fun verifyOTP(userOTPVerifyBody: UserOTPVerifyBody): AuthToken {
-        return userAuthRepository.verifyOTP(userOTPVerifyBody).processResponse()
+    suspend fun verifyOTP(userOTPVerifyBody: UserOTPVerifyBody, origin: String): AuthToken {
+        return userAuthRepository.verifyOTP(userOTPVerifyBody, origin).processResponse()
     }
 
     suspend fun forgetPasswordRequestOTP(userForgetPasswordBody: UserForgetPasswordBody): UserRegisteredId {

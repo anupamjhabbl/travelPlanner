@@ -59,7 +59,6 @@ import com.example.bbltripplanner.screens.posting.entity.TripActionResourceMappe
 import com.example.bbltripplanner.screens.posting.entity.TripData
 import com.example.bbltripplanner.screens.posting.viewModels.UserTripDetailIntent
 import com.example.bbltripplanner.screens.posting.viewModels.UserTripDetailViewModel
-import com.example.bbltripplanner.screens.user.myacount.composables.openMyProfilePage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -362,7 +361,7 @@ private fun ActionTile (
 
 private fun takeAction(navController: NavController, key: String) {
     when (key) {
-        Constants.TripDetailScreen.GENERAL -> openMyProfilePage(navController)
+        Constants.TripDetailScreen.GENERAL -> {}
         Constants.TripDetailScreen.ATTACHMENTS-> {}
         Constants.TripDetailScreen.GROUP -> {}
         Constants.TripDetailScreen.ITINERARY-> {}

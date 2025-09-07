@@ -24,8 +24,8 @@ class UserAuthNetwork(
         return userAuthClient.loginUser(userLoginBody)
     }
 
-    override suspend fun verifyOTP(userOTPVerifyBody: UserOTPVerifyBody): BaseResponse<AuthToken> {
-        return userAuthClient.verifyOTP(userOTPVerifyBody)
+    override suspend fun verifyOTP(userOTPVerifyBody: UserOTPVerifyBody, origin: String): BaseResponse<AuthToken> {
+        return userAuthClient.verifyOTP(userOTPVerifyBody, origin)
     }
 
     override suspend fun forgetPasswordRequestOTP(userForgetPasswordBody: UserForgetPasswordBody): BaseResponse<UserRegisteredId> {
