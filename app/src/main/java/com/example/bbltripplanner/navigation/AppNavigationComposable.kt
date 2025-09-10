@@ -36,7 +36,9 @@ import com.example.bbltripplanner.screens.vault.composables.UserVaultScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 @Composable
-fun AppNavigationComposable() {
+fun AppNavigationComposable(
+    accessToken: String
+) {
     val homeNavController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
     val bottomNavigationItems = getNavigationItemList()
@@ -69,19 +71,24 @@ fun AppNavigationComposable() {
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
-            HomeNavigationComposable(homeNavController, snackbarHostState)
+            HomeNavigationComposable(accessToken, homeNavController)
         }
     }
 }
 
 @Composable
 fun HomeNavigationComposable(
-    homeNavController: NavHostController,
-    snackbarHostState: SnackbarHostState
+    accessToken: String,
+    homeNavController: NavHostController
 ) {
+    val startDestination = if (accessToken.isEmpty()){
+        AppNavigationScreen.AuthGraph.route
+    } else  {
+        AppNavigationScreen.HomeScreen.route
+    }
     NavHost(
         navController = homeNavController,
-        startDestination = AppNavigationScreen.HomeScreen.route
+        startDestination = startDestination
     ) {
         navigation(
             route = AppNavigationScreen.UserScreenGraph.route,

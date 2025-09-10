@@ -91,7 +91,7 @@ fun BundleItemView(
             .width(Dp(width))
             .height(Dp(width/2))
             .padding(starPadding, 0.dp, endPadding, 0.dp)
-            .clickable(interactionSource = null, indication = null) {
+            .clickable {
                 openBundleItem(context, bundleWidgetItem.itemId)
             }
     ) {

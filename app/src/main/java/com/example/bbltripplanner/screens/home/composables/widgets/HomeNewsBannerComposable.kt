@@ -60,7 +60,7 @@ fun HomeNewsBannerComposable(widget: HomeCxeWidget.NewsBannerWidget) {
                     modifier = Modifier
                         .background(colorResource(R.color.primary), RoundedCornerShape(8.dp))
                         .padding(12.dp, 4.dp)
-                        .clickable(interactionSource = null, indication = null) {
+                        .clickable {
                             openNewsPage(context)
                         }
                 ) {

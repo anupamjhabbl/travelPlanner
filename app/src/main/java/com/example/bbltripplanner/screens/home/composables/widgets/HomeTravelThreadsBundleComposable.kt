@@ -79,7 +79,7 @@ fun ViewMoreCTA(deeplink: String?) {
         contentDescription = "View All",
         modifier = Modifier
             .size(50.dp)
-            .clickable(interactionSource = null, indication = null) {
+            .clickable {
                 context.openDeeplink(deeplink)
             }
     )
@@ -105,7 +105,7 @@ fun TravelThreadWidgetItem(
             .width(Dp(width))
             .padding(starPadding, 0.dp, endPadding, 0.dp)
             .border(1.dp, colorResource(R.color.bg_default_image), RoundedCornerShape(12.dp))
-            .clickable(interactionSource = null, indication = null) {
+            .clickable {
                 openTravelThread(context, travelThreadsWidgetItem.threadId)
             }
     ) {
@@ -124,7 +124,7 @@ fun TravelThreadWidgetItem(
                 modifier = Modifier
                     .size(30.dp)
                     .align(Alignment.CenterEnd)
-                    .clickable(interactionSource = null, indication = null) {
+                    .clickable {
                         currentIndex = (currentIndex + 1) % imageList.size
                     }
             )

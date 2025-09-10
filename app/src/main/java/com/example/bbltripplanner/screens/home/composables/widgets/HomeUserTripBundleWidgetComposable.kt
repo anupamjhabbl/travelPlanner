@@ -63,7 +63,7 @@ fun HomeUserTripBundleWidgetComposable(widget: HomeCxeWidget.UserTripBundleWidge
                 modifier = Modifier
                     .background(colorResource(R.color.primary), RoundedCornerShape(8.dp))
                     .padding(12.dp, 4.dp)
-                    .clickable(interactionSource = null, indication = null) {
+                    .clickable {
                         context.openDeeplink(widget.data.content?.deeplink)
                     }
             ) {
@@ -95,7 +95,7 @@ fun UserTripWidgetItem(userTripWidgetItem: UserTripWidgetItem) {
             .padding(16.dp, 0.dp)
             .border(1.dp, colorResource(R.color.bg_default_image), RoundedCornerShape(12.dp))
             .padding(8.dp)
-            .clickable(interactionSource = null, indication = null) {
+            .clickable {
                 openUserTrip(context, userTripWidgetItem.userTripId, false)
             },
         verticalAlignment = Alignment.CenterVertically
@@ -130,7 +130,7 @@ fun UserTripWidgetItem(userTripWidgetItem: UserTripWidgetItem) {
                     fontSize = 14.sp,
                     textColor = colorResource(R.color.primary),
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable(interactionSource = null, indication = null) {
+                    modifier = Modifier.clickable {
                         openUserTrip(context, userTripWidgetItem.userTripId, true)
                     }
                 )

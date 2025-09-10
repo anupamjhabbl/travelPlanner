@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TripPlanner</string>
+    <string name="app_name">Trip Planner</string>
     <string name="profile">Profile</string>
     <string name="profile_details">Profile Details</string>
     <string name="notifications">Notifications</string>
