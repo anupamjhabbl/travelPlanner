@@ -27,14 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.utils.WindowSizeUtils
 import com.example.bbltripplanner.screens.home.entities.CarouselItemSrc
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -140,8 +139,8 @@ fun DotsIndicator(
     totalDots: Int,
     selectedIndex: Int
 ) {
-    val selectedColor = colorResource(R.color.primary)
-    val unSelectedColor = colorResource(R.color.faded_primary)
+    val selectedColor = LocalCustomColors.current.secondaryBackground
+    val unSelectedColor = LocalCustomColors.current.fadedBackground
     LazyRow(
         modifier = modifier.wrapContentSize()
     ) {

@@ -20,16 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.utils.openDeeplink
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
 import com.example.bbltripplanner.screens.home.entities.UserTripWidgetItem
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -61,7 +60,7 @@ fun HomeUserTripBundleWidgetComposable(widget: HomeCxeWidget.UserTripBundleWidge
 
             Box(
                 modifier = Modifier
-                    .background(colorResource(R.color.primary), RoundedCornerShape(8.dp))
+                    .background(LocalCustomColors.current.secondaryBackground, RoundedCornerShape(8.dp))
                     .padding(12.dp, 4.dp)
                     .clickable {
                         context.openDeeplink(widget.data.content?.deeplink)
@@ -69,7 +68,7 @@ fun HomeUserTripBundleWidgetComposable(widget: HomeCxeWidget.UserTripBundleWidge
             ) {
                 ComposeTextView.TitleTextView(
                     text = widget.data.actionHeader?.text ?: "",
-                    textColor = colorResource(R.color.white),
+                    textColor = LocalCustomColors.current.primaryBackground,
                     fontSize = 12.sp
                 )
             }
@@ -93,7 +92,7 @@ fun UserTripWidgetItem(userTripWidgetItem: UserTripWidgetItem) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp, 0.dp)
-            .border(1.dp, colorResource(R.color.bg_default_image), RoundedCornerShape(12.dp))
+            .border(1.dp, LocalCustomColors.current.defaultImageCardColor, RoundedCornerShape(12.dp))
             .padding(8.dp)
             .clickable {
                 openUserTrip(context, userTripWidgetItem.userTripId, false)
@@ -128,7 +127,7 @@ fun UserTripWidgetItem(userTripWidgetItem: UserTripWidgetItem) {
                 ComposeTextView.TextView(
                     text = "Share Stories",
                     fontSize = 14.sp,
-                    textColor = colorResource(R.color.primary),
+                    textColor = LocalCustomColors.current.secondaryBackground,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier.clickable {
                         openUserTrip(context, userTripWidgetItem.userTripId, true)

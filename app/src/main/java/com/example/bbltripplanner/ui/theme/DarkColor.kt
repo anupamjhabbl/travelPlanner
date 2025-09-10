@@ -5,20 +5,17 @@ import androidx.compose.ui.graphics.Color
 class DarkColor {
     companion object {
         val primaryBackGround = Color(0xFF000000)
-        val primaryAccent = Color(0xFF00BFA6)
-        val secondaryAccent = Color(0xFFFF6F61)
-        val titleTextColor = Color(0xFFFFFFFF)
-        val textColor = Color(0xFFE0E0E0)
-        val secondaryTextColor = Color(0xFFFFFEFE)
-        val highlightTextColor = Color(0xFFFFAB91)
+        val secondaryBackground = Color(0xFFB5ADFF)
+        val fadedBackground = Color(0xFF4A4376)
+        val titleTextColor = Color(0xFFDADAF5)
+        val textColor = Color(0xFFDADAF5)
+        val hintTextColor  = Color(0xFF4D4D4D)
         val primaryButtonBg = Color(0xFF2b2d42)
-        val secondaryButtonBorder = Color(0xFF64FFDA)
         val primaryButtonText = Color(0xFFFFFFFF)
         val secondaryButtonText = Color(0xFF64FFDA)
-        val error = Color(0xFFF81F1A)
+        val error = Color(0xFFF60E1E)
         val warning = Color(0xFFFFCA28)
         val success = Color(0xFF66BB6A)
-        val buttonOutline = Color(0xFF51525E)
-        val primary = Color(0xFF6851EB)
+        val defaultImageCardColor = Color(0xFF2C2639)
     }
 }

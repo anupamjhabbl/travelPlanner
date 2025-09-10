@@ -6,41 +6,35 @@ import androidx.compose.ui.graphics.Color
 
 data class CustomColors(
     val primaryBackground: Color,
+    val secondaryBackground: Color,
+    val fadedBackground: Color,
     val titleTextColor: Color,
     val textColor: Color,
-    val primaryAccent: Color,
-    val secondaryAccent: Color,
-    val secondaryTextColor: Color,
-    val highlightTextColor: Color,
+    val hintTextColor: Color,
     val primaryButtonBg: Color,
-    val secondaryButtonBorder: Color,
     val primaryButtonText: Color,
     val secondaryButtonText: Color,
     val warning: Color,
     val error: Color,
     val success: Color,
-    val buttonOutline: Color,
-    val primary: Color
+    val defaultImageCardColor: Color
 )
 
 val LocalCustomColors = staticCompositionLocalOf {
     CustomColors(
         primaryBackground = Color.Unspecified,
+        secondaryBackground = Color.Unspecified,
+        fadedBackground = Color.Unspecified,
         textColor = Color.Unspecified,
         titleTextColor = Color.Unspecified,
-        primaryAccent = Color.Unspecified,
-        secondaryAccent = Color.Unspecified,
-        secondaryTextColor = Color.Unspecified,
-        highlightTextColor = Color.Unspecified,
+        hintTextColor = Color.Unspecified,
         primaryButtonBg = Color.Unspecified,
-        secondaryButtonBorder = Color.Unspecified,
         primaryButtonText = Color.Unspecified,
         secondaryButtonText = Color.Unspecified,
         warning = Color.Unspecified,
         error = Color.Unspecified,
         success = Color.Unspecified,
-        buttonOutline = Color.Unspecified,
-        primary = Color.Unspecified
+        defaultImageCardColor = Color.Unspecified
     )
 }
 
@@ -48,40 +42,34 @@ fun getCustomColor(isDarkTheme: Boolean): CustomColors {
     return if (isDarkTheme) {
         CustomColors(
             primaryBackground = DarkColor.primaryBackGround,
+            secondaryBackground = DarkColor.secondaryBackground,
+            fadedBackground = DarkColor.fadedBackground,
             textColor = DarkColor.textColor,
             titleTextColor = DarkColor.titleTextColor,
-            primaryAccent = DarkColor.primaryAccent,
-            secondaryAccent = DarkColor.secondaryAccent,
-            secondaryTextColor = DarkColor.secondaryTextColor,
-            highlightTextColor = DarkColor.highlightTextColor,
+            hintTextColor = DarkColor.hintTextColor,
             primaryButtonText = DarkColor.primaryButtonText,
             primaryButtonBg = DarkColor.primaryButtonBg,
-            secondaryButtonBorder = DarkColor.secondaryButtonBorder,
             secondaryButtonText = DarkColor.secondaryButtonText,
             warning = DarkColor.warning,
             error = DarkColor.error,
             success = DarkColor.success,
-            buttonOutline = DarkColor.buttonOutline,
-            primary = DarkColor.primary
+            defaultImageCardColor = DarkColor.defaultImageCardColor
         )
     } else {
         CustomColors(
             primaryBackground = LightColor.primaryBackGround,
+            secondaryBackground = LightColor.secondaryBackground,
+            fadedBackground = LightColor.fadedBackground,
             textColor = LightColor.textColor,
             titleTextColor = LightColor.titleTextColor,
-            primaryAccent = LightColor.primaryAccent,
-            secondaryAccent = LightColor.secondaryAccent,
-            secondaryTextColor = LightColor.secondaryTextColor,
-            highlightTextColor = LightColor.highlightTextColor,
+            hintTextColor = LightColor.hintTextColor,
             primaryButtonText = LightColor.primaryButtonText,
             primaryButtonBg = LightColor.primaryButtonBg,
-            secondaryButtonBorder = LightColor.secondaryButtonBorder,
             secondaryButtonText = LightColor.secondaryButtonText,
             warning = DarkColor.warning,
             error = DarkColor.error,
             success = DarkColor.success,
-            buttonOutline = LightColor.buttonOutline,
-            primary = DarkColor.primary
+            defaultImageCardColor = LightColor.defaultImageCardColor
         )
     }
 }

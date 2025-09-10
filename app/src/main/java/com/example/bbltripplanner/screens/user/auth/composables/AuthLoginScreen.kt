@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -54,6 +53,7 @@ import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserLoginAuthViewModel
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -122,7 +122,7 @@ fun AuthLoginScreen(
         ) {
             ComposeTextView.TextView(
                 text = stringResource(R.string.email),
-                textColor = colorResource(R.color.textSecondary),
+                textColor = LocalCustomColors.current.textColor,
                 fontSize = 16.sp
             )
 
@@ -139,23 +139,23 @@ fun AuthLoginScreen(
                     ComposeTextView.TextView(
                         text = stringResource(R.string.email_hint),
                         fontSize = 16.sp,
-                        textColor = colorResource(R.color.input_hint_color),
+                        textColor = LocalCustomColors.current.hintTextColor,
                     )
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors().copy(
-                    focusedTextColor = colorResource(R.color.textSecondary),
-                    focusedIndicatorColor = colorResource(R.color.primary),
-                    unfocusedTextColor = colorResource(R.color.textSecondary),
-                    errorIndicatorColor = colorResource(R.color.error_red)
+                    focusedTextColor = LocalCustomColors.current.textColor,
+                    focusedIndicatorColor = LocalCustomColors.current.secondaryBackground,
+                    unfocusedTextColor = LocalCustomColors.current.textColor,
+                    errorIndicatorColor = LocalCustomColors.current.error
                 ),
                 isError = !state.isValid && state.email.isNotEmpty(),
                 supportingText = {
                     if (!state.isValid && state.email.isNotEmpty()) {
                         ComposeTextView.TextView(
                             text = stringResource(R.string.invalid_email_alert),
-                            textColor = colorResource(R.color.error_red)
+                            textColor = LocalCustomColors.current.error
                         )
                     }
                 }
@@ -165,7 +165,7 @@ fun AuthLoginScreen(
 
             ComposeTextView.TextView(
                 text = stringResource(R.string.password),
-                textColor = colorResource(R.color.textSecondary),
+                textColor = LocalCustomColors.current.textColor,
                 fontSize = 16.sp
             )
 
@@ -182,7 +182,7 @@ fun AuthLoginScreen(
                     ComposeTextView.TextView(
                         text = stringResource(R.string.password_hint),
                         fontSize = 16.sp,
-                        textColor = colorResource(R.color.input_hint_color)
+                        textColor = LocalCustomColors.current.hintTextColor
                     )
                 },
                 singleLine = true,
@@ -202,8 +202,8 @@ fun AuthLoginScreen(
                     }
                 },
                 colors = OutlinedTextFieldDefaults.colors().copy(
-                    focusedTextColor = colorResource(R.color.textSecondary),
-                    unfocusedTextColor = colorResource(R.color.textSecondary)
+                    focusedTextColor = LocalCustomColors.current.textColor,
+                    unfocusedTextColor = LocalCustomColors.current.textColor
                 )
             )
 
@@ -216,7 +216,7 @@ fun AuthLoginScreen(
                 TextButton(onClick = onForgotPasswordClick) {
                     ComposeTextView.TextView(
                         stringResource(R.string.forgot_password),
-                        textColor = colorResource(R.color.primary),
+                        textColor = LocalCustomColors.current.secondaryBackground,
                         fontSize = 16.sp
                     )
                 }
@@ -231,14 +231,14 @@ fun AuthLoginScreen(
                     .height(48.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.primary),
-                    disabledContainerColor = colorResource(R.color.faded_primary)
+                    containerColor = LocalCustomColors.current.secondaryBackground,
+                    disabledContainerColor = LocalCustomColors.current.fadedBackground
                 ),
                 enabled = state.isValid
             ) {
                 ComposeTextView.TitleTextView(
                     stringResource(R.string.continue_text),
-                    textColor = colorResource(R.color.white),
+                    textColor = LocalCustomColors.current.primaryBackground,
                     fontSize = 16.sp
                 )
             }
@@ -249,13 +249,13 @@ fun AuthLoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier = Modifier.height(1.dp).weight(1f).background(colorResource(R.color.input_hint_color)))
+                Spacer(modifier = Modifier.height(1.dp).weight(1f).background(LocalCustomColors.current.hintTextColor))
                 ComposeTextView.TextView(
                     stringResource(R.string.auth_or),
-                    textColor = colorResource(R.color.input_hint_color),
+                    textColor = LocalCustomColors.current.hintTextColor,
                     fontSize = 16.sp
                 )
-                Spacer(modifier = Modifier.height(1.dp).weight(1f).background(colorResource(R.color.input_hint_color)))
+                Spacer(modifier = Modifier.height(1.dp).weight(1f).background(LocalCustomColors.current.hintTextColor))
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -266,7 +266,7 @@ fun AuthLoginScreen(
                     .fillMaxWidth()
                     .height(48.dp),
                 shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, color = colorResource(R.color.input_hint_color))
+                border = BorderStroke(1.dp, color = LocalCustomColors.current.hintTextColor)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_google),
@@ -291,7 +291,7 @@ fun AuthLoginScreen(
                     .fillMaxWidth()
                     .height(48.dp),
                 shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, color = colorResource(R.color.input_hint_color))
+                border = BorderStroke(1.dp, color = LocalCustomColors.current.hintTextColor)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_apple),
@@ -322,7 +322,7 @@ fun AuthLoginScreen(
 
                 ComposeTextView.TextView(
                     text = stringResource(R.string.sign_up),
-                    textColor = colorResource(R.color.primary),
+                    textColor = LocalCustomColors.current.secondaryBackground,
                     fontSize = 16.sp,
                     modifier = Modifier.clickable { onSignUpClick() }
                 )

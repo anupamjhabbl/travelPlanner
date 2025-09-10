@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -36,6 +35,7 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.utils.WindowSizeUtils
 import com.example.bbltripplanner.screens.home.entities.BundleWidgetItem
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 @Composable
 fun HomeBundleItemComposable(widget: HomeCxeWidget.BundleItemsWidget) {
@@ -118,7 +118,7 @@ fun BundleItemView(
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .background(color = colorResource(R.color.bg_default_image), RoundedCornerShape(8.dp))
+                .background(color = LocalCustomColors.current.defaultImageCardColor, RoundedCornerShape(8.dp))
                 .padding(16.dp, 8.dp)
                 .wrapContentSize()
                 .align(Alignment.BottomCenter),
@@ -126,7 +126,7 @@ fun BundleItemView(
         ) {
             ComposeTextView.TitleTextView(
                 text = bundleWidgetItem.tripName,
-                textColor = colorResource(R.color.primary),
+                textColor = LocalCustomColors.current.secondaryBackground,
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp
             )

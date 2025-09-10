@@ -1,5 +1,6 @@
 package com.example.bbltripplanner
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -35,10 +36,8 @@ class MainActivity : ComponentActivity() {
             splashScreenView.iconView.startAnimation(animation)
         }
 
-        WindowCompat.setDecorFitsSystemWindows(
-            window,
-            false
-        )
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
 
         setContent {
             TripPlannerTheme {

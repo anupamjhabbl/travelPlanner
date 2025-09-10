@@ -29,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +42,7 @@ import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.auth.viewModels.ForgotPasswordAuthViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -107,7 +107,7 @@ fun ForgotPasswordScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .background(colorResource(R.color.primary), CircleShape)
+                    .background(LocalCustomColors.current.secondaryBackground, CircleShape)
                     .size(32.dp)
             ) {
                 IconButton(
@@ -118,7 +118,7 @@ fun ForgotPasswordScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Back",
-                        tint = colorResource(R.color.white)
+                        tint = LocalCustomColors.current.primaryBackground
                     )
                 }
             }
@@ -158,24 +158,24 @@ fun ForgotPasswordScreen(
                 placeholder = {
                     ComposeTextView.TextView(
                         text = stringResource(R.string.email_hint),
-                        textColor = colorResource(R.color.input_hint_color),
+                        textColor = LocalCustomColors.current.hintTextColor,
                         fontSize = 16.sp
                     )
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors().copy(
-                    focusedTextColor = colorResource(R.color.textSecondary),
-                    focusedIndicatorColor = colorResource(R.color.primary),
-                    unfocusedTextColor = colorResource(R.color.textSecondary),
-                    errorIndicatorColor = colorResource(R.color.error_red)
+                    focusedTextColor = LocalCustomColors.current.textColor,
+                    focusedIndicatorColor = LocalCustomColors.current.secondaryBackground,
+                    unfocusedTextColor = LocalCustomColors.current.textColor,
+                    errorIndicatorColor = LocalCustomColors.current.error
                 ),
                 isError = !state.isValid && state.email.isNotEmpty(),
                 supportingText = {
                     if (!state.isValid && state.email.isNotEmpty()) {
                         ComposeTextView.TextView(
                             text = stringResource(R.string.invalid_email_alert),
-                            textColor = colorResource(R.color.error_red)
+                            textColor = LocalCustomColors.current.error
                         )
                     }
                 }
@@ -193,15 +193,15 @@ fun ForgotPasswordScreen(
                 shape = RoundedCornerShape(8.dp),
                 enabled = state.isValid,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.primary),
-                    contentColor = colorResource(R.color.white),
-                    disabledContainerColor = colorResource(R.color.faded_primary),
-                    disabledContentColor = colorResource(R.color.bg_default_image)
+                    containerColor = LocalCustomColors.current.secondaryBackground,
+                    contentColor = LocalCustomColors.current.primaryBackground,
+                    disabledContainerColor = LocalCustomColors.current.fadedBackground,
+                    disabledContentColor = LocalCustomColors.current.defaultImageCardColor
                 )
             ) {
                 ComposeTextView.TitleTextView(
                     text = stringResource(R.string.reset_password),
-                    textColor = colorResource(R.color.white),
+                    textColor = LocalCustomColors.current.primaryBackground,
                     fontSize = 16.sp
                 )
             }

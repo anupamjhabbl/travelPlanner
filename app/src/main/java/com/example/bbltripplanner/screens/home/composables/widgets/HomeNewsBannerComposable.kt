@@ -19,12 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 @Composable
 fun HomeNewsBannerComposable(widget: HomeCxeWidget.NewsBannerWidget) {
@@ -40,7 +39,7 @@ fun HomeNewsBannerComposable(widget: HomeCxeWidget.NewsBannerWidget) {
                 clip = false
             ),
         shape = RoundedCornerShape(12.dp),
-        colors = CardColors(colorResource(R.color.white), Color.Unspecified, colorResource(R.color.white), Color.Unspecified)
+        colors = CardColors(LocalCustomColors.current.primaryBackground, Color.Unspecified, LocalCustomColors.current.primaryBackground, Color.Unspecified)
     ) {
         Column(
             modifier = Modifier
@@ -58,7 +57,7 @@ fun HomeNewsBannerComposable(widget: HomeCxeWidget.NewsBannerWidget) {
 
                 Box(
                     modifier = Modifier
-                        .background(colorResource(R.color.primary), RoundedCornerShape(8.dp))
+                        .background(LocalCustomColors.current.secondaryBackground, RoundedCornerShape(8.dp))
                         .padding(12.dp, 4.dp)
                         .clickable {
                             openNewsPage(context)
@@ -66,7 +65,7 @@ fun HomeNewsBannerComposable(widget: HomeCxeWidget.NewsBannerWidget) {
                 ) {
                     ComposeTextView.TitleTextView(
                         text = widget.data.actionHeader?.text ?: "",
-                        textColor = colorResource(R.color.white),
+                        textColor = LocalCustomColors.current.primaryBackground,
                         fontSize = 12.sp
                     )
                 }

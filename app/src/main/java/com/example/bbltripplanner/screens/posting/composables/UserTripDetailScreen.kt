@@ -39,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,6 +58,7 @@ import com.example.bbltripplanner.screens.posting.entity.TripActionResourceMappe
 import com.example.bbltripplanner.screens.posting.entity.TripData
 import com.example.bbltripplanner.screens.posting.viewModels.UserTripDetailIntent
 import com.example.bbltripplanner.screens.posting.viewModels.UserTripDetailViewModel
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -107,7 +107,7 @@ fun UserTripDetailScreen(
                                 Modifier
                                     .height(1.dp)
                                     .fillMaxWidth()
-                                    .background(colorResource(R.color.bg_default_image))
+                                    .background(LocalCustomColors.current.defaultImageCardColor)
                             )
                         }
                     }
@@ -147,7 +147,7 @@ private fun TripSummarySection(
             Box(
                 modifier = Modifier
                     .size(36.dp)
-                    .background(color = colorResource(R.color.primary), CircleShape)
+                    .background(color = LocalCustomColors.current.secondaryBackground, CircleShape)
             ) {
                 IconButton(
                     onClick = {}
@@ -156,7 +156,7 @@ private fun TripSummarySection(
                         Icons.Default.Share,
                         modifier = Modifier.size(20.dp),
                         contentDescription = "Share Trip",
-                        tint = colorResource(R.color.white)
+                        tint = LocalCustomColors.current.primaryBackground
                     )
                 }
             }
@@ -189,13 +189,13 @@ private fun TripSummarySection(
 
             Box(
                 modifier = Modifier
-                    .background(colorResource(R.color.primary), RoundedCornerShape(8.dp))
+                    .background(LocalCustomColors.current.secondaryBackground, RoundedCornerShape(8.dp))
                     .padding(16.dp, 8.dp)
                     .clickable {  }
             ) {
                 ComposeTextView.TextView(
                     text = stringResource(R.string.accept),
-                    textColor = colorResource(R.color.white)
+                    textColor = LocalCustomColors.current.primaryBackground
                 )
             }
         }
@@ -261,7 +261,7 @@ private fun TripSummaryDetailItem(
             icon,
             contentDescription = "trip time",
             modifier = Modifier.size(14.dp),
-            tint = colorResource(R.color.primary)
+            tint = LocalCustomColors.current.secondaryBackground
         )
 
         Spacer(Modifier.width(4.dp))
@@ -284,7 +284,7 @@ private fun UserTripDetailToolbar(navController: NavController) {
         Box(
             modifier = Modifier
                 .size(36.dp)
-                .background(color = colorResource(R.color.primary), CircleShape)
+                .background(color = LocalCustomColors.current.secondaryBackground, CircleShape)
         ) {
             IconButton(
                 onClick = {
@@ -294,14 +294,14 @@ private fun UserTripDetailToolbar(navController: NavController) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = colorResource(R.color.white)
+                    tint = LocalCustomColors.current.primaryBackground
                 )
             }
         }
 
         ComposeTextView.TextView(
             text = stringResource(R.string.see_trips),
-            textColor = colorResource(R.color.primary),
+            textColor = LocalCustomColors.current.secondaryBackground,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             textDecoration = TextDecoration.Underline,

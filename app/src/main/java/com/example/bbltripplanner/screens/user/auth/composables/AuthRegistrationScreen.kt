@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -54,6 +53,7 @@ import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.auth.entity.PasswordStrengthValidityStatus
 import com.example.bbltripplanner.screens.user.auth.viewModels.UseRegistrationViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -127,7 +127,7 @@ fun AuthRegistrationScreen(
         ) {
             ComposeTextView.TextView(
                 text = stringResource(R.string.username),
-                textColor = colorResource(R.color.textSecondary),
+                textColor = LocalCustomColors.current.textColor,
                 fontSize = 16.sp
             )
 
@@ -148,15 +148,15 @@ fun AuthRegistrationScreen(
                     ComposeTextView.TextView(
                         text = stringResource(R.string.username_hint),
                         fontSize = 16.sp,
-                        textColor = colorResource(R.color.input_hint_color),
+                        textColor = LocalCustomColors.current.hintTextColor,
                     )
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors().copy(
-                    focusedTextColor = colorResource(R.color.textSecondary),
-                    focusedIndicatorColor = colorResource(R.color.primary),
-                    unfocusedTextColor = colorResource(R.color.textSecondary)
+                    focusedTextColor = LocalCustomColors.current.textColor,
+                    focusedIndicatorColor = LocalCustomColors.current.secondaryBackground,
+                    unfocusedTextColor = LocalCustomColors.current.textColor
                 )
             )
 
@@ -164,7 +164,7 @@ fun AuthRegistrationScreen(
 
             ComposeTextView.TextView(
                 text = stringResource(R.string.email),
-                textColor = colorResource(R.color.textSecondary),
+                textColor = LocalCustomColors.current.textColor,
                 fontSize = 16.sp
             )
 
@@ -181,23 +181,23 @@ fun AuthRegistrationScreen(
                     ComposeTextView.TextView(
                         text = stringResource(R.string.email_hint),
                         fontSize = 16.sp,
-                        textColor = colorResource(R.color.input_hint_color),
+                        textColor = LocalCustomColors.current.hintTextColor,
                     )
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors().copy(
-                    focusedTextColor = colorResource(R.color.textSecondary),
-                    focusedIndicatorColor = colorResource(R.color.primary),
-                    unfocusedTextColor = colorResource(R.color.textSecondary),
-                    errorIndicatorColor = colorResource(R.color.error_red)
+                    focusedTextColor = LocalCustomColors.current.textColor,
+                    focusedIndicatorColor = LocalCustomColors.current.secondaryBackground,
+                    unfocusedTextColor = LocalCustomColors.current.textColor,
+                    errorIndicatorColor = LocalCustomColors.current.error
                 ),
                 isError = !state.emailValid && state.email.isNotEmpty(),
                 supportingText = {
                     if (!state.emailValid && state.email.isNotEmpty()) {
                         ComposeTextView.TextView(
                             text = stringResource(R.string.invalid_email_alert),
-                            textColor = colorResource(R.color.error_red)
+                            textColor = LocalCustomColors.current.error
                         )
                     }
                 }
@@ -207,7 +207,7 @@ fun AuthRegistrationScreen(
 
             ComposeTextView.TextView(
                 text = stringResource(R.string.password),
-                textColor = colorResource(R.color.textSecondary),
+                textColor = LocalCustomColors.current.textColor,
                 fontSize = 16.sp
             )
 
@@ -228,7 +228,7 @@ fun AuthRegistrationScreen(
                     ComposeTextView.TextView(
                         text = stringResource(R.string.password_hint),
                         fontSize = 16.sp,
-                        textColor = colorResource(R.color.input_hint_color)
+                        textColor = LocalCustomColors.current.hintTextColor
                     )
                 },
                 singleLine = true,
@@ -248,17 +248,17 @@ fun AuthRegistrationScreen(
                     }
                 },
                 colors = OutlinedTextFieldDefaults.colors().copy(
-                    focusedTextColor = colorResource(R.color.textSecondary),
-                    focusedIndicatorColor = colorResource(R.color.primary),
-                    unfocusedTextColor = colorResource(R.color.textSecondary),
-                    errorIndicatorColor = colorResource(R.color.error_red)
+                    focusedTextColor = LocalCustomColors.current.textColor,
+                    focusedIndicatorColor = LocalCustomColors.current.secondaryBackground,
+                    unfocusedTextColor = LocalCustomColors.current.textColor,
+                    errorIndicatorColor = LocalCustomColors.current.error
                 ),
                 isError = state.passwordValid != PasswordStrengthValidityStatus.VALID && state.passwordValid != null,
                 supportingText = {
                     if (state.passwordValid != PasswordStrengthValidityStatus.VALID && state.passwordValid != null) {
                         ComposeTextView.TextView(
                             text = state.passwordValid?.message ?: "",
-                            textColor = colorResource(R.color.error_red)
+                            textColor = LocalCustomColors.current.error
                         )
                     }
                 }
@@ -275,14 +275,14 @@ fun AuthRegistrationScreen(
                     .height(48.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.primary),
-                    disabledContainerColor = colorResource(R.color.faded_primary)
+                    containerColor = LocalCustomColors.current.secondaryBackground,
+                    disabledContainerColor = LocalCustomColors.current.fadedBackground
                 ),
                 enabled = state.passwordValid == PasswordStrengthValidityStatus.VALID && state.emailValid && state.userNameValid
             ) {
                 ComposeTextView.TitleTextView(
                     stringResource(R.string.start_your_jorney),
-                    textColor = colorResource(R.color.white),
+                    textColor = LocalCustomColors.current.primaryBackground,
                     fontSize = 16.sp
                 )
             }
@@ -293,13 +293,13 @@ fun AuthRegistrationScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier = Modifier.height(1.dp).weight(1f).background(colorResource(R.color.input_hint_color)))
+                Spacer(modifier = Modifier.height(1.dp).weight(1f).background(LocalCustomColors.current.hintTextColor))
                 ComposeTextView.TextView(
                     stringResource(R.string.auth_or),
-                    textColor = colorResource(R.color.input_hint_color),
+                    textColor = LocalCustomColors.current.hintTextColor,
                     fontSize = 16.sp
                 )
-                Spacer(modifier = Modifier.height(1.dp).weight(1f).background(colorResource(R.color.input_hint_color)))
+                Spacer(modifier = Modifier.height(1.dp).weight(1f).background(LocalCustomColors.current.hintTextColor))
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -310,7 +310,7 @@ fun AuthRegistrationScreen(
                     .fillMaxWidth()
                     .height(48.dp),
                 shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, color = colorResource(R.color.input_hint_color))
+                border = BorderStroke(1.dp, color = LocalCustomColors.current.hintTextColor)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_google),
@@ -335,7 +335,7 @@ fun AuthRegistrationScreen(
                     .fillMaxWidth()
                     .height(48.dp),
                 shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, color = colorResource(R.color.input_hint_color))
+                border = BorderStroke(1.dp, color = LocalCustomColors.current.hintTextColor)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_apple),
@@ -366,7 +366,7 @@ fun AuthRegistrationScreen(
 
                 ComposeTextView.TextView(
                     text = stringResource(R.string.login),
-                    textColor = colorResource(R.color.primary),
+                    textColor = LocalCustomColors.current.secondaryBackground,
                     fontSize = 16.sp,
                     modifier = Modifier.clickable { onLoginClick() }
                 )

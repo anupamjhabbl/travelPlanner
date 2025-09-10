@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -16,6 +15,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.ui.theme.CustomTypography
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 object ComposeTextView {
     @Composable
@@ -26,7 +26,7 @@ object ComposeTextView {
         fontSize: TextUnit = with(LocalDensity.current) {
             dimensionResource(id = R.dimen.module_20sp).toSp()
         },
-        textColor: Color = colorResource(R.color.textPrimary)
+        textColor: Color = LocalCustomColors.current.titleTextColor
     ) {
         Text(
             text = text,
@@ -48,7 +48,7 @@ object ComposeTextView {
         fontSize: TextUnit = with(LocalDensity.current) {
             dimensionResource(id = R.dimen.module_12sp).toSp()
         },
-        textColor: Color = colorResource(R.color.textSecondary),
+        textColor: Color = LocalCustomColors.current.textColor,
         fontWeight: FontWeight = FontWeight.W400,
         maxLines: Int = Int.MAX_VALUE,
         textDecoration: TextDecoration = TextDecoration.None

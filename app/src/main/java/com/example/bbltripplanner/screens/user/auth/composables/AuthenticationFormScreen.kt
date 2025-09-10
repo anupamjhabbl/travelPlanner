@@ -12,13 +12,14 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -42,11 +43,12 @@ fun AuthenticationFormScreen(
         TabRow(
             selectedTabIndex = pagerState.currentPage,
             divider = {},
+            containerColor = Color.Transparent,
             indicator = { tabPositions ->
                 SecondaryIndicator(
                     Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
                     height = 2.dp,
-                    color = colorResource(R.color.primary)
+                    color = LocalCustomColors.current.secondaryBackground
                 )
             }
         ) {
@@ -63,7 +65,7 @@ fun AuthenticationFormScreen(
                 text = {
                     ComposeTextView.TitleTextView(
                         text = stringResource(R.string.login),
-                        textColor = if (pagerState.currentPage == logInPageIndex) colorResource(R.color.primary) else colorResource(R.color.input_hint_color)
+                        textColor = if (pagerState.currentPage == logInPageIndex) LocalCustomColors.current.secondaryBackground else LocalCustomColors.current.hintTextColor
                     )
                 }
             )
@@ -80,7 +82,7 @@ fun AuthenticationFormScreen(
                 text = {
                     ComposeTextView.TitleTextView(
                         text = stringResource(R.string.sign_up),
-                        textColor = if (pagerState.currentPage == registerPageIndex) colorResource(R.color.primary) else colorResource(R.color.input_hint_color)
+                        textColor = if (pagerState.currentPage == registerPageIndex) LocalCustomColors.current.secondaryBackground else LocalCustomColors.current.hintTextColor
                     )
                 }
             )

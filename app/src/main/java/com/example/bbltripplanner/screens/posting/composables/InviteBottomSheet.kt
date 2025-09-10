@@ -15,12 +15,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 @Composable
 fun InviteBottomSheet(
@@ -58,7 +57,7 @@ fun InviteBottomSheet(
 
                 Box(
                     modifier = Modifier
-                        .background(colorResource(R.color.bg_default_image), shape)
+                        .background(LocalCustomColors.current.defaultImageCardColor, shape)
                         .height(50.dp)
                         .fillMaxWidth()
                         .padding(vertical = 8.dp, horizontal = 16.dp)

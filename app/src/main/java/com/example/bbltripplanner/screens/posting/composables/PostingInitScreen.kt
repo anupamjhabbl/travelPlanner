@@ -53,9 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -71,6 +69,7 @@ import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.screens.posting.entity.TripVisibility
 import com.example.bbltripplanner.screens.posting.viewModels.PostingInitIntent
 import com.example.bbltripplanner.screens.posting.viewModels.PostingInitViewModel
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -112,7 +111,7 @@ fun PostingInitScreen(
                     showBottomSheet = null
                 },
                 sheetState = sheetState,
-                containerColor = colorResource(R.color.white)
+                containerColor = LocalCustomColors.current.primaryBackground
             ) {
                 InviteBottomSheet { user ->
                     viewModel.addTripMates(user)
@@ -125,7 +124,7 @@ fun PostingInitScreen(
                     showBottomSheet = null
                 },
                 sheetState = sheetState,
-                containerColor = colorResource(R.color.white)
+                containerColor = LocalCustomColors.current.primaryBackground
             ) {
                 LocationBottomSheet { location ->
                     viewModel.updateTripLocation(location)
@@ -185,12 +184,12 @@ fun PostingInitScreen(
                     Icon(
                         Icons.Default.DateRange,
                         contentDescription = null,
-                        tint = colorResource(R.color.primary)
+                        tint = LocalCustomColors.current.secondaryBackground
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     ComposeTextView.TextView(
                         text = postingFormData.startDate  ?: startDate,
-                        textColor = colorResource(R.color.primary)
+                        textColor = LocalCustomColors.current.secondaryBackground
                     )
                 }
                 OutlinedButton(
@@ -201,12 +200,12 @@ fun PostingInitScreen(
                     Icon(
                         Icons.Default.DateRange,
                         contentDescription = null,
-                        tint = colorResource(R.color.primary)
+                        tint = LocalCustomColors.current.secondaryBackground
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     ComposeTextView.TextView(
                         text = postingFormData.endDate ?: endDate,
-                        textColor = colorResource(R.color.primary)
+                        textColor = LocalCustomColors.current.secondaryBackground
                     )
                 }
             }
@@ -227,10 +226,10 @@ fun PostingInitScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = colorResource(R.color.primary),
-                    unfocusedBorderColor = colorResource(R.color.primary),
-                    errorBorderColor = colorResource(R.color.error_red),
-                    disabledBorderColor = colorResource(R.color.faded_primary)
+                    focusedBorderColor = LocalCustomColors.current.secondaryBackground,
+                    unfocusedBorderColor = LocalCustomColors.current.secondaryBackground,
+                    errorBorderColor = LocalCustomColors.current.error,
+                    disabledBorderColor = LocalCustomColors.current.fadedBackground
                 )
             )
 
@@ -273,12 +272,12 @@ fun PostingInitScreen(
                             Icon(
                                 Icons.Default.Clear,
                                 contentDescription = "remove",
-                                tint = colorResource(R.color.faded_primary),
+                                tint = LocalCustomColors.current.fadedBackground,
                                 modifier = Modifier.size(20.dp)
                             )
                         },
                         shape = RoundedCornerShape(40),
-                        border = BorderStroke(1.dp, color = colorResource(R.color.primary))
+                        border = BorderStroke(1.dp, color = LocalCustomColors.current.secondaryBackground)
                     )
                 }
 
@@ -295,7 +294,7 @@ fun PostingInitScreen(
                         )
                     },
                     shape = RoundedCornerShape(40),
-                    border = BorderStroke(1.dp, color = colorResource(R.color.primary))
+                    border = BorderStroke(1.dp, color = LocalCustomColors.current.secondaryBackground)
                 )
             }
         }
@@ -336,7 +335,7 @@ fun PostingInitScreenToolbar(
         Box(
             modifier = Modifier
                 .size(36.dp)
-                .background(color = colorResource(R.color.primary), CircleShape)
+                .background(color = LocalCustomColors.current.secondaryBackground, CircleShape)
         ) {
             IconButton(
                 onClick = {
@@ -346,7 +345,7 @@ fun PostingInitScreenToolbar(
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = colorResource(R.color.white)
+                    tint = LocalCustomColors.current.primaryBackground
                 )
             }
         }
@@ -360,7 +359,7 @@ fun PostingInitScreenToolbar(
             Box(
                 modifier = Modifier
                     .menuAnchor()
-                    .background(color = Color(0xFFF3F0FF), RoundedCornerShape(50))
+                    .background(color = LocalCustomColors.current.secondaryBackground, RoundedCornerShape(50))
                     .height(32.dp)
                     .padding(horizontal = 16.dp)
                     .wrapContentWidth(),
@@ -371,21 +370,23 @@ fun PostingInitScreenToolbar(
                 ) {
                     ComposeTextView.TitleTextView(
                         visibility.value,
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        textColor = LocalCustomColors.current.primaryBackground
                     )
                     Spacer(Modifier.width(2.dp))
                     Icon(
                         Icons.Default.ArrowDropDown,
                         modifier = Modifier.size(24.dp),
                         contentDescription = "DropDown",
-                        tint = colorResource(R.color.primary)
+                        tint = LocalCustomColors.current.primaryBackground
                     )
                 }
             }
 
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
             ) {
                 TripVisibility.entries.forEach { item ->
                     DropdownMenuItem(
@@ -429,7 +430,7 @@ fun ClickableFieldBox(
             .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
-                color = colorResource(R.color.primary),
+                color = LocalCustomColors.current.secondaryBackground,
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable { onClick() }
@@ -444,7 +445,7 @@ fun ClickableFieldBox(
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
-                    tint = colorResource(R.color.primary)
+                    tint = LocalCustomColors.current.secondaryBackground
                 )
                 Spacer(modifier = Modifier.width(8.dp))
 
@@ -464,7 +465,7 @@ fun ClickableFieldBox(
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = null,
-                tint = colorResource(R.color.primary)
+                tint = LocalCustomColors.current.secondaryBackground
             )
         }
     }

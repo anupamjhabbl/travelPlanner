@@ -28,7 +28,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -144,8 +143,8 @@ fun HomeToolbar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(colorResource(R.color.white))
-            .padding(16.dp, 0.dp, 16.dp, 8.dp),
+            .background(LocalCustomColors.current.primaryBackground)
+            .padding(16.dp, 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
@@ -171,7 +170,7 @@ fun HomeToolbar(
         ) {
             Box(
                 modifier = Modifier
-                    .background(colorResource(R.color.primary), CircleShape)
+                    .background(LocalCustomColors.current.secondaryBackground, CircleShape)
                     .padding(6.dp)
             ) {
                 ComposeImageView.ImageViewWitDrawableId(
@@ -243,11 +242,11 @@ fun ShowCxeResponseErrorComposable(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            colors = ButtonDefaults.buttonColors(colorResource(R.color.primary))
+            colors = ButtonDefaults.buttonColors(LocalCustomColors.current.secondaryBackground)
         ) {
             ComposeTextView.TitleTextView(
                 text = "Retry",
-                textColor = colorResource(R.color.white),
+                textColor = LocalCustomColors.current.primaryBackground,
                 fontSize = 16.sp
             )
         }

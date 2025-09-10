@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -36,6 +35,7 @@ import com.example.bbltripplanner.common.utils.WindowSizeUtils
 import com.example.bbltripplanner.common.utils.openDeeplink
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
 import com.example.bbltripplanner.screens.home.entities.TravelThreadsWidgetItem
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 @Composable
 fun HomeTravelThreadsBundleComposable(widget: HomeCxeWidget.TravelThreadsBundleWidget) {
@@ -104,7 +104,7 @@ fun TravelThreadWidgetItem(
         modifier = Modifier
             .width(Dp(width))
             .padding(starPadding, 0.dp, endPadding, 0.dp)
-            .border(1.dp, colorResource(R.color.bg_default_image), RoundedCornerShape(12.dp))
+            .border(1.dp, LocalCustomColors.current.defaultImageCardColor, RoundedCornerShape(12.dp))
             .clickable {
                 openTravelThread(context, travelThreadsWidgetItem.threadId)
             }

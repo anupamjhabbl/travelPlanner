@@ -44,7 +44,6 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -65,8 +64,9 @@ import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.auth.entity.OTPAction
 import com.example.bbltripplanner.screens.user.auth.entity.OTPState
-import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
 import com.example.bbltripplanner.screens.user.auth.viewModels.OTPAuthViewModel
+import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -209,7 +209,7 @@ fun OTPVerificationScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .background(colorResource(R.color.primary), CircleShape)
+                    .background(LocalCustomColors.current.secondaryBackground, CircleShape)
                     .size(32.dp)
             ) {
                 IconButton(
@@ -220,7 +220,7 @@ fun OTPVerificationScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Back",
-                        tint = colorResource(R.color.white)
+                        tint = LocalCustomColors.current.primaryBackground
                     )
                 }
             }
@@ -273,15 +273,15 @@ fun OTPVerificationScreen(
                 shape = RoundedCornerShape(8.dp),
                 enabled = otpState.isValid,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.primary),
-                    contentColor = colorResource(R.color.white),
-                    disabledContainerColor = colorResource(R.color.faded_primary),
-                    disabledContentColor = colorResource(R.color.bg_default_image)
+                    containerColor = LocalCustomColors.current.secondaryBackground,
+                    contentColor = LocalCustomColors.current.primaryBackground,
+                    disabledContainerColor = LocalCustomColors.current.fadedBackground,
+                    disabledContentColor = LocalCustomColors.current.defaultImageCardColor
                 )
             ) {
                 ComposeTextView.TitleTextView(
                     text = stringResource(R.string.verify_otp),
-                    textColor = colorResource(R.color.white),
+                    textColor = LocalCustomColors.current.primaryBackground,
                     fontSize = 16.sp
                 )
             }
@@ -304,7 +304,7 @@ fun OTPVerificationScreen(
 
                 ComposeTextView.TextView(
                     text = stringResource(R.string.resend_email),
-                    textColor = colorResource(R.color.primary),
+                    textColor = LocalCustomColors.current.secondaryBackground,
                     fontSize = 16.sp,
                     modifier = Modifier.clickable {
                         viewModel.processEvent(UserAuthIntent.OTPAuth.ViewEvent.ResendOTP)
@@ -384,10 +384,10 @@ fun OTPInputField(
         modifier = modifier
             .border(
                 width = 1.dp,
-                color = if (number != null) colorResource(R.color.primary) else colorResource(R.color.input_hint_color),
+                color = if (number != null) LocalCustomColors.current.secondaryBackground else LocalCustomColors.current.hintTextColor,
                 RoundedCornerShape(12.dp)
             )
-            .background(colorResource(R.color.white), RoundedCornerShape(12.dp)),
+            .background(LocalCustomColors.current.primaryBackground, RoundedCornerShape(12.dp)),
         contentAlignment = Alignment.Center
     ) {
         BasicTextField(
@@ -398,13 +398,13 @@ fun OTPInputField(
                     onNumberChanged(newNumber.toIntOrNull())
                 }
             },
-            cursorBrush = SolidColor(colorResource(R.color.primary)),
+            cursorBrush = SolidColor(LocalCustomColors.current.secondaryBackground),
             singleLine = true,
             textStyle = TextStyle(
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.W600,
                 fontSize = 20.sp,
-                color = colorResource(R.color.textPrimary)
+                color = LocalCustomColors.current.titleTextColor
             ),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.NumberPassword

@@ -70,7 +70,11 @@ fun AppNavigationComposable(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
-        Box(modifier = Modifier.padding(padding)) {
+        Box(
+            modifier = Modifier
+                .background(LocalCustomColors.current.primaryBackground)
+                .padding(padding)
+        ) {
             HomeNavigationComposable(accessToken, homeNavController)
         }
     }

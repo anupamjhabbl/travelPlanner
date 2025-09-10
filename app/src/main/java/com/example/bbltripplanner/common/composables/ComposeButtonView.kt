@@ -15,12 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bbltripplanner.R
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 object ComposeButtonView {
     @Composable
@@ -42,8 +41,8 @@ object ComposeButtonView {
     @Composable
     fun PrimaryButtonView (
         modifier: Modifier = Modifier,
-        backgroundColor: Color = colorResource(R.color.primary),
-        contentColor: Color = colorResource(R.color.white),
+        backgroundColor: Color = LocalCustomColors.current.secondaryBackground,
+        contentColor: Color = LocalCustomColors.current.primaryBackground,
         text: String,
         shape: Shape = RoundedCornerShape(8.dp),
         paddingValues: PaddingValues = PaddingValues(16.dp, 8.dp),

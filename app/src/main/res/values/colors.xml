@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="white">#ffffff</color>
-    <color name="black">#000000</color>
-    <color name="titleTextColor">#141414</color>
-    <color name="primaryAccent">#FF00BFA6</color>
-    <color name="primary">#6851EB</color>
-    <color name="faded_primary">#B6ACE0</color>
-    <color name="textPrimary">#070821</color>
-    <color name="textSecondary">#1a1c34</color>
+    <color name="primary_background_light">#ffffff</color>
+    <color name="primary_background_dark">#000000</color>
+    <color name="secondary_background_light">#6851EB</color>
+    <color name="secondary_background_dark">#B5ADFF</color>
+    <color name="faded_background_light">#B6ACE0</color>
+    <color name="faded_background_dark">#4A4376</color>
+    <color name="titleTextColor">#070821</color>
+    <color name="textColor">#1A1C34</color>
     <color name="bg_default_image">#E3DFEF</color>
     <color name="error_red">#F60E1E</color>
     <color name="ongoing_green">#67ea68</color>
