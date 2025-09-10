@@ -1,8 +1,9 @@
 package com.example.bbltripplanner.navigation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -24,22 +25,29 @@ import com.example.bbltripplanner.common.entity.BottomNavigationItem
 import com.example.bbltripplanner.screens.buzz.composables.BuzzScreen
 import com.example.bbltripplanner.screens.home.composables.HomeExperienceScreen
 import com.example.bbltripplanner.screens.posting.composables.PostingInitScreen
+import com.example.bbltripplanner.screens.posting.composables.UserTripDetailScreen
+import com.example.bbltripplanner.screens.user.auth.composables.AuthenticationFormScreen
+import com.example.bbltripplanner.screens.user.auth.composables.ForgotPasswordScreen
+import com.example.bbltripplanner.screens.user.auth.composables.OTPVerificationScreen
+import com.example.bbltripplanner.screens.user.auth.composables.PasswordResetScreen
 import com.example.bbltripplanner.screens.user.myacount.composables.MyAccountView
 import com.example.bbltripplanner.screens.user.profile.composables.MyProfileView
 import com.example.bbltripplanner.screens.vault.composables.UserVaultScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 @Composable
-fun AppNavigationComposable() {
+fun AppNavigationComposable(
+    accessToken: String
+) {
     val homeNavController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
     val bottomNavigationItems = getNavigationItemList()
     val navStackElements by homeNavController.visibleEntries.collectAsState()
     val selectedTabIndex = remember { mutableIntStateOf(0) }
+    val navBackStackEntry = navStackElements.lastOrNull()?.destination
+    val currentRoute = navBackStackEntry?.route
+    val parentRoute = navBackStackEntry?.parent?.route
     for (index in bottomNavigationItems.indices) {
-        val navBackStackEntry = navStackElements.lastOrNull()?.destination
-        val currentRoute = navBackStackEntry?.route
-        val parentRoute = navBackStackEntry?.parent?.route
         if (bottomNavigationItems[index].route == (parentRoute ?: currentRoute)) {
             if (selectedTabIndex.intValue != index) {
                 selectedTabIndex.intValue = index
@@ -52,23 +60,39 @@ fun AppNavigationComposable() {
             .fillMaxSize()
             .background(LocalCustomColors.current.primaryBackground),
         bottomBar = {
-            BottomNavigationPanel(homeNavController, selectedTabIndex.intValue, bottomNavigationItems)
+            if (navBackStackEntry.toAppNavigationScreen()?.hasBottomBar == true) {
+                BottomNavigationPanel(
+                    homeNavController,
+                    selectedTabIndex.intValue,
+                    bottomNavigationItems
+                )
+            }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
-        HomeNavigationComposable(homeNavController, snackbarHostState, padding)
+        Box(
+            modifier = Modifier
+                .background(LocalCustomColors.current.primaryBackground)
+                .padding(padding)
+        ) {
+            HomeNavigationComposable(accessToken, homeNavController)
+        }
     }
 }
 
 @Composable
 fun HomeNavigationComposable(
-    homeNavController: NavHostController,
-    snackbarHostState: SnackbarHostState,
-    paddingValues: PaddingValues
+    accessToken: String,
+    homeNavController: NavHostController
 ) {
+    val startDestination = if (accessToken.isEmpty()){
+        AppNavigationScreen.AuthGraph.route
+    } else  {
+        AppNavigationScreen.HomeScreen.route
+    }
     NavHost(
         navController = homeNavController,
-        startDestination = AppNavigationScreen.HomeScreen.route
+        startDestination = startDestination
     ) {
         navigation(
             route = AppNavigationScreen.UserScreenGraph.route,
@@ -80,6 +104,30 @@ fun HomeNavigationComposable(
 
             composable(route = AppNavigationScreen.ProfileScreen.route) {
                 MyProfileView(homeNavController)
+            }
+        }
+
+        navigation(
+            route = AppNavigationScreen.AuthGraph.route,
+            startDestination = AppNavigationScreen.AuthenticationFormScreen.route
+        ) {
+            composable(route = AppNavigationScreen.AuthenticationFormScreen.route) {
+                AuthenticationFormScreen(homeNavController)
+            }
+
+            composable(route = AppNavigationScreen.ForgotPasswordScreen.route) {
+                ForgotPasswordScreen(homeNavController)
+            }
+
+            composable(route = AppNavigationScreen.ResetPasswordScreen.route) {
+                PasswordResetScreen(homeNavController)
+            }
+
+            composable(route = AppNavigationScreen.OtpVerificationScreen.route) { navBackStackEntry ->
+                val userEmail =  navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_EMAIL)
+                val origin = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.ORIGIN)
+                val userId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_ID)
+                OTPVerificationScreen(homeNavController, userEmail, origin, userId)
             }
         }
 
@@ -97,6 +145,11 @@ fun HomeNavigationComposable(
 
         composable(route = AppNavigationScreen.BuzzScreen.route) {
             BuzzScreen(homeNavController)
+        }
+
+        composable(route = AppNavigationScreen.UserTripDetailScreen.route) { navBackStackEntry ->
+            val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+            UserTripDetailScreen(homeNavController, tripId)
         }
     }
 }

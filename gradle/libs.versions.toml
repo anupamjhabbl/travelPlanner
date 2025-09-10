@@ -9,7 +9,7 @@ lifecycleRuntimeKtx = "2.8.3"
 activityCompose = "1.9.3"
 composeBom = "2024.04.01"
 googleFontVersion = "1.7.5"
-coilVersion = "2.2.2"
+coilVersion = "2.7.0"
 constraintVersion = "1.0.0"
 koinVersion = "4.0.1"
 kspPlugin = "1.9.0-1.0.13"
@@ -21,6 +21,10 @@ google-services = "4.4.2"
 firebase-bom = "33.7.0"
 navigationComposeVersion = "2.6.0"
 materialVersion = "1.12.0"
+window = "1.4.0"
+accompanistVersion = "0.22.0-rc"
+securityCryptoVersion = "1.1.0"
+splashscreenVersion = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,24 +41,28 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "googleFontVersion"}
-io-coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilVersion"}
-androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintVersion"}
-io-insert-koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koinVersion"}
-io-koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koinVersion"}
-io-insert-koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koinVersion"}
+google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "googleFontVersion" }
+io-coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilVersion" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintVersion" }
+io-insert-koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koinVersion" }
+io-koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koinVersion" }
+io-insert-koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koinVersion" }
 koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koinAnnotationVersion" }
 koin-ksp-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koinAnnotationVersion" }
-gson-impl = { group = "com.google.code.gson", name = "gson", version.ref = "gsonVersion"}
-com-squareup-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVersion"}
+gson-impl = { group = "com.google.code.gson", name = "gson", version.ref = "gsonVersion" }
+com-squareup-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVersion" }
 com-squareup-convertor = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitVersion" }
 androidx-room = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion"}
-ksp-room = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion"}
+ksp-room = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVersion" }
-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom"}
-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics"}
-navigation-compose = {group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationComposeVersion"}
-android-material = {group = "com.google.android.material", name = "material", version.ref = "materialVersion"}
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+navigation-compose = {group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationComposeVersion" }
+android-material = {group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
+androidx-window = { group = "androidx.window", name = "window", version.ref = "window" }
+google-accompanist = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanistVersion" }
+androidx-security-crypto =  { group = "androidx.security", name = "security-crypto", version.ref = "securityCryptoVersion" }
+core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreenVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

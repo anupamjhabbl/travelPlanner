@@ -6,8 +6,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.ui.theme.CustomTypography
@@ -29,9 +33,10 @@ object ComposeTextView {
             modifier = modifier,
             color = textColor,
             fontSize = fontSize,
-            fontWeight = CustomTypography.titleLarge.fontWeight,
+            fontWeight = FontWeight.W600,
             textAlign = textAlign,
-            fontStyle = CustomTypography.titleLarge.fontStyle
+            fontStyle = CustomTypography.titleLarge.fontStyle,
+            fontFamily = primaryFontFamily
         )
     }
 
@@ -41,11 +46,12 @@ object ComposeTextView {
         modifier: Modifier = Modifier,
         textAlign: TextAlign = TextAlign.Left,
         fontSize: TextUnit = with(LocalDensity.current) {
-            dimensionResource(id = R.dimen.module_16sp).toSp()
+            dimensionResource(id = R.dimen.module_12sp).toSp()
         },
         textColor: Color = LocalCustomColors.current.textColor,
-        fontWeight: FontWeight = CustomTypography.bodyLarge.fontWeight ?: FontWeight.W500,
-        maxLines: Int = Int.MAX_VALUE
+        fontWeight: FontWeight = FontWeight.W400,
+        maxLines: Int = Int.MAX_VALUE,
+        textDecoration: TextDecoration = TextDecoration.None
     ) {
         Text(
             text = text,
@@ -55,7 +61,16 @@ object ComposeTextView {
             fontWeight = fontWeight,
             textAlign = textAlign,
             fontStyle = CustomTypography.titleLarge.fontStyle,
-            maxLines = maxLines
+            maxLines = maxLines,
+            fontFamily = primaryFontFamily,
+            textDecoration = textDecoration,
+            overflow = TextOverflow.Ellipsis
         )
     }
+
+    private val primaryFontFamily = FontFamily(
+        Font(R.font.lato_regular, FontWeight.Normal),
+        Font(R.font.lato_bold, FontWeight.Bold),
+        Font(R.font.lato_light, FontWeight.Light)
+    )
 }

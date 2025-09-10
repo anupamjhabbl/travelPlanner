@@ -1,8 +1,7 @@
 package com.example.bbltripplanner.screens.user.profile.viewModels
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bbltripplanner.common.baseClasses.BaseMVIVPresenter
+import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,7 +9,7 @@ import kotlinx.coroutines.launch
 
 class OtherProfileViewModel(
     private val profileUseCase: ProfileUseCase
-): ViewModel(), BaseMVIVPresenter<OtherProfileIntent.ViewEvent> {
+): BaseMVIVViewModel<OtherProfileIntent.ViewEvent>() {
 
     private val _viewEffect = MutableStateFlow<OtherProfileIntent.ViewEffect?>(null)
     val viewEffect = _viewEffect.asStateFlow()

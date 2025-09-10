@@ -5,16 +5,17 @@ import androidx.compose.ui.graphics.Color
 class LightColor {
     companion object {
         val primaryBackGround = Color(0xFFFFFFFF)
-        val primaryAccent = Color(0xFF00BFA6)
-        val secondaryAccent = Color(0xFFFF6F61)
-        val titleTextColor = Color(0xFF141414)
-        val textColor = Color(0xFF212121)
-        val secondaryTextColor = Color(0xFFFFFDFD)
-        val highlightTextColor = Color(0xFF90CAF9)
+        val secondaryBackground = Color(0xFF6851EB)
+        val fadedBackground = Color(0xFFB6ACE0)
+        val titleTextColor = Color(0xFF070821)
+        val textColor = Color(0xFF1A1C34)
+        val hintTextColor  = Color(0xFFB3B3B3)
         val primaryButtonBg = Color(0xFF1E1E1E)
-        val secondaryButtonBorder = Color(0xFF00BFA6)
         val primaryButtonText = Color(0xFFfffffF)
         val secondaryButtonText = Color(0xFF00BFA6)
-        val buttonOutline = Color(0xFF6D6C6C)
+        val error = Color(0xFFF60E1E)
+        val warning = Color(0xFFFFCA28)
+        val success = Color(0xFF66BB6A)
+        val defaultImageCardColor = Color(0xFFE3DFEF)
     }
 }

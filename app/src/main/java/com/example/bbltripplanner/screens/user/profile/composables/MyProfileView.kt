@@ -277,8 +277,7 @@ fun ProfileUpperSection(navController: NavController) {
                 )
                 com.example.bbltripplanner.common.composables.ComposeButtonView.PrimaryButtonView(
                     backgroundColor = LocalCustomColors.current.primaryButtonBg,
-                    text = stringResource(id = R.string.follow),
-                    textColor = LocalCustomColors.current.primaryButtonText
+                    text = stringResource(id = R.string.follow)
                 ) {}
             }
         }

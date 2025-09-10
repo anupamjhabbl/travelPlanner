@@ -90,7 +90,7 @@ fun MyAccountView(
     }
 }
 
-fun takeAction(navController: NavController, key: String) {     // TODO: All the tiles action on myAccount page
+private fun takeAction(navController: NavController, key: String) {     // TODO: All the tiles action on myAccount page
     when (key) {
         Constants.PROFILE_DETAILS -> openMyProfilePage(navController)
         Constants.NOTIFICATIONS -> {}
@@ -112,7 +112,7 @@ fun ProfileContainer() {
             .wrapContentHeight()
             .fillMaxWidth()
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.module_8)))
-            .background(LocalCustomColors.current.primary)
+            .background(LocalCustomColors.current.primaryBackground)
             .padding(dimensionResource(id = R.dimen.module_24))
     ) {
         Row (
@@ -148,14 +148,14 @@ fun ProfileNameAndTravelsContainer(
             fontSize = with(LocalDensity.current) {
                 dimensionResource(id = R.dimen.module_20sp).toSp()
             },
-            textColor = LocalCustomColors.current.secondaryTextColor
+            textColor = LocalCustomColors.current.textColor
         )
         com.example.bbltripplanner.common.composables.ComposeTextView.TextView(
             text = "8 Travels",
             fontSize = with(LocalDensity.current) {
                 dimensionResource(id = R.dimen.module_18sp).toSp()
             },
-            textColor = LocalCustomColors.current.secondaryTextColor
+            textColor = LocalCustomColors.current.textColor
         )
     }
 }
