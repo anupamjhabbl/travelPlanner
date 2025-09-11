@@ -1,7 +1,7 @@
 package com.example.bbltripplanner.common.entity
 
 data class User(
-    val id: Long,
+    val id: String,
     val name: String,
     val phones: List<String> = emptyList(),
     val email: String?,

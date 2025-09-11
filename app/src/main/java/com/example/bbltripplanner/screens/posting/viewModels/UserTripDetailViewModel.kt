@@ -3,14 +3,13 @@ package com.example.bbltripplanner.screens.posting.viewModels
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
+import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.posting.entity.TripData
 import com.example.bbltripplanner.screens.posting.usecases.UserTripDetailUseCase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class UserTripDetailViewModel(
     private val userTripDetailUseCase: UserTripDetailUseCase
@@ -27,10 +26,8 @@ class UserTripDetailViewModel(
     private fun fetchTripDetail(tripId: String) {
         _userTripDetailFetchStatus.value = userTripDetailFetchStatus.value.copy(isLoading = true)
         viewModelScope.launch {
-            val tripDetailResult = withContext(Dispatchers.IO) {
-                kotlin.runCatching {
-                    userTripDetailUseCase.getUserTripDetail(tripId)
-                }
+            val tripDetailResult = SafeIOUtil.safeCall {
+                userTripDetailUseCase.getUserTripDetail(tripId)
             }
             tripDetailResult.onSuccess { tripData ->
                 _userTripDetailFetchStatus.value =  userTripDetailFetchStatus.value.copy(isLoading = false, data = tripData)

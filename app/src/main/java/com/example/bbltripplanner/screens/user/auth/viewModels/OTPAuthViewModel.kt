@@ -5,6 +5,7 @@ import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
+import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.entity.AuthToken
 import com.example.bbltripplanner.screens.user.auth.entity.OTPAction
 import com.example.bbltripplanner.screens.user.auth.entity.OTPState
@@ -12,7 +13,6 @@ import com.example.bbltripplanner.screens.user.auth.entity.UserForgetPasswordBod
 import com.example.bbltripplanner.screens.user.auth.entity.UserOTPVerifyBody
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class OTPAuthViewModel(
     private val userAuthUseCase: UserAuthUseCase,
@@ -60,15 +59,13 @@ class OTPAuthViewModel(
     private fun verifyOTP() {
         viewModelScope.launch {
             _userOTPVerifyRequestStatus.emit(RequestStatus.Loading)
-            val registerUserResult = withContext(Dispatchers.IO) {
-                kotlin.runCatching {
-                    userAuthUseCase.verifyOTP(getOTPVerifyBody(), origin)
-                }
+            val registerUserResult = SafeIOUtil.safeCall {
+                userAuthUseCase.verifyOTP(getOTPVerifyBody(), origin)
             }
             registerUserResult.onSuccess { result ->
                 result?.let {
                     saveTheToken(result)
-                    _userOTPVerifyRequestStatus.emit(RequestStatus.Success(""))
+                    fetchLocalUserData()
                 } ?: _userOTPVerifyRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
             }
             registerUserResult.onFailure { exception ->
@@ -82,6 +79,37 @@ class OTPAuthViewModel(
                 }
             }
         }
+    }
+
+    private suspend fun fetchLocalUserData() {
+        val getUserDataRequest = SafeIOUtil.safeCall {
+            userAuthUseCase.getLocalUser()
+        }
+        getUserDataRequest.onSuccess { user ->
+            if (user == null) {
+                removeToken()
+                _userOTPVerifyRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
+            } else {
+                authPreferencesUseCase.setUser(user)
+                _userOTPVerifyRequestStatus.emit(RequestStatus.Success(""))
+            }
+        }
+        getUserDataRequest.onFailure { exception ->
+            removeToken()
+            when (exception) {
+                is TripPlannerException -> {
+                    _userOTPVerifyRequestStatus.emit(RequestStatus.Error(exception.message))
+                }
+                is Exception -> {
+                    _userOTPVerifyRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
+                }
+            }
+        }
+    }
+
+    private fun removeToken() {
+        authPreferencesUseCase.removeAccessToken()
+        authPreferencesUseCase.removeRefreshToken()
     }
 
     private fun saveTheToken(authToken: AuthToken) {
@@ -100,10 +128,8 @@ class OTPAuthViewModel(
     private fun resendOTP() {
         viewModelScope.launch {
             _userOTPResendRequestStatus.emit(RequestStatus.Loading)
-            val registerUserResult = withContext(Dispatchers.IO) {
-                kotlin.runCatching {
-                    userAuthUseCase.forgetPasswordRequestOTP(getForgetPasswordRequestBody())
-                }
+            val registerUserResult = SafeIOUtil.safeCall {
+                userAuthUseCase.forgetPasswordRequestOTP(getForgetPasswordRequestBody())
             }
             registerUserResult.onSuccess { response ->
                 response?.let {

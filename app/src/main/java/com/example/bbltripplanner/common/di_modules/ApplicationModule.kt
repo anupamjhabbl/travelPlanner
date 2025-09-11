@@ -2,6 +2,8 @@ package com.example.bbltripplanner.common.di_modules
 
 import com.example.bbltripplanner.common.infra.EncryptedPreferenceManager
 import com.example.bbltripplanner.common.infra.Network
+import com.example.bbltripplanner.common.infra.PreferenceManager
+import com.example.bbltripplanner.main.viewModels.MainActivityViewModel
 import com.example.bbltripplanner.screens.home.clients.HomeCxeClient
 import com.example.bbltripplanner.screens.home.repositories.HomeCxeLayoutRepository
 import com.example.bbltripplanner.screens.home.repositoryImpl.HomeCxeLayoutNetwork
@@ -33,6 +35,7 @@ import com.example.bbltripplanner.screens.user.profile.repositories.GetProfileRe
 import com.example.bbltripplanner.screens.user.profile.repositoryImpl.GetProfileNetwork
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
 import com.example.bbltripplanner.screens.user.profile.viewModels.OtherProfileViewModel
+import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -40,6 +43,11 @@ import org.koin.dsl.module
 val appModule = module {
     // infra
     single<EncryptedPreferenceManager> { EncryptedPreferenceManager(androidContext()) }
+    single<PreferenceManager> { PreferenceManager(androidContext(), get()) }
+    single<Gson> { Gson() }
+
+    // main
+    viewModel { MainActivityViewModel(get(), get()) }
 
     // User
     single<UserClient> { Network.createWithAuth(UserClient::class.java, get(), get()) }
@@ -68,7 +76,7 @@ val appModule = module {
     single<UserAuthClient> { Network.create(UserAuthClient::class.java) }
     single<UserAuthRepository> { UserAuthNetwork(get()) }
     single<UserAuthUseCase> { UserAuthUseCase(get()) }
-    single<AuthPreferencesUseCase> { AuthPreferencesUseCase(get()) }
+    single<AuthPreferencesUseCase> { AuthPreferencesUseCase(get(), get()) }
     viewModel { OTPAuthViewModel(get(), get()) }
     viewModel { UserLoginAuthViewModel(get(), get()) }
     viewModel { UseRegistrationViewModel(get()) }

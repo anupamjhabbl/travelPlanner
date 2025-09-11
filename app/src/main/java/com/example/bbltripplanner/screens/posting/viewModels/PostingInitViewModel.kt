@@ -3,11 +3,11 @@ package com.example.bbltripplanner.screens.posting.viewModels
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.home.entities.Location
 import com.example.bbltripplanner.screens.posting.entity.TripData
 import com.example.bbltripplanner.screens.posting.entity.TripVisibility
 import com.example.bbltripplanner.screens.posting.usecases.PostingUseCase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PostingInitViewModel(
     private val postingUseCase: PostingUseCase
@@ -62,10 +61,8 @@ class PostingInitViewModel(
 
     private fun saveTheTripDataAndContinue() {
         viewModelScope.launch {
-            val postTripResult = withContext(Dispatchers.IO) {
-                kotlin.runCatching {
-                    postingUseCase.postTrip(_tripFormData.value)
-                }
+            val postTripResult = SafeIOUtil.safeCall {
+                postingUseCase.postTrip(_tripFormData.value)
             }
             postTripResult.onSuccess {
                 _viewEffects.emit(PostingInitIntent.ViewEffect.GoNext(it))

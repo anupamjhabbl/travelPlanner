@@ -5,13 +5,13 @@ import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
+import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.common.utils.StringUtils.isValidEmail
 import com.example.bbltripplanner.screens.user.auth.entity.AuthToken
 import com.example.bbltripplanner.screens.user.auth.entity.UserLoginBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserLoginFormState
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class UserLoginAuthViewModel(
     private val userAuthUseCase: UserAuthUseCase,
@@ -43,15 +42,13 @@ class UserLoginAuthViewModel(
     private fun loginUser() {
         viewModelScope.launch {
             _userLoginRequestStatus.emit(RequestStatus.Loading)
-            val registerUserResult = withContext(Dispatchers.IO) {
-                kotlin.runCatching {
-                    userAuthUseCase.loginUser(getLoginUserBody())
-                }
+            val registerUserResult = SafeIOUtil.safeCall {
+                userAuthUseCase.loginUser(getLoginUserBody())
             }
             registerUserResult.onSuccess {  result ->
                 result?.let {
                     saveTheToken(result)
-                    _userLoginRequestStatus.emit(RequestStatus.Success(""))
+                    fetchLocalUserData()
                 } ?: _userLoginRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
             }
             registerUserResult.onFailure { exception ->
@@ -65,6 +62,37 @@ class UserLoginAuthViewModel(
                 }
             }
         }
+    }
+
+    private suspend fun fetchLocalUserData() {
+        val getUserDataRequest = SafeIOUtil.safeCall {
+            userAuthUseCase.getLocalUser()
+        }
+        getUserDataRequest.onSuccess { user ->
+            if (user == null) {
+                removeToken()
+                _userLoginRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
+            } else {
+                authPreferencesUseCase.setUser(user)
+                _userLoginRequestStatus.emit(RequestStatus.Success(""))
+            }
+        }
+        getUserDataRequest.onFailure { exception ->
+            removeToken()
+            when (exception) {
+                is TripPlannerException -> {
+                    _userLoginRequestStatus.emit(RequestStatus.Error(exception.message))
+                }
+                is Exception -> {
+                    _userLoginRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
+                }
+            }
+        }
+    }
+
+    private fun removeToken() {
+        authPreferencesUseCase.removeRefreshToken()
+        authPreferencesUseCase.removeAccessToken()
     }
 
     private fun saveTheToken(authToken: AuthToken) {

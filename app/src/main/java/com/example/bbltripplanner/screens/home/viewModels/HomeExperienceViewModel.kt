@@ -3,18 +3,17 @@ package com.example.bbltripplanner.screens.home.viewModels
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
+import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.home.entities.CxeResponseError
 import com.example.bbltripplanner.screens.home.entities.HomeCxeResponse
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
 import com.example.bbltripplanner.screens.home.usecases.HomeCxeUseCase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 
 class HomeExperienceViewModel(
@@ -48,10 +47,8 @@ class HomeExperienceViewModel(
     private fun getCxeResponse() {
         viewModelScope.launch {
             _viewStateLiveData.value =  HomeExperienceIntent.ViewState.ShowFullScreenLoading
-            val result = withContext(Dispatchers.IO) {
-                runCatching {
+            val result = SafeIOUtil.safeCall {
                     homeCxeUseCase.getHomeCxeResponse()
-                }
             }
             result.onSuccess { response ->
                  processResponse(response)
@@ -92,10 +89,8 @@ class HomeExperienceViewModel(
             return
         }
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                runCatching {
-                    homeCxeUseCase.getBundleWidgetData(bundleData)
-                }
+            val result = SafeIOUtil.safeCall {
+                homeCxeUseCase.getBundleWidgetData(bundleData)
             }
             result.onSuccess { newData ->
                 if (newData.isNotEmpty()) {
@@ -122,10 +117,8 @@ class HomeExperienceViewModel(
             return
         }
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                runCatching {
-                    homeCxeUseCase.getUserTripBundleData(bundleData)
-                }
+            val result = SafeIOUtil.safeCall {
+                homeCxeUseCase.getUserTripBundleData(bundleData)
             }
             result.onSuccess { newData ->
                 if (newData.isNotEmpty()) {
@@ -152,10 +145,8 @@ class HomeExperienceViewModel(
             return
         }
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                runCatching {
-                    homeCxeUseCase.getTravelThreadBundleData(bundleData)
-                }
+            val result = SafeIOUtil.safeCall {
+                homeCxeUseCase.getTravelThreadBundleData(bundleData)
             }
             result.onSuccess { newData ->
                 if (newData.isNotEmpty()) {

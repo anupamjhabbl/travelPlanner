@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.user.auth.repositoryImpl
 
 import com.example.bbltripplanner.common.entity.BaseResponse
+import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.screens.user.auth.clients.UserAuthClient
 import com.example.bbltripplanner.screens.user.auth.entity.AuthToken
 import com.example.bbltripplanner.screens.user.auth.entity.PasswordResetResponse
@@ -34,6 +35,10 @@ class UserAuthNetwork(
 
     override suspend fun resetPassword(userResetBody: UserPasswordResetBody, accessToken: String): BaseResponse<PasswordResetResponse> {
         return userAuthClient.resetPassword(userResetBody, accessToken)
+    }
+
+    override suspend fun getLocalUser(): BaseResponse<User> {
+        return userAuthClient.getLocalUser()
     }
 
     override fun getNewAccessToken(refreshToken: String): Call<BaseResponse<AuthToken>> {

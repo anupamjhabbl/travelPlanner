@@ -1,23 +1,30 @@
-package com.example.bbltripplanner
+package com.example.bbltripplanner.main
 
 import android.graphics.Color
 import android.os.Bundle
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import com.example.bbltripplanner.R
+import com.example.bbltripplanner.main.viewModels.MainActivityIntent
+import com.example.bbltripplanner.main.viewModels.MainActivityViewModel
 import com.example.bbltripplanner.navigation.AppNavigationComposable
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.ui.theme.TripPlannerTheme
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private val authPreferencesUseCase: AuthPreferencesUseCase by inject()
+    private val mainActivityViewModel: MainActivityViewModel by lazy {
+        getViewModel<MainActivityViewModel>()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -38,6 +45,7 @@ class MainActivity : ComponentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
+        mainActivityViewModel.processEvent(MainActivityIntent.ViewEvent.Init)
 
         setContent {
             TripPlannerTheme {

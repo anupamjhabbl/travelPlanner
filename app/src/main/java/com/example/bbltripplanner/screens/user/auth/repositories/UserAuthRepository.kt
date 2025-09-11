@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.user.auth.repositories
 
 import com.example.bbltripplanner.common.entity.BaseResponse
+import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.screens.user.auth.entity.AuthToken
 import com.example.bbltripplanner.screens.user.auth.entity.PasswordResetResponse
 import com.example.bbltripplanner.screens.user.auth.entity.UserForgetPasswordBody
@@ -17,5 +18,6 @@ interface UserAuthRepository {
     suspend fun verifyOTP(userOTPVerifyBody: UserOTPVerifyBody, origin: String): BaseResponse<AuthToken>
     suspend fun forgetPasswordRequestOTP(userForgetPasswordBody: UserForgetPasswordBody): BaseResponse<UserRegisteredId>
     suspend fun resetPassword(userResetBody: UserPasswordResetBody, accessToken: String): BaseResponse<PasswordResetResponse>
+    suspend fun getLocalUser(): BaseResponse<User>
     fun getNewAccessToken(refreshToken: String): Call<BaseResponse<AuthToken>>
 }

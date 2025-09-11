@@ -5,12 +5,12 @@ import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
+import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.common.utils.StringUtils.isStrongPassword
 import com.example.bbltripplanner.screens.user.auth.entity.UserPasswordResetBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserResetPasswordFormState
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PasswordResetVieModel(
     private val userAuthUseCase: UserAuthUseCase,
@@ -42,10 +41,8 @@ class PasswordResetVieModel(
     private fun resetPassword() {
         viewModelScope.launch {
             _userResetPasswordRequestStatus.emit(RequestStatus.Loading)
-            val registerUserResult = withContext(Dispatchers.IO) {
-                kotlin.runCatching {
-                    userAuthUseCase.resetPassword(getResetPasswordBody(), "${Constants.HTTPHeaders.AUTHORIZATION_BEARER} ${authPreferencesUseCase.getAccessToken()}")
-                }
+            val registerUserResult = SafeIOUtil.safeCall {
+                userAuthUseCase.resetPassword(getResetPasswordBody(), "${Constants.HTTPHeaders.AUTHORIZATION_BEARER} ${authPreferencesUseCase.getAccessToken()}")
             }
             registerUserResult.onSuccess {
                 _userResetPasswordRequestStatus.emit(RequestStatus.Success(""))
