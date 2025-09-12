@@ -81,4 +81,7 @@
     <string name="server_error_subtitle">The server isn’t responding right now. We’re fixing it, please try again soon.</string>
     <string name="verify_otp">Verify OTP</string>
     <string name="password_not_empty">Password should not be empty</string>
+    <string name="trip_count">%1$d Trips</string>
+    <string name="inconvenience_sorry">Sorry for the inconvenience</string>
+    <string name="restart_app_message">Please restart the app and come back.</string>
 </resources>

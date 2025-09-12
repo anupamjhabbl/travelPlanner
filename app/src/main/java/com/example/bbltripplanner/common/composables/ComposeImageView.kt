@@ -45,6 +45,7 @@ object ComposeImageView {
                 placeholder = painterResource(id = onLoading),
                 error = painterResource(id = onError),
                 contentDescription = contentDescription,
+                contentScale = ContentScale.Crop
             )
         }
     }
