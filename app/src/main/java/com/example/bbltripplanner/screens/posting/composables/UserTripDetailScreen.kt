@@ -51,8 +51,8 @@ import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.common.composables.ComposeViewUtils.FullScreenLoading
 import com.example.bbltripplanner.common.entity.User
-import com.example.bbltripplanner.screens.home.composables.FullScreenLoading
 import com.example.bbltripplanner.screens.posting.entity.TripActionItem
 import com.example.bbltripplanner.screens.posting.entity.TripActionResourceMapper
 import com.example.bbltripplanner.screens.posting.entity.TripData

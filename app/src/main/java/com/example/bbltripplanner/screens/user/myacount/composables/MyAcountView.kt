@@ -13,25 +13,33 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
+import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionItem
@@ -44,53 +52,90 @@ fun MyAccountView(
     navController: NavController
 ) {
     val viewModel: MyAccountViewModel = koinViewModel()
+    val user = viewModel.getUser()
 
-    Scaffold (
-        topBar = {
-            com.example.bbltripplanner.common.composables.ToolBarView.TitleBackButtonTitleBar(
-                modifier = Modifier,
-                title = stringResource(id = R.string.profile),
-                backgroundColor = Color.Transparent
-            ) {
-                navController.popBackStack()
-            }
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            Column (
+    Column(
+        modifier = Modifier
+            .background(LocalCustomColors.current.primaryBackground)
+            .fillMaxWidth()
+    ) {
+        AccountToolbar(navController)
+
+        if (user == null) {
+            ComposeViewUtils.FullScreenErrorComposable(
+                Pair(
+                    stringResource(R.string.inconvenience_sorry),
+                    stringResource(R.string.restart_app_message)
+                ),
+                false
+            )
+        } else {
+            Box(
                 modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.module_16))
-                    .wrapContentHeight()
+                    .fillMaxSize()
             ) {
-                ProfileContainer()
-                LazyColumn (
+                Column(
                     modifier = Modifier
-                        .padding(
-                            0.dp,
-                            dimensionResource(id = R.dimen.module_20),
-                            0.dp, 
-                            dimensionResource(id = R.dimen.module_16)
-                        )
+                        .wrapContentHeight()
                 ) {
-                    items(ProfileActionResourceMapper.getProfileActions()) { item ->
-                        ProfileActionTile(
-                            item
-                        ) { key ->
-                            takeAction(navController, key)
+                    ProfileContainer(user) {
+                        navController.navigate(AppNavigationScreen.VaultScreen.route)
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(
+                                0.dp,
+                                dimensionResource(id = R.dimen.module_16),
+                            )
+                    ) {
+                        items(ProfileActionResourceMapper.getProfileActions()) { item ->
+                            ProfileActionTile(
+                                item
+                            ) { key ->
+                                takeAction(navController, key)
+                            }
                         }
                     }
                 }
             }
         }
-
     }
 }
 
-private fun takeAction(navController: NavController, key: String) {     // TODO: All the tiles action on myAccount page
+@Composable
+fun AccountToolbar(navController: NavController) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp, 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(
+            onClick = {
+                navController.popBackStack()
+            }
+        ) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                modifier = Modifier.size(32.dp),
+                contentDescription = "Back",
+                tint = LocalCustomColors.current.secondaryBackground
+            )
+        }
+
+        Spacer(Modifier.width(8.dp))
+
+        ComposeTextView.TitleTextView(
+            text = stringResource(R.string.profile),
+            fontSize = 22.sp,
+            textColor = LocalCustomColors.current.secondaryBackground
+        )
+    }
+
+}
+
+private fun takeAction(navController: NavController, key: String) {
     when (key) {
         Constants.PROFILE_DETAILS -> openMyProfilePage(navController)
         Constants.NOTIFICATIONS -> {}
@@ -106,14 +151,22 @@ fun openMyProfilePage(navController: NavController) {
 
 
 @Composable
-fun ProfileContainer() {
+fun ProfileContainer(
+    user: User,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .wrapContentHeight()
             .fillMaxWidth()
-            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.module_8)))
-            .background(LocalCustomColors.current.primaryBackground)
+            .padding(16.dp, 16.dp, 16.dp, 0.dp)
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.module_16)))
+            .background(LocalCustomColors.current.defaultImageCardColor)
+            .clickable {
+                onClick()
+            }
             .padding(dimensionResource(id = R.dimen.module_24))
+
     ) {
         Row (
             modifier = Modifier
@@ -123,13 +176,14 @@ fun ProfileContainer() {
                 .align(Alignment.Center)
         ){
             com.example.bbltripplanner.common.composables.ComposeImageView.CircularImageView(
-                imageURI = "https://www.orbitmedia.com/wp-content/uploads/2023/06/Andy-Profile-600.png",
+                imageURI = user.profilePicture,
                 diameter = dimensionResource(id = R.dimen.module_90)
             )
             ProfileNameAndTravelsContainer(
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.module_16), 0.dp)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                user
             )
         }
     }
@@ -137,21 +191,25 @@ fun ProfileContainer() {
 
 @Composable
 fun ProfileNameAndTravelsContainer(
-    modifier: Modifier
+    modifier: Modifier,
+    user: User
 ) {
     Column (
         modifier = modifier,
         Arrangement.Center
     ) {
-        com.example.bbltripplanner.common.composables.ComposeTextView.TextView(
-            text = "Anupam Kumar",
+        ComposeTextView.TextView(
+            text = user.name,
             fontSize = with(LocalDensity.current) {
                 dimensionResource(id = R.dimen.module_20sp).toSp()
             },
             textColor = LocalCustomColors.current.textColor
         )
-        com.example.bbltripplanner.common.composables.ComposeTextView.TextView(
-            text = "8 Travels",
+
+        Spacer(Modifier.height(4.dp))
+
+        ComposeTextView.TextView(
+            text = stringResource(R.string.trip_count, user.tripCount),
             fontSize = with(LocalDensity.current) {
                 dimensionResource(id = R.dimen.module_18sp).toSp()
             },
@@ -169,7 +227,10 @@ fun ProfileActionTile (
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
+            .padding(8.dp, 0.dp)
+            .clip(RoundedCornerShape(12.dp))
             .clickable { onClick(item.key) }
+            .padding(8.dp, 0.dp)
     ) {
         Row(
             modifier = Modifier
@@ -177,9 +238,7 @@ fun ProfileActionTile (
                 .height(IntrinsicSize.Min)
                 .padding(
                     dimensionResource(id = R.dimen.module_8),
-                    dimensionResource(id = R.dimen.module_20),
-                    dimensionResource(id = R.dimen.module_8),
-                    dimensionResource(id = R.dimen.module_8)
+                    dimensionResource(id = R.dimen.module_12)
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -194,14 +253,14 @@ fun ProfileActionTile (
                     .wrapContentWidth()
                     .padding(32.dp, 0.dp, 0.dp, 0.dp)
             ) {
-                com.example.bbltripplanner.common.composables.ComposeTextView.TextView(
+                ComposeTextView.TextView(
                     text = stringResource(id = item.title),
                     fontSize = with(LocalDensity.current) {
                         dimensionResource(id = R.dimen.module_18sp).toSp()
                     },
                     fontWeight = FontWeight.W500
                 )
-                com.example.bbltripplanner.common.composables.ComposeTextView.TextView(
+                ComposeTextView.TextView(
                     text = stringResource(id = item.title),
                     fontSize = with(LocalDensity.current) {
                         dimensionResource(id = R.dimen.module_16sp).toSp()

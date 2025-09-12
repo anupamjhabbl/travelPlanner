@@ -2,7 +2,6 @@ package com.example.bbltripplanner.screens.home.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,9 +18,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,15 +25,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
-import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.common.composables.ComposeViewUtils.FullScreenErrorComposable
+import com.example.bbltripplanner.common.composables.ComposeViewUtils.FullScreenLoading
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeBundleItemComposable
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeGreetingComposable
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeImageCarouselComposable
@@ -204,58 +199,5 @@ fun ShowCxeResponseErrorComposable(
         CxeResponseError.INTERNET_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
         CxeResponseError.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        ComposeImageView.ImageViewWitDrawableId(
-            imageId = R.drawable.ic_vault_filled,
-            contentDescription = "Error",
-            modifier = Modifier
-                .size(200.dp)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        ComposeTextView.TitleTextView(
-            text = errorStrings.first,
-            fontSize = 24.sp
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        ComposeTextView.TextView(
-            text = errorStrings.second,
-            fontSize = 18.sp,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = onRetryClick,
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            colors = ButtonDefaults.buttonColors(LocalCustomColors.current.secondaryBackground)
-        ) {
-            ComposeTextView.TitleTextView(
-                text = "Retry",
-                textColor = LocalCustomColors.current.primaryBackground,
-                fontSize = 16.sp
-            )
-        }
-    }
-}
-
-@Composable
-fun FullScreenLoading() {
-    ComposeViewUtils.Loading(
-        modifier = Modifier.size(40.dp)
-    )
+    FullScreenErrorComposable(errorStrings, true, onRetryClick)
 }

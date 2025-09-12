@@ -54,7 +54,7 @@ val appModule = module {
     single<GetProfileRepository> { GetProfileNetwork(get()) }
     single<ProfileUseCase> { ProfileUseCase(get()) }
     viewModel { OtherProfileViewModel(get()) }
-    viewModel { MyAccountViewModel() }
+    viewModel { MyAccountViewModel(get()) }
 
     // Home & Listing
     single<HomeCxeLayoutRepository> { HomeCxeLayoutNetwork(get()) }
