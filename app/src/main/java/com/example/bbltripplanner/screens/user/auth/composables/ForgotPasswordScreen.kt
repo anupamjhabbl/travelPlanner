@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,8 @@ fun ForgotPasswordScreen(
     val genericMessage = stringResource(R.string.generic_error)
     val viewModel: ForgotPasswordAuthViewModel =  koinViewModel()
     val state by viewModel.state.collectAsState()
+    var isEmailFocused by remember { mutableStateOf(false) }
+    var hasEmailFocused by remember { mutableStateOf(false) }
     var isLoading by remember {
         mutableStateOf(false)
     }
@@ -154,7 +157,14 @@ fun ForgotPasswordScreen(
                         )
                     )
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            hasEmailFocused = true
+                        }
+                        isEmailFocused = focusState.isFocused
+                    },
                 placeholder = {
                     ComposeTextView.TextView(
                         text = stringResource(R.string.email_hint),
@@ -170,9 +180,9 @@ fun ForgotPasswordScreen(
                     unfocusedTextColor = LocalCustomColors.current.textColor,
                     errorIndicatorColor = LocalCustomColors.current.error
                 ),
-                isError = !state.isValid && state.email.isNotEmpty(),
+                isError = !state.isValid && hasEmailFocused && !isEmailFocused,
                 supportingText = {
-                    if (!state.isValid && state.email.isNotEmpty()) {
+                    if (!state.isValid && hasEmailFocused && !isEmailFocused) {
                         ComposeTextView.TextView(
                             text = stringResource(R.string.invalid_email_alert),
                             textColor = LocalCustomColors.current.error

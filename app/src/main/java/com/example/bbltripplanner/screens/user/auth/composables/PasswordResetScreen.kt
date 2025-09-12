@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -60,6 +61,10 @@ fun PasswordResetScreen(
     val state by viewModel.state.collectAsState()
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
+    var hasPasswordFocused by remember { mutableStateOf(false) }
+    var isPasswordFocused by remember { mutableStateOf(false) }
+    var hasCPasswordFocused by remember { mutableStateOf(false) }
+    var isCPasswordFocused by remember { mutableStateOf(false) }
     var isLoading  by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -155,7 +160,14 @@ fun PasswordResetScreen(
                         )
                     )
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            hasPasswordFocused = true
+                        }
+                        isPasswordFocused = focusState.isFocused
+                    },
                 placeholder = {
                     ComposeTextView.TextView(
                         text = stringResource(R.string.new_password_hint),
@@ -185,11 +197,11 @@ fun PasswordResetScreen(
                     unfocusedTextColor = LocalCustomColors.current.textColor,
                     errorIndicatorColor = LocalCustomColors.current.error
                 ),
-                isError = state.passwordValid != null && state.passwordValid != PasswordStrengthValidityStatus.VALID,
+                isError = state.passwordValid != PasswordStrengthValidityStatus.VALID && !isPasswordFocused && hasPasswordFocused,
                 supportingText = {
-                    if (state.passwordValid != null && state.passwordValid != PasswordStrengthValidityStatus.VALID) {
+                    if (state.passwordValid != PasswordStrengthValidityStatus.VALID && !isPasswordFocused && hasPasswordFocused) {
                         ComposeTextView.TextView(
-                            text = state.passwordValid?.message ?: "",
+                            text = state.passwordValid?.message ?: stringResource(R.string.password_not_empty),
                             textColor = LocalCustomColors.current.error
                         )
                     }
@@ -214,7 +226,14 @@ fun PasswordResetScreen(
                         )
                     )
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            hasCPasswordFocused = true
+                        }
+                        isCPasswordFocused = focusState.isFocused
+                    },
                 placeholder = {
                     ComposeTextView.TextView(
                         text = stringResource(R.string.confirm_password_hint),
@@ -244,9 +263,9 @@ fun PasswordResetScreen(
                     unfocusedTextColor = LocalCustomColors.current.textColor,
                     errorIndicatorColor =  LocalCustomColors.current.error
                 ),
-                isError = !state.confirmPasswordValid,
+                isError = !state.confirmPasswordValid && !isCPasswordFocused && hasCPasswordFocused,
                 supportingText = {
-                    if (!state.confirmPasswordValid) {
+                    if (!state.confirmPasswordValid && !isCPasswordFocused && hasCPasswordFocused) {
                         ComposeTextView.TextView(
                             text = stringResource(R.string.both_password_not_matching_alert),
                             textColor = LocalCustomColors.current.error

@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -69,6 +70,10 @@ fun AuthRegistrationScreen(
     val viewModel: UseRegistrationViewModel = koinViewModel()
     val state by viewModel.state.collectAsState()
     var passwordVisible by remember { mutableStateOf(false) }
+    var isEmailFocused by remember { mutableStateOf(false) }
+    var hasEmailFocused by remember { mutableStateOf(false) }
+    var isPasswordFocused by remember { mutableStateOf(false) }
+    var hasPasswordFocused by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     var isLoading by remember {
         mutableStateOf(false)
@@ -176,7 +181,13 @@ fun AuthRegistrationScreen(
                     viewModel.processEvent(UserAuthIntent.RegisterAuth.ViewEvent.UpdateEmail(it))
                 },
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            hasEmailFocused = true
+                        }
+                        isEmailFocused = focusState.isFocused
+                    },
                 placeholder = {
                     ComposeTextView.TextView(
                         text = stringResource(R.string.email_hint),
@@ -192,9 +203,9 @@ fun AuthRegistrationScreen(
                     unfocusedTextColor = LocalCustomColors.current.textColor,
                     errorIndicatorColor = LocalCustomColors.current.error
                 ),
-                isError = !state.emailValid && state.email.isNotEmpty(),
+                isError = !state.emailValid && hasEmailFocused && !isEmailFocused,
                 supportingText = {
-                    if (!state.emailValid && state.email.isNotEmpty()) {
+                    if (!state.emailValid && hasEmailFocused && !isEmailFocused) {
                         ComposeTextView.TextView(
                             text = stringResource(R.string.invalid_email_alert),
                             textColor = LocalCustomColors.current.error
@@ -223,7 +234,13 @@ fun AuthRegistrationScreen(
                     )
                 },
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            hasPasswordFocused = true
+                        }
+                        isPasswordFocused = focusState.isFocused
+                    },
                 placeholder = {
                     ComposeTextView.TextView(
                         text = stringResource(R.string.password_hint),
@@ -253,11 +270,11 @@ fun AuthRegistrationScreen(
                     unfocusedTextColor = LocalCustomColors.current.textColor,
                     errorIndicatorColor = LocalCustomColors.current.error
                 ),
-                isError = state.passwordValid != PasswordStrengthValidityStatus.VALID && state.passwordValid != null,
+                isError = state.passwordValid != PasswordStrengthValidityStatus.VALID && !isPasswordFocused && hasPasswordFocused,
                 supportingText = {
-                    if (state.passwordValid != PasswordStrengthValidityStatus.VALID && state.passwordValid != null) {
+                    if (state.passwordValid != PasswordStrengthValidityStatus.VALID && !isPasswordFocused && hasPasswordFocused) {
                         ComposeTextView.TextView(
-                            text = state.passwordValid?.message ?: "",
+                            text = state.passwordValid?.message ?: stringResource(R.string.password_not_empty),
                             textColor = LocalCustomColors.current.error
                         )
                     }

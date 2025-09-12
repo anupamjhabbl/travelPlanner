@@ -80,4 +80,5 @@
     <string name="no_internet_connection_subtitle">Please check your Wi-Fi or mobile data and try again.</string>
     <string name="server_error_subtitle">The server isn’t responding right now. We’re fixing it, please try again soon.</string>
     <string name="verify_otp">Verify OTP</string>
+    <string name="password_not_empty">Password should not be empty</string>
 </resources>
