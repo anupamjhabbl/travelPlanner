@@ -1,11 +1,13 @@
 package com.example.bbltripplanner.screens.user.myacount.composables
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,9 +24,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,10 +52,11 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.navigation.AppNavigationScreen
-import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionItem
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionResourceMapper
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountViewModel
+import com.example.bbltripplanner.screens.vault.entity.VaultScreens
+import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -52,7 +64,54 @@ fun MyAccountView(
     navController: NavController
 ) {
     val viewModel: MyAccountViewModel = koinViewModel()
+    var logOutConfirmDialogVisibility by remember {
+        mutableStateOf(false)
+    }
     val user = viewModel.getUser()
+
+    if (logOutConfirmDialogVisibility) {
+        AlertDialog(
+            onDismissRequest = { logOutConfirmDialogVisibility = false },
+            confirmButton = {
+                ConfirmButton {
+                    logOutConfirmDialogVisibility = false
+                    viewModel.logOutUser()
+                    navController.navigate(AppNavigationScreen.AuthGraph.route) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop
+                    }
+                }
+            },
+            dismissButton = {
+                DismissButton {
+                    logOutConfirmDialogVisibility = false
+                }
+            },
+            text = {
+                ComposeTextView.TextView(
+                    stringResource(R.string.logout_alert_message),
+                    fontSize = 14.sp
+                )
+            },
+            title = {
+                ComposeTextView.TitleTextView(
+                    stringResource(R.string.logout_alert_title)
+                )
+            },
+            shape = RoundedCornerShape(12.dp),
+            containerColor = LocalCustomColors.current.defaultImageCardColor
+        )
+    }
+
+    fun takeAction(navController: NavController, key: String) {
+        when (key) {
+            Constants.PROFILE_DETAILS -> openMyProfilePage(navController, user?.id)
+            Constants.NOTIFICATIONS -> navController.navigate(AppNavigationScreen.NotificationScreen.route)
+            Constants.SETTINGS -> navController.navigate(AppNavigationScreen.UserSettingsScreen.route)
+            Constants.HELP_SUPPORT -> navController.navigate(AppNavigationScreen.HelpSupportScreen.route)
+            Constants.LOGOUT ->  { logOutConfirmDialogVisibility = true }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -66,8 +125,7 @@ fun MyAccountView(
                 Pair(
                     stringResource(R.string.inconvenience_sorry),
                     stringResource(R.string.restart_app_message)
-                ),
-                false
+                )
             )
         } else {
             Box(
@@ -78,9 +136,11 @@ fun MyAccountView(
                     modifier = Modifier
                         .wrapContentHeight()
                 ) {
-                    ProfileContainer(user) {
-                        navController.navigate(AppNavigationScreen.VaultScreen.route)
+                    ProfileContainer(user, navController) {
+                        navController.navigate(AppNavigationScreen.VaultScreen.createRoute(VaultScreens.TRIPS.value, user.id))
                     }
+
+                    Spacer(Modifier.height(20.dp))
 
                     LazyColumn(
                         modifier = Modifier
@@ -89,7 +149,7 @@ fun MyAccountView(
                                 dimensionResource(id = R.dimen.module_16),
                             )
                     ) {
-                        items(ProfileActionResourceMapper.getProfileActions()) { item ->
+                        items(ProfileActionResourceMapper.getAccountActions()) { item ->
                             ProfileActionTile(
                                 item
                             ) { key ->
@@ -104,7 +164,7 @@ fun MyAccountView(
 }
 
 @Composable
-fun AccountToolbar(navController: NavController) {
+private fun AccountToolbar(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -132,27 +192,64 @@ fun AccountToolbar(navController: NavController) {
             textColor = LocalCustomColors.current.secondaryBackground
         )
     }
-
 }
 
-private fun takeAction(navController: NavController, key: String) {
-    when (key) {
-        Constants.PROFILE_DETAILS -> openMyProfilePage(navController)
-        Constants.NOTIFICATIONS -> {}
-        Constants.SETTINGS -> {}
-        Constants.HELP_SUPPORT -> {}
-        Constants.LOGOUT -> {}
+@Composable
+fun ConfirmButton(
+    onClick: () -> Unit
+) {
+    Box(modifier = Modifier.padding(4.dp)) {
+        OutlinedButton(
+            onClick = onClick,
+            shape = RoundedCornerShape(8.dp),
+            contentPadding = PaddingValues(16.dp, 8.dp),
+            border = BorderStroke(2.dp, LocalCustomColors.current.secondaryBackground)
+        ) {
+            ComposeTextView.TextView(
+                text = stringResource(R.string.logout),
+                textColor = LocalCustomColors.current.secondaryBackground,
+                fontSize = 16.sp
+            )
+        }
     }
 }
 
-fun openMyProfilePage(navController: NavController) {
-    navController.navigate(AppNavigationScreen.ProfileScreen.route)
+@Composable
+fun DismissButton(
+    onClick: () -> Unit
+) {
+    Box(modifier = Modifier.padding(4.dp)) {
+        Button(
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors().copy(
+                containerColor = LocalCustomColors.current.secondaryBackground,
+                contentColor = LocalCustomColors.current.primaryBackground
+            ),
+            shape = RoundedCornerShape(8.dp),
+            contentPadding = PaddingValues(16.dp, 8.dp)
+        ) {
+            ComposeTextView.TextView(
+                text = stringResource(R.string.cancel),
+                textColor = LocalCustomColors.current.primaryBackground,
+                fontSize = 16.sp
+            )
+        }
+    }
+}
+
+private fun openMyProfilePage(navController: NavController, userId: String?) {
+    userId?.let {
+        navController.navigate(
+            AppNavigationScreen.ProfileScreen.createRoute("u123457")
+        )
+    }
 }
 
 
 @Composable
-fun ProfileContainer(
+private fun ProfileContainer(
     user: User,
+    navController: NavController,
     onClick: () -> Unit
 ) {
     Box(
@@ -173,24 +270,41 @@ fun ProfileContainer(
                 .padding(0.dp)
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
-                .align(Alignment.Center)
+                .align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically
         ){
             com.example.bbltripplanner.common.composables.ComposeImageView.CircularImageView(
                 imageURI = user.profilePicture,
                 diameter = dimensionResource(id = R.dimen.module_90)
             )
+
             ProfileNameAndTravelsContainer(
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.module_16), 0.dp)
                     .fillMaxHeight(),
                 user
             )
+
+            Spacer(Modifier.weight(1f))
+
+            IconButton(
+                onClick = {
+                    navController.navigate(AppNavigationScreen.EditProfileScreen.route)
+                }
+            ) {
+                Icon(
+                    modifier = Modifier.size(32.dp),
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Back",
+                    tint = LocalCustomColors.current.secondaryBackground
+                )
+            }
         }
     }
 }
 
 @Composable
-fun ProfileNameAndTravelsContainer(
+private fun ProfileNameAndTravelsContainer(
     modifier: Modifier,
     user: User
 ) {
@@ -219,7 +333,7 @@ fun ProfileNameAndTravelsContainer(
 }
 
 @Composable
-fun ProfileActionTile (
+private fun ProfileActionTile (
     item: ProfileActionItem,
     onClick: (key: String) -> Unit
 ) {

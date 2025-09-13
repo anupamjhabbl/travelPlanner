@@ -14,4 +14,5 @@ interface AuthPreferencesRepository {
     fun saveRefreshToken(refreshToken: String)
     fun getAccessToken(): String
     fun saveAccessToken(accessToken: String)
+    fun clearUserData()
 }

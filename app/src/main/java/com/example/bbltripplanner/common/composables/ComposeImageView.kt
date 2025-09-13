@@ -28,8 +28,8 @@ object ComposeImageView {
         borderWidth: Dp = 0.dp,
         borderColor: Color = Color.Transparent,
         contentDescription: String = "",
-        onError: Int = R.drawable.ic_launcher_background,
-        onLoading: Int = R.drawable.ic_launcher_foreground
+        onError: Int = R.drawable.ic_default_profile,
+        onLoading: Int = R.drawable.ic_default_profile
     ) {
         Box(
             modifier = modifier

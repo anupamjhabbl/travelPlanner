@@ -34,7 +34,7 @@ interface UserAuthClient {
     @POST("auth/resetPassword")
     suspend fun resetPassword(@Body userResetBody: UserPasswordResetBody, @Header(Constants.HTTPHeaders.AUTHORIZATION) accessToken: String): BaseResponse<PasswordResetResponse>
 
-    @GET("profile/me")
+    @GET("auth/me")
     suspend fun getLocalUser(): BaseResponse<User>
 
     @POST("auth/refresh")

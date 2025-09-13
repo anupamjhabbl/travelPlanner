@@ -17,5 +17,6 @@ class DarkColor {
         val warning = Color(0xFFFFCA28)
         val success = Color(0xFF66BB6A)
         val defaultImageCardColor = Color(0xFF2C2639)
+        val deepPurpleGlow = Color(0xFF1A1425)
     }
 }

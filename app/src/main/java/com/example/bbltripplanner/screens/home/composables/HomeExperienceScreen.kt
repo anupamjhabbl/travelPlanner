@@ -33,6 +33,7 @@ import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils.FullScreenErrorComposable
 import com.example.bbltripplanner.common.composables.ComposeViewUtils.FullScreenLoading
+import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeBundleItemComposable
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeGreetingComposable
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeImageCarouselComposable
@@ -181,7 +182,7 @@ fun HomeToolbar(
                 imageId = R.drawable.ic_notification_action,
                 modifier = Modifier.size(30.dp)
                     .clickable {
-
+                        navController.navigate(AppNavigationScreen.NotificationScreen.route)
                     },
                 contentDescription = "search"
             )

@@ -13,6 +13,12 @@ object Constants {
     const val APP_NAME = "TripPlanner"
     const val DEFAULT_ERROR = "default_error"
     const val TRIP_PLANNER_LOG_KEY = "TRIP_PLANNER_CURL"
+    const val TRIP_PAGE = "TRIP_PAGE"
+    const val BUZZ_PAGE = "BUZZ_PAGE"
+    const val REVIEW_PAGES = "REVIEW_PAGES"
+    const val FAVOURITES  = "FAVOURITES"
+    const val CONTACTS = "CONTACTS"
+    const val APP_NAME_URI = "tripplanner"
 
     object HTTPHeaders {
         const val AUTHORIZATION_BEARER = "Bearer"
@@ -31,6 +37,7 @@ object Constants {
         // general
         const val VAULT_SCREEN = "vault_screen"
         const val BUZZ_SCREEN = "buzz_screen"
+        const val NOTIFICATION_SCREEN = "notifictaion_screen"
 
         // Trip & Posting
         const val USER_TRIP_DETAIL_SCREEN = "user_trip_detail_screen"
@@ -39,7 +46,11 @@ object Constants {
         // User Screens
         const val PROFILE_SCREEN = "profile_screen"
         const val ACCOUNT_SCREEN = "my_account_screen"
+        const val EDIT_PROFILE_SCREEN = "edit_profile_screen"
         const val USER_SCREEN_GRAPH = "user_screen_graph"
+        const val USER_SETTING_SCREEN = "user_setting_screen"
+        const val HELP_SUPPORT_SCREEN = "help_support_screen"
+        const val PROFILE_SOCIAL_SCREEN = "contacts_screen"
 
         // Authentication
         const val AUTHENTICATION_FORM_SCREEN = "authentication_form_screen"
@@ -54,6 +65,7 @@ object Constants {
         const val USER_EMAIL = "user_email"
         const val ORIGIN = "origin"
         const val USER_ID = "user_id"
+        const val PAGE_ID = "page_id"
     }
 
     object Origin {

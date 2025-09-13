@@ -3,18 +3,20 @@ package com.example.bbltripplanner.navigation
 import androidx.navigation.NavDestination
 import com.example.bbltripplanner.common.Constants
 
-sealed class AppNavigationScreen(val route: String, val hasBottomBar: Boolean) {
+sealed class AppNavigationScreen(
+    val route: String,
+    val hasBottomBar: Boolean = false
+) {
     // User Auth Screens
-    data object AuthGraph: AppNavigationScreen(Constants.NavigationScreen.AUTH_GRAPH, false)
-    data object AuthenticationFormScreen: AppNavigationScreen(Constants.NavigationScreen.AUTHENTICATION_FORM_SCREEN, false)
-    data object ResetPasswordScreen: AppNavigationScreen(Constants.NavigationScreen.RESET_PASSWORD_SCREEN, false)
-    data object ForgotPasswordScreen: AppNavigationScreen(Constants.NavigationScreen.FORGOT_PASSWORD_SCREEN,  false)
+    data object AuthGraph: AppNavigationScreen(Constants.NavigationScreen.AUTH_GRAPH)
+    data object AuthenticationFormScreen: AppNavigationScreen(Constants.NavigationScreen.AUTHENTICATION_FORM_SCREEN)
+    data object ResetPasswordScreen: AppNavigationScreen(Constants.NavigationScreen.RESET_PASSWORD_SCREEN)
+    data object ForgotPasswordScreen: AppNavigationScreen(Constants.NavigationScreen.FORGOT_PASSWORD_SCREEN)
     data object OtpVerificationScreen: AppNavigationScreen(
         route = "${Constants.NavigationScreen.OTP_VERIFICATION_SCREEN}?" +
                 "${Constants.NavigationArgs.USER_EMAIL}={${Constants.NavigationArgs.USER_EMAIL}}&" +
                 "${Constants.NavigationArgs.USER_ID}={${Constants.NavigationArgs.USER_ID}}&" +
-                "${Constants.NavigationArgs.ORIGIN}={${Constants.NavigationArgs.ORIGIN}}",
-        hasBottomBar = false
+                "${Constants.NavigationArgs.ORIGIN}={${Constants.NavigationArgs.ORIGIN}}"
     ) {
         fun createRoute(userEmail: String, origin: String, userId: String) =
             "${Constants.NavigationScreen.OTP_VERIFICATION_SCREEN}?" +
@@ -23,41 +25,71 @@ sealed class AppNavigationScreen(val route: String, val hasBottomBar: Boolean) {
                     "${Constants.NavigationArgs.ORIGIN}=$origin"
     }
 
-    // User Home Screens
+    // Home Screens
     data object HomeScreen: AppNavigationScreen(route = Constants.NavigationScreen.HOME_SCREEN, hasBottomBar = true)
 
-    // User Screens Graph
+    // User Screens
     data object UserScreenGraph: AppNavigationScreen(route = Constants.NavigationScreen.USER_SCREEN_GRAPH, hasBottomBar = true)
-    data object ProfileScreen: AppNavigationScreen(route = Constants.NavigationScreen.PROFILE_SCREEN, hasBottomBar = false)
     data object AccountScreen: AppNavigationScreen(route = Constants.NavigationScreen.ACCOUNT_SCREEN, hasBottomBar = true)
+    data object EditProfileScreen: AppNavigationScreen(route = Constants.NavigationScreen.EDIT_PROFILE_SCREEN)
+    data object UserSettingsScreen: AppNavigationScreen(route = Constants.NavigationScreen.USER_SETTING_SCREEN)
+    data object HelpSupportScreen: AppNavigationScreen(route = Constants.NavigationScreen.HELP_SUPPORT_SCREEN)
+    data object ProfileSocialScreen: AppNavigationScreen(
+        route = "${Constants.NavigationScreen.PROFILE_SOCIAL_SCREEN}?" +
+                "${Constants.NavigationArgs.PAGE_ID}={${Constants.NavigationArgs.PAGE_ID}}&" +
+                "${Constants.NavigationArgs.USER_ID}={${Constants.NavigationArgs.USER_ID}}&"
+    ) {
+        fun createRoute(pageId: String, userId: String) =
+            "${Constants.NavigationScreen.PROFILE_SOCIAL_SCREEN}?" +
+                    "${Constants.NavigationArgs.PAGE_ID}=$pageId&" +
+                    "${Constants.NavigationArgs.USER_ID}=$userId"
+    }
+    data object ProfileScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.PROFILE_SCREEN}/{${Constants.NavigationArgs.USER_ID}}") {
+        fun createRoute(userId: String) ="${Constants.NavigationScreen.PROFILE_SCREEN}/$userId"
+    }
 
     // User Trip And Posting Screens
-    data object AddScreen: AppNavigationScreen(route = Constants.NavigationScreen.ADD_SCREEN, hasBottomBar = false)
-    data object UserTripDetailScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.USER_TRIP_DETAIL_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}", hasBottomBar = false) {
+    data object AddScreen: AppNavigationScreen(route = Constants.NavigationScreen.ADD_SCREEN)
+    data object UserTripDetailScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.USER_TRIP_DETAIL_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}") {
         fun createRoute(tripId: String) = "${Constants.NavigationScreen.USER_TRIP_DETAIL_SCREEN}/$tripId"
     }
 
     // General
-    data object VaultScreen: AppNavigationScreen(route = Constants.NavigationScreen.VAULT_SCREEN, hasBottomBar = true)
     data object BuzzScreen: AppNavigationScreen(route = Constants.NavigationScreen.BUZZ_SCREEN, hasBottomBar = true)
+    data object NotificationScreen: AppNavigationScreen(route = Constants.NavigationScreen.NOTIFICATION_SCREEN)
+    data object VaultScreen: AppNavigationScreen(
+        route = "${Constants.NavigationScreen.VAULT_SCREEN}?" +
+                "${Constants.NavigationArgs.PAGE_ID}={${Constants.NavigationArgs.PAGE_ID}}&" +
+                "${Constants.NavigationArgs.USER_ID}={${Constants.NavigationArgs.USER_ID}}&"
+    ) {
+        fun createRoute(pageId: String, userId: String) =
+            "${Constants.NavigationScreen.VAULT_SCREEN}?" +
+                    "${Constants.NavigationArgs.PAGE_ID}=$pageId&" +
+                    "${Constants.NavigationArgs.USER_ID}=$userId"
+    }
 }
 
 fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
     val route = this?.route ?: return null
     return when (route) {
-        // Profile
+        // User Screens
         Constants.NavigationScreen.ACCOUNT_SCREEN -> AppNavigationScreen.AccountScreen
         Constants.NavigationScreen.PROFILE_SCREEN -> AppNavigationScreen.ProfileScreen
         Constants.NavigationScreen.USER_SCREEN_GRAPH -> AppNavigationScreen.UserScreenGraph
+        Constants.NavigationScreen.EDIT_PROFILE_SCREEN -> AppNavigationScreen.EditProfileScreen
+        Constants.NavigationScreen.USER_SETTING_SCREEN -> AppNavigationScreen.UserSettingsScreen
+        Constants.NavigationScreen.HELP_SUPPORT_SCREEN -> AppNavigationScreen.HelpSupportScreen
+        Constants.NavigationScreen.PROFILE_SOCIAL_SCREEN -> AppNavigationScreen.ProfileSocialScreen
 
-        // User
+        // Home Screens
         Constants.NavigationScreen.HOME_SCREEN -> AppNavigationScreen.HomeScreen
 
         // General
         Constants.NavigationScreen.VAULT_SCREEN -> AppNavigationScreen.VaultScreen
         Constants.NavigationScreen.BUZZ_SCREEN -> AppNavigationScreen.BuzzScreen
+        Constants.NavigationScreen.NOTIFICATION_SCREEN -> AppNavigationScreen.NotificationScreen
 
-        // Trip & Posting
+        // User Trip And Posting Screens
         Constants.NavigationScreen.ADD_SCREEN -> AppNavigationScreen.AddScreen
         Constants.NavigationScreen.USER_TRIP_DETAIL_SCREEN -> AppNavigationScreen.UserTripDetailScreen
 
