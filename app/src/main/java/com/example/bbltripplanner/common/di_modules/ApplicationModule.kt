@@ -34,7 +34,7 @@ import com.example.bbltripplanner.screens.user.profile.clients.UserClient
 import com.example.bbltripplanner.screens.user.profile.repositories.GetProfileRepository
 import com.example.bbltripplanner.screens.user.profile.repositoryImpl.GetProfileNetwork
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
-import com.example.bbltripplanner.screens.user.profile.viewModels.OtherProfileViewModel
+import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileViewModel
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -53,7 +53,7 @@ val appModule = module {
     single<UserClient> { Network.createWithAuth(UserClient::class.java, get(), get()) }
     single<GetProfileRepository> { GetProfileNetwork(get()) }
     single<ProfileUseCase> { ProfileUseCase(get()) }
-    viewModel { OtherProfileViewModel(get()) }
+    viewModel { ProfileViewModel(get(), get()) }
     viewModel { MyAccountViewModel(get()) }
 
     // Home & Listing

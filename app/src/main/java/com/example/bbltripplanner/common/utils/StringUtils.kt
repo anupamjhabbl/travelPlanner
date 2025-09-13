@@ -1,6 +1,9 @@
 package com.example.bbltripplanner.common.utils
 
+import android.net.Uri
 import android.util.Patterns
+import com.example.bbltripplanner.common.Constants
+import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.screens.user.auth.entity.PasswordStrengthValidityStatus
 
 object StringUtils {
@@ -22,5 +25,17 @@ object StringUtils {
         } else {
             PasswordStrengthValidityStatus.VALID
         }
+    }
+
+    fun getDeeplinkForUserShare(
+        userId: String
+    ): String {
+        return Uri.Builder()
+            .scheme("https")
+            .authority(Constants.APP_NAME_URI)
+            .appendPath(AppNavigationScreen.ProfileScreen.route)
+            .appendPath(userId)
+            .build()
+            .toString()
     }
 }

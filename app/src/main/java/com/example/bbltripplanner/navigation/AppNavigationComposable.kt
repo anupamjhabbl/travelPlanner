@@ -24,14 +24,19 @@ import com.example.bbltripplanner.common.composables.BottomNavigationPanel
 import com.example.bbltripplanner.common.entity.BottomNavigationItem
 import com.example.bbltripplanner.screens.buzz.composables.BuzzScreen
 import com.example.bbltripplanner.screens.home.composables.HomeExperienceScreen
+import com.example.bbltripplanner.screens.notification.composables.NotificationScreen
 import com.example.bbltripplanner.screens.posting.composables.PostingInitScreen
 import com.example.bbltripplanner.screens.posting.composables.UserTripDetailScreen
 import com.example.bbltripplanner.screens.user.auth.composables.AuthenticationFormScreen
 import com.example.bbltripplanner.screens.user.auth.composables.ForgotPasswordScreen
 import com.example.bbltripplanner.screens.user.auth.composables.OTPVerificationScreen
 import com.example.bbltripplanner.screens.user.auth.composables.PasswordResetScreen
+import com.example.bbltripplanner.screens.user.general.composables.HelpSupportScreen
+import com.example.bbltripplanner.screens.user.general.composables.UserSettingsScreen
 import com.example.bbltripplanner.screens.user.myacount.composables.MyAccountView
-import com.example.bbltripplanner.screens.user.profile.composables.MyProfileView
+import com.example.bbltripplanner.screens.user.profile.composables.EditProfileScreen
+import com.example.bbltripplanner.screens.user.profile.composables.ProfileSocialScreen
+import com.example.bbltripplanner.screens.user.profile.composables.ProfileScreen
 import com.example.bbltripplanner.screens.vault.composables.UserVaultScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
@@ -102,8 +107,27 @@ fun HomeNavigationComposable(
                 MyAccountView(homeNavController)
             }
 
-            composable(route = AppNavigationScreen.ProfileScreen.route) {
-                MyProfileView(homeNavController)
+            composable(route = AppNavigationScreen.ProfileScreen.route) { navBackStackEntry ->
+                val userId =  navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_ID)
+                ProfileScreen(homeNavController, userId)
+            }
+
+            composable(route = AppNavigationScreen.HelpSupportScreen.route) {
+                HelpSupportScreen(homeNavController)
+            }
+
+            composable(route = AppNavigationScreen.UserSettingsScreen.route) {
+                UserSettingsScreen(homeNavController)
+            }
+
+            composable(route = AppNavigationScreen.ProfileSocialScreen.route) { navBackStackEntry ->
+                val pageId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.PAGE_ID)
+                val userId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_ID)
+                ProfileSocialScreen(homeNavController, pageId, userId)
+            }
+
+            composable(route = AppNavigationScreen.EditProfileScreen.route) {
+                EditProfileScreen(homeNavController)
             }
         }
 
@@ -135,8 +159,14 @@ fun HomeNavigationComposable(
             HomeExperienceScreen(homeNavController)
         }
 
-        composable(route = AppNavigationScreen.VaultScreen.route) {
-            UserVaultScreen(homeNavController)
+        composable(route = AppNavigationScreen.NotificationScreen.route) {
+            NotificationScreen(homeNavController)
+        }
+
+        composable(route = AppNavigationScreen.VaultScreen.route) { navBackStackEntry ->
+            val pageId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.PAGE_ID)
+            val userId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_ID)
+            UserVaultScreen(homeNavController, pageId, userId)
         }
 
         composable(route = AppNavigationScreen.AddScreen.route) {

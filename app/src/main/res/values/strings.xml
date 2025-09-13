@@ -84,4 +84,21 @@
     <string name="trip_count">%1$d Trips</string>
     <string name="inconvenience_sorry">Sorry for the inconvenience</string>
     <string name="restart_app_message">Please restart the app and come back.</string>
+    <string name="total_trips">Total trips</string>
+    <string name="your_trips">Your Trips</string>
+    <string name="favouriees">Favourites</string>
+    <string name="your_story">Your Stories</string>
+    <string name="your_buzz">Your Buzz</string>
+    <string name="contacts">Contacts</string>
+    <string name="user_trips">User Trips</string>
+    <string name="user_story">User Stories</string>
+    <string name="user_buzz">User Buzz</string>
+    <string name="cancel">Cancel</string>
+    <string name="alert">Alert</string>
+    <string name="logout_alert_message">Logging out will end your current session. You’ll need to sign in again to access your account.</string>
+    <string name="logout_alert_title">Confirm Logout</string>
+    <string name="block_failure">Failed to block user. Please try again.</string>
+    <string name="follow_failure">Failed to follow. Please try again.</string>
+    <string name="block_success">User has been blocked.</string>
+    <string name="follow_success">You’re now following this user.</string>
 </resources>

@@ -17,7 +17,8 @@ data class CustomColors(
     val warning: Color,
     val error: Color,
     val success: Color,
-    val defaultImageCardColor: Color
+    val defaultImageCardColor: Color,
+    val deepPurpleGlow: Color
 )
 
 val LocalCustomColors = staticCompositionLocalOf {
@@ -34,7 +35,8 @@ val LocalCustomColors = staticCompositionLocalOf {
         warning = Color.Unspecified,
         error = Color.Unspecified,
         success = Color.Unspecified,
-        defaultImageCardColor = Color.Unspecified
+        defaultImageCardColor = Color.Unspecified,
+        deepPurpleGlow = Color.Unspecified
     )
 }
 
@@ -53,7 +55,8 @@ fun getCustomColor(isDarkTheme: Boolean): CustomColors {
             warning = DarkColor.warning,
             error = DarkColor.error,
             success = DarkColor.success,
-            defaultImageCardColor = DarkColor.defaultImageCardColor
+            defaultImageCardColor = DarkColor.defaultImageCardColor,
+            deepPurpleGlow = DarkColor.deepPurpleGlow
         )
     } else {
         CustomColors(
@@ -69,7 +72,8 @@ fun getCustomColor(isDarkTheme: Boolean): CustomColors {
             warning = DarkColor.warning,
             error = DarkColor.error,
             success = DarkColor.success,
-            defaultImageCardColor = LightColor.defaultImageCardColor
+            defaultImageCardColor = LightColor.defaultImageCardColor,
+            deepPurpleGlow = LightColor.lightPurpleGlow
         )
     }
 }

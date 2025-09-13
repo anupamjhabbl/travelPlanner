@@ -7,8 +7,11 @@ import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseC
 class MyAccountViewModel(
     private val authPreferencesUseCase: AuthPreferencesUseCase
 ) : ViewModel() {
-
     fun getUser(): User? {
         return authPreferencesUseCase.getLoggedUser()
+    }
+
+    fun logOutUser() {
+        authPreferencesUseCase.clearUserData()
     }
 }

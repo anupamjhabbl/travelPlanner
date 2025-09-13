@@ -11,9 +11,6 @@ data class User(
     val tripCount: Long = 0,
     val createdAt: String,
     val updatedAt: String,
-    val profilePicture: String
-)
-
-data class UserSettings(
-    val themePreference: com.example.bbltripplanner.common.Constants.Theme
+    val profilePicture: String,
+    val userStory: String?
 )

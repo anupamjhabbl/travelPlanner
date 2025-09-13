@@ -57,4 +57,9 @@ class AuthPreferencesUseCase(
     override fun removeUserData() {
         preferenceManager.removeLocalUser()
     }
+
+    override fun clearUserData() {
+        preferenceManager.clear()
+        encryptedPreferenceManager.clear()
+    }
 }

@@ -1,14 +1,14 @@
-package com.example.bbltripplanner.screens.buzz.composables
+package com.example.bbltripplanner.screens.notification.composables
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 
 @Composable
-fun BuzzScreen(
+fun NotificationScreen(
     navController: NavController
 ) {
     ComposeViewUtils.FullScreenErrorComposable(
-        errorStrings = Pair("Work Under Progress", "Buzz Page will get live soon")
+        errorStrings = Pair("Work Under Progress", "Notification Page will get live soon")
     )
 }

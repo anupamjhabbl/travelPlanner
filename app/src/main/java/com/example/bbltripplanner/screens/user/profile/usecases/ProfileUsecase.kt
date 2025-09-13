@@ -6,7 +6,15 @@ import com.example.bbltripplanner.screens.user.profile.repositories.GetProfileRe
 class ProfileUseCase(
     private val getProfileRepository: GetProfileRepository
 ) {
-    suspend fun getOwnProfile(): User {
-        return getProfileRepository.getUser()
+    suspend fun getUserProfile(userId: String): User? {
+        return getProfileRepository.getUser(userId).processResponse()
+    }
+
+    suspend fun followUser(userId: String): String? {
+        return getProfileRepository.followUser(userId).processResponse()
+    }
+
+    suspend fun blockUser(userId: String): String? {
+        return getProfileRepository.blockUser(userId).processResponse()
     }
 }
