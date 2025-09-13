@@ -240,7 +240,7 @@ fun DismissButton(
 private fun openMyProfilePage(navController: NavController, userId: String?) {
     userId?.let {
         navController.navigate(
-            AppNavigationScreen.ProfileScreen.createRoute("u123457")
+            AppNavigationScreen.ProfileScreen.createRoute(userId)
         )
     }
 }
