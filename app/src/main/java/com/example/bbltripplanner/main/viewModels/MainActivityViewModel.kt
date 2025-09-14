@@ -22,13 +22,15 @@ class MainActivityViewModel(
     }
 
     private fun getLocalUserData() {
-        viewModelScope.launch {
-            val result = SafeIOUtil.safeCall {
-                userAuthUseCase.getLocalUser()
-            }
-            result.onSuccess { loggedUser ->
-                loggedUser?.let {
-                    authPreferencesUseCase.saveLoggedUser(it)
+        if (authPreferencesUseCase.getAccessToken().isNotEmpty()) {
+            viewModelScope.launch {
+                val result = SafeIOUtil.safeCall {
+                    userAuthUseCase.getLocalUser()
+                }
+                result.onSuccess { loggedUser ->
+                    loggedUser?.let {
+                        authPreferencesUseCase.saveLoggedUser(it)
+                    }
                 }
             }
         }
