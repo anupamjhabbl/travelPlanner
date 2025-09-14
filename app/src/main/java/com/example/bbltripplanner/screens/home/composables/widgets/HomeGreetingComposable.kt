@@ -13,7 +13,10 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
 
 @Composable
-fun HomeGreetingComposable(widget: HomeCxeWidget.GreetingWidget, userName: String?) {
+fun HomeGreetingComposable(
+    widget: HomeCxeWidget.GreetingWidget,
+    userName: String?
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

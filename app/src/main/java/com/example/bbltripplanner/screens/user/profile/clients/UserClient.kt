@@ -2,9 +2,14 @@ package com.example.bbltripplanner.screens.user.profile.clients
 
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.common.entity.User
+import okhttp3.MultipartBody
 import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+
 
 interface UserClient {
     @GET("/user/{userId}")
@@ -15,4 +20,8 @@ interface UserClient {
 
     @GET("/user/block")
     suspend fun blockUser(@Query("userId") userId: String): BaseResponse<String>
+
+    @Multipart
+    @POST("user/update")
+    suspend fun updateUser(@Part profilePic: MultipartBody.Part?, @Part("name") name: String?, @Part("bio") bio: String?, @Part("phone") phone: String?): BaseResponse<User>
 }

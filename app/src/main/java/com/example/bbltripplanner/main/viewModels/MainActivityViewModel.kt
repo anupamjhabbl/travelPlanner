@@ -28,7 +28,7 @@ class MainActivityViewModel(
             }
             result.onSuccess { loggedUser ->
                 loggedUser?.let {
-                    authPreferencesUseCase.setUser(it)
+                    authPreferencesUseCase.saveLoggedUser(it)
                 }
             }
         }

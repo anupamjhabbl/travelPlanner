@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.common.composables
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
@@ -44,6 +46,62 @@ object ComposeImageView {
                 model = imageURI,
                 placeholder = painterResource(id = onLoading),
                 error = painterResource(id = onError),
+                contentDescription = contentDescription,
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
+
+    @Composable
+    fun CircularImageView(
+        imageURI: Uri,
+        diameter: Dp,
+        modifier: Modifier = Modifier,
+        borderWidth: Dp = 0.dp,
+        borderColor: Color = Color.Transparent,
+        contentDescription: String = "",
+        onError: Int = R.drawable.ic_default_profile,
+        onLoading: Int = R.drawable.ic_default_profile
+    ) {
+        Box(
+            modifier = modifier
+                .width(diameter)
+                .height(diameter)
+                .border(width = borderWidth, color = borderColor, shape = CircleShape)
+        ) {
+            AsyncImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape),
+                model = imageURI,
+                placeholder = painterResource(id = onLoading),
+                error = painterResource(id = onError),
+                contentDescription = contentDescription,
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
+
+    @Composable
+    fun CircularImageView(
+        bitmap: ImageBitmap,
+        diameter: Dp,
+        modifier: Modifier = Modifier,
+        borderWidth: Dp = 0.dp,
+        borderColor: Color = Color.Transparent,
+        contentDescription: String = "",
+    ) {
+        Box(
+            modifier = modifier
+                .width(diameter)
+                .height(diameter)
+                .border(width = borderWidth, color = borderColor, shape = CircleShape)
+        ) {
+            Image(
+                bitmap = bitmap,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape),
                 contentDescription = contentDescription,
                 contentScale = ContentScale.Crop
             )

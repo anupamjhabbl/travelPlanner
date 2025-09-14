@@ -41,7 +41,7 @@ object ComposeViewUtils {
     @Composable
     fun Loading(
         modifier: Modifier = Modifier,
-        color: Color = LocalCustomColors.current.secondaryBackground,
+        color: Color = LocalCustomColors.current.fadedBackground,
         strokeWidth: Dp = 3.dp
     ) {
         Box(

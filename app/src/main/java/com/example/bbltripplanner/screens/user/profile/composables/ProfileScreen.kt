@@ -248,7 +248,7 @@ private fun doMenuAction(
     }
 }
 
-fun shareProfile(
+private fun shareProfile(
     context: Context,
     userId: String
 ) {

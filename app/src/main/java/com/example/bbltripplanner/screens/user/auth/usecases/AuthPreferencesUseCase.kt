@@ -50,7 +50,7 @@ class AuthPreferencesUseCase(
         return preferenceManager.getLocalUser()
     }
 
-    override fun setUser(loggedUser: User) {
+    override fun saveLoggedUser(loggedUser: User) {
         preferenceManager.saveLocalUser(loggedUser)
     }
 

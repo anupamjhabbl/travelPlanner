@@ -73,7 +73,7 @@ class UserLoginAuthViewModel(
                 removeToken()
                 _userLoginRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
             } else {
-                authPreferencesUseCase.setUser(user)
+                authPreferencesUseCase.saveLoggedUser(user)
                 _userLoginRequestStatus.emit(RequestStatus.Success(""))
             }
         }

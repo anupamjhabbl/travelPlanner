@@ -114,12 +114,12 @@ fun OTPVerificationScreen(
             when (otpResendRequestStatus) {
                 is RequestStatus.Error -> {
                     isLoading = false
-                    if ((otpResendRequestStatus as? RequestStatus.Error)?.message == Constants.DEFAULT_ERROR) {
+                    if (otpResendRequestStatus.message == Constants.DEFAULT_ERROR) {
                         showToast(context, genericMessage)
                     } else {
                         showToast(
                             context,
-                            (otpResendRequestStatus as? RequestStatus.Error)?.message ?: ""
+                            otpResendRequestStatus.message ?: ""
                         )
                     }
                 }
@@ -158,12 +158,12 @@ fun OTPVerificationScreen(
                 when (otpVerifyRequestStatus) {
                     is RequestStatus.Error -> {
                         isLoading = false
-                        if ((otpVerifyRequestStatus as? RequestStatus.Error)?.message == Constants.DEFAULT_ERROR) {
+                        if (otpVerifyRequestStatus.message == Constants.DEFAULT_ERROR) {
                             showToast(context, genericMessage)
                         } else {
                             showToast(
                                 context,
-                                (otpVerifyRequestStatus as? RequestStatus.Error)?.message ?: ""
+                                otpVerifyRequestStatus.message ?: ""
                             )
                         }
                     }

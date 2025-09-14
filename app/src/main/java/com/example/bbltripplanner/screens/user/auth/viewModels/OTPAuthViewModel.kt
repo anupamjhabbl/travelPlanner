@@ -90,7 +90,7 @@ class OTPAuthViewModel(
                 removeToken()
                 _userOTPVerifyRequestStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
             } else {
-                authPreferencesUseCase.setUser(user)
+                authPreferencesUseCase.saveLoggedUser(user)
                 _userOTPVerifyRequestStatus.emit(RequestStatus.Success(""))
             }
         }

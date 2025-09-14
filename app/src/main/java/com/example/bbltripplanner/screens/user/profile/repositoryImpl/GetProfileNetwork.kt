@@ -4,6 +4,7 @@ import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.screens.user.profile.clients.UserClient
 import com.example.bbltripplanner.screens.user.profile.repositories.GetProfileRepository
+import okhttp3.MultipartBody
 
 class GetProfileNetwork(
     private val userClient: UserClient
@@ -18,5 +19,9 @@ class GetProfileNetwork(
 
     override suspend fun blockUser(userId: String): BaseResponse<String> {
         return userClient.blockUser(userId)
+    }
+
+    override suspend fun updateUser(profilePic: MultipartBody.Part?, name: String?, bio: String?, phone: String?): BaseResponse<User> {
+        return userClient.updateUser(profilePic, name, bio, phone)
     }
 }
