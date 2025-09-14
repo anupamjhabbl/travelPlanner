@@ -4,11 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
-import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
+import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel(
-    private val userAuthUseCase: UserAuthUseCase,
+    private val profileUseCase: ProfileUseCase,
     private val authPreferencesUseCase: AuthPreferencesUseCase
 ): BaseMVIVViewModel<MainActivityIntent.ViewEvent>() {
     override fun processEvent(viewEvent: MainActivityIntent.ViewEvent) {
@@ -25,7 +25,7 @@ class MainActivityViewModel(
         if (authPreferencesUseCase.getAccessToken().isNotEmpty()) {
             viewModelScope.launch {
                 val result = SafeIOUtil.safeCall {
-                    userAuthUseCase.getLocalUser()
+                    profileUseCase.getLocalUser()
                 }
                 result.onSuccess { loggedUser ->
                     loggedUser?.let {

@@ -9,7 +9,7 @@ import org.koin.core.component.KoinComponent
 
 object InfraProvider :  KoinComponent {
     private val getBaseUrl by lazy {
-        "http://10.0.2.2:3000/"
+        "http://10.0.2.2:3000/api/"
     }
 
     val getNetworkConfiguration by lazy {
