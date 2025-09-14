@@ -85,7 +85,7 @@ fun HomeExperienceScreen(
             }
             else -> {
                 val uiWidgetList = filterWidgetsForUI(widgets)
-                ShowItems(uiWidgetList, widgetsListState)
+                ShowItems(uiWidgetList, widgetsListState, viewModel)
             }
         }
     }
@@ -104,7 +104,11 @@ fun filterWidgetsForUI(widgets: List<HomeCxeWidget>): List<HomeCxeWidget> {
 }
 
 @Composable
-fun ShowItems(widgets: List<HomeCxeWidget>, widgetsListState: LazyListState) {
+fun ShowItems(
+    widgets: List<HomeCxeWidget>,
+    widgetsListState: LazyListState,
+    viewModel: HomeExperienceViewModel
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -114,7 +118,7 @@ fun ShowItems(widgets: List<HomeCxeWidget>, widgetsListState: LazyListState) {
             Spacer(modifier = Modifier.height(14.dp))
 
             when (homeCxeWidget) {
-                is HomeCxeWidget.GreetingWidget -> HomeGreetingComposable(homeCxeWidget, "Jeevesh")
+                is HomeCxeWidget.GreetingWidget -> HomeGreetingComposable(homeCxeWidget, viewModel.geLoggedUserName())
                 is HomeCxeWidget.ImageCarouselWidget -> HomeImageCarouselComposable(homeCxeWidget)
                 is HomeCxeWidget.BundleItemsWidget -> HomeBundleItemComposable(homeCxeWidget)
                 is HomeCxeWidget.NewsBannerWidget -> HomeNewsBannerComposable(homeCxeWidget)

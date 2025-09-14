@@ -101,4 +101,14 @@
     <string name="follow_failure">Failed to follow. Please try again.</string>
     <string name="block_success">User has been blocked.</string>
     <string name="follow_success">You’re now following this user.</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="change_profile_picture">Change Profile Picture</string>
+    <string name="update">Update</string>
+    <string name="phone">Phone</string>
+    <string name="phone_hint">Enter your phone</string>
+    <string name="country_code_hint">+91</string>
+    <string name="invalid_phone_alert">Please enter a valid phone number</string>
+    <string name="code">Code</string>
+    <string name="bio">Bio</string>
+    <string name="camera_gallery_picker_message">Capture an image or Select from gallery</string>
 </resources>

@@ -38,4 +38,10 @@ object StringUtils {
             .build()
             .toString()
     }
+
+    fun String.isValidPhoneNumber(): Boolean {
+        if (this.isEmpty()) return false
+        val pattern = Regex("^\\+[0-9]{9,14}$")
+        return pattern.matches(this)
+    }
 }

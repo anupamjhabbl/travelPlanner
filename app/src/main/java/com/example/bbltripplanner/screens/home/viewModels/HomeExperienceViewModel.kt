@@ -8,6 +8,7 @@ import com.example.bbltripplanner.screens.home.entities.CxeResponseError
 import com.example.bbltripplanner.screens.home.entities.HomeCxeResponse
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
 import com.example.bbltripplanner.screens.home.usecases.HomeCxeUseCase
+import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -17,7 +18,8 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 
 class HomeExperienceViewModel(
-    private val homeCxeUseCase: HomeCxeUseCase
+    private val homeCxeUseCase: HomeCxeUseCase,
+    private val authPreferencesUseCase: AuthPreferencesUseCase
 ): BaseMVIVViewModel<HomeExperienceIntent.ViewEvent>() {
 
     private val _widgetsLiveData: MutableStateFlow<List<HomeCxeWidget>> = MutableStateFlow(emptyList())
@@ -42,6 +44,10 @@ class HomeExperienceViewModel(
     private fun clearCxeWidgets() {
         _widgetsLiveData.value = emptyList()
         getCxeResponse()
+    }
+
+    fun geLoggedUserName(): String {
+        return authPreferencesUseCase.getLoggedUser()?.name ?: ""
     }
 
     private fun getCxeResponse() {

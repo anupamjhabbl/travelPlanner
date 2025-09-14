@@ -83,12 +83,12 @@ fun AuthLoginScreen(
             when (userLoginRequestStatus) {
                 is RequestStatus.Error -> {
                     isLoading = false
-                    if ((userLoginRequestStatus as? RequestStatus.Error)?.message == Constants.DEFAULT_ERROR) {
+                    if (userLoginRequestStatus.message == Constants.DEFAULT_ERROR) {
                         showToast(context, genericMessage)
                     } else {
                         showToast(
                             context,
-                            (userLoginRequestStatus as? RequestStatus.Error)?.message ?: ""
+                            userLoginRequestStatus.message ?: ""
                         )
                     }
                 }

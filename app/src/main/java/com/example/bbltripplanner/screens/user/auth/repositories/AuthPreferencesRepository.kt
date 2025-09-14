@@ -6,7 +6,7 @@ interface AuthPreferencesRepository {
     fun isUserLogged(): Boolean
     fun getUserIdLogged(): String?
     fun getLoggedUser(): User?
-    fun setUser(loggedUser: User)
+    fun saveLoggedUser(loggedUser: User)
     fun removeUserData()
     fun removeRefreshToken()
     fun removeAccessToken()
