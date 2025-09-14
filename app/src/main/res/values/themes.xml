@@ -8,7 +8,7 @@
     </style>
 
     <style name="Theme.Splash.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#FFFFFF</item>
+        <item name="windowSplashScreenBackground">@color/primary_background_light</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_screen_logo</item>
         <item name="splashScreenIconSize">200dp</item>
         <item name="postSplashScreenTheme">@style/Theme.TripPlanner</item>
