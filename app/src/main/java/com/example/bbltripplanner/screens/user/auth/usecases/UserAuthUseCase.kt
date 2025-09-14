@@ -17,27 +17,23 @@ class UserAuthUseCase(
     private val userAuthRepository: UserAuthRepository
 ) {
     suspend fun registerUser(userRegistrationBody: UserRegistrationBody): UserRegisteredId? {
-        return userAuthRepository.registerUser(userRegistrationBody).processResponse()
+        return BaseResponse.processResponse { userAuthRepository.registerUser(userRegistrationBody) }
     }
 
     suspend fun loginUser(userLoginBody: UserLoginBody): AuthToken? {
-        return userAuthRepository.loginUser(userLoginBody).processResponse()
+        return BaseResponse.processResponse { userAuthRepository.loginUser(userLoginBody) }
     }
 
     suspend fun verifyOTP(userOTPVerifyBody: UserOTPVerifyBody, origin: String): AuthToken? {
-        return userAuthRepository.verifyOTP(userOTPVerifyBody, origin).processResponse()
+        return BaseResponse.processResponse { userAuthRepository.verifyOTP(userOTPVerifyBody, origin) }
     }
 
     suspend fun forgetPasswordRequestOTP(userForgetPasswordBody: UserForgetPasswordBody): UserRegisteredId? {
-       return userAuthRepository.forgetPasswordRequestOTP(userForgetPasswordBody).processResponse()
+       return BaseResponse.processResponse { userAuthRepository.forgetPasswordRequestOTP(userForgetPasswordBody) }
     }
 
     suspend fun resetPassword(userResetBody: UserPasswordResetBody, accessToken: String): PasswordResetResponse? {
-        return userAuthRepository.resetPassword(userResetBody, accessToken).processResponse()
-    }
-
-    suspend fun getLocalUser(): User? {
-        return userAuthRepository.getLocalUser().processResponse()
+        return BaseResponse.processResponse { userAuthRepository.resetPassword(userResetBody, accessToken) }
     }
 
     fun getNewAccessToken(refreshToken: String): Call<BaseResponse<AuthToken>> {

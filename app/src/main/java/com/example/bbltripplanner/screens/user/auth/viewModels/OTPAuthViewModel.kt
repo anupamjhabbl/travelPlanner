@@ -13,6 +13,7 @@ import com.example.bbltripplanner.screens.user.auth.entity.UserForgetPasswordBod
 import com.example.bbltripplanner.screens.user.auth.entity.UserOTPVerifyBody
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
+import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 
 class OTPAuthViewModel(
     private val userAuthUseCase: UserAuthUseCase,
+    private val profileUseCase: ProfileUseCase,
     private val authPreferencesUseCase: AuthPreferencesUseCase
 ): BaseMVIVViewModel<UserAuthIntent.OTPAuth.ViewEvent>() {
     private val _otpState: MutableStateFlow<OTPState> = MutableStateFlow(OTPState(OTP_SIZE))
@@ -83,7 +85,7 @@ class OTPAuthViewModel(
 
     private suspend fun fetchLocalUserData() {
         val getUserDataRequest = SafeIOUtil.safeCall {
-            userAuthUseCase.getLocalUser()
+            profileUseCase.getLocalUser()
         }
         getUserDataRequest.onSuccess { user ->
             if (user == null) {

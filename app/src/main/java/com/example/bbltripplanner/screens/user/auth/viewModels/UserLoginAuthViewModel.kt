@@ -12,6 +12,7 @@ import com.example.bbltripplanner.screens.user.auth.entity.UserLoginBody
 import com.example.bbltripplanner.screens.user.auth.entity.UserLoginFormState
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
+import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -23,6 +24,7 @@ import kotlinx.coroutines.launch
 
 class UserLoginAuthViewModel(
     private val userAuthUseCase: UserAuthUseCase,
+    private val profileUseCase: ProfileUseCase,
     private val authPreferencesUseCase: AuthPreferencesUseCase
 ): BaseMVIVViewModel<UserAuthIntent.LoginAuth.ViewEvent>() {
     private val _state: MutableStateFlow<UserLoginFormState> = MutableStateFlow(UserLoginFormState())
@@ -66,7 +68,7 @@ class UserLoginAuthViewModel(
 
     private suspend fun fetchLocalUserData() {
         val getUserDataRequest = SafeIOUtil.safeCall {
-            userAuthUseCase.getLocalUser()
+            profileUseCase.getLocalUser()
         }
         getUserDataRequest.onSuccess { user ->
             if (user == null) {

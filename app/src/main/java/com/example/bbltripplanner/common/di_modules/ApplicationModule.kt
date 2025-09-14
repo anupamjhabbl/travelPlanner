@@ -75,12 +75,12 @@ val appModule = module {
     viewModel { UserTripDetailViewModel(get()) }
 
     // User Auth
-    single<UserAuthClient> { Network.createWithAuth(UserAuthClient::class.java, get(), get()) }
     single<UserAuthRepository> { UserAuthNetwork(get()) }
     single<UserAuthUseCase> { UserAuthUseCase(get()) }
     single<AuthPreferencesUseCase> { AuthPreferencesUseCase(get(), get()) }
-    viewModel { OTPAuthViewModel(get(), get()) }
-    viewModel { UserLoginAuthViewModel(get(), get()) }
+    single<UserAuthClient> { Network.create(UserAuthClient::class.java) }
+    viewModel { OTPAuthViewModel(get(), get(),get()) }
+    viewModel { UserLoginAuthViewModel(get(), get(), get()) }
     viewModel { UseRegistrationViewModel(get()) }
     viewModel { ForgotPasswordAuthViewModel(get()) }
     viewModel { PasswordResetVieModel(get(), get()) }

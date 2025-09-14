@@ -13,32 +13,29 @@ import com.example.bbltripplanner.screens.user.auth.entity.UserRegisteredId
 import com.example.bbltripplanner.screens.user.auth.entity.UserRegistrationBody
 import com.example.bbltripplanner.screens.user.auth.repositories.UserAuthRepository
 import retrofit2.Call
+import retrofit2.Response
 
 class UserAuthNetwork(
     private val userAuthClient: UserAuthClient
 ): UserAuthRepository {
-    override suspend fun registerUser(userRegistrationBody: UserRegistrationBody): BaseResponse<UserRegisteredId> {
+    override suspend fun registerUser(userRegistrationBody: UserRegistrationBody): Response<BaseResponse<UserRegisteredId>> {
         return userAuthClient.registerUser(userRegistrationBody)
     }
 
-    override suspend fun loginUser(userLoginBody: UserLoginBody): BaseResponse<AuthToken> {
+    override suspend fun loginUser(userLoginBody: UserLoginBody): Response<BaseResponse<AuthToken>> {
         return userAuthClient.loginUser(userLoginBody)
     }
 
-    override suspend fun verifyOTP(userOTPVerifyBody: UserOTPVerifyBody, origin: String): BaseResponse<AuthToken> {
+    override suspend fun verifyOTP(userOTPVerifyBody: UserOTPVerifyBody, origin: String): Response<BaseResponse<AuthToken>> {
         return userAuthClient.verifyOTP(userOTPVerifyBody, origin)
     }
 
-    override suspend fun forgetPasswordRequestOTP(userForgetPasswordBody: UserForgetPasswordBody): BaseResponse<UserRegisteredId> {
+    override suspend fun forgetPasswordRequestOTP(userForgetPasswordBody: UserForgetPasswordBody): Response<BaseResponse<UserRegisteredId>> {
         return userAuthClient.forgetPasswordRequestOTP(userForgetPasswordBody)
     }
 
-    override suspend fun resetPassword(userResetBody: UserPasswordResetBody, accessToken: String): BaseResponse<PasswordResetResponse> {
+    override suspend fun resetPassword(userResetBody: UserPasswordResetBody, accessToken: String): Response<BaseResponse<PasswordResetResponse>> {
         return userAuthClient.resetPassword(userResetBody, accessToken)
-    }
-
-    override suspend fun getLocalUser(): BaseResponse<User> {
-        return userAuthClient.getLocalUser()
     }
 
     override fun getNewAccessToken(refreshToken: String): Call<BaseResponse<AuthToken>> {

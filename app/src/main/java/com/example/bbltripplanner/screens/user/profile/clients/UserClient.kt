@@ -3,6 +3,7 @@ package com.example.bbltripplanner.screens.user.profile.clients
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.common.entity.User
 import okhttp3.MultipartBody
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -13,15 +14,18 @@ import retrofit2.http.Query
 
 interface UserClient {
     @GET("/user/{userId}")
-    suspend fun getUser(@Path("userId") userId: String): BaseResponse<User>
+    suspend fun getUser(@Path("userId") userId: String): Response<BaseResponse<User?>>
 
     @GET("/user/follow")
-    suspend fun followUser(@Query("userId") userId: String): BaseResponse<String>
+    suspend fun followUser(@Query("userId") userId: String): Response<BaseResponse<String>>
 
     @GET("/user/block")
-    suspend fun blockUser(@Query("userId") userId: String): BaseResponse<String>
+    suspend fun blockUser(@Query("userId") userId: String): Response<BaseResponse<String>>
+
+    @GET("user/me")
+    suspend fun getLocalUser(): Response<BaseResponse<User>>
 
     @Multipart
     @POST("user/update")
-    suspend fun updateUser(@Part profilePic: MultipartBody.Part?, @Part("name") name: String?, @Part("bio") bio: String?, @Part("phone") phone: String?): BaseResponse<User>
+    suspend fun updateUser(@Part profilePic: MultipartBody.Part?, @Part("name") name: String?, @Part("bio") bio: String?, @Part("phone") phone: String?): Response<BaseResponse<User>>
 }
