@@ -75,7 +75,7 @@ val appModule = module {
     viewModel { UserTripDetailViewModel(get()) }
 
     // User Auth
-    single<UserAuthClient> { Network.create(UserAuthClient::class.java) }
+    single<UserAuthClient> { Network.createWithAuth(UserAuthClient::class.java, get(), get()) }
     single<UserAuthRepository> { UserAuthNetwork(get()) }
     single<UserAuthUseCase> { UserAuthUseCase(get()) }
     single<AuthPreferencesUseCase> { AuthPreferencesUseCase(get(), get()) }
