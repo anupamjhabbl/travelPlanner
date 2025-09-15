@@ -86,7 +86,7 @@ fun EditProfileScreen(
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(false) }
     val defaultMessage = stringResource(R.string.generic_error)
-    var imageFile: MultipartBody.Part? by remember {  mutableStateOf(null) }
+    var imageFile: MultipartBody.Part? by remember { mutableStateOf(null) }
     var imageBitMap: Bitmap? by remember { mutableStateOf(null) }
     var imageUri: Uri? by remember { mutableStateOf(null) }
 
@@ -344,7 +344,7 @@ private fun UserFieldsSection(
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
-            value = bio,
+            value = bio ?: "",
             onValueChange = {
                 if (it.length <= maxBioLength) {
                     bio = it
@@ -378,7 +378,7 @@ private fun UserFieldsSection(
             .fillMaxWidth()
             .padding(8.dp, 0.dp)) {
             ComposeTextView.TextView(
-                text = "${bio.length}/$maxBioLength",
+                text = "${bio?.length ?: 0}/$maxBioLength",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End
             )

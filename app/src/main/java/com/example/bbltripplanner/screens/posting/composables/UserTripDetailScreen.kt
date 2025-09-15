@@ -232,7 +232,7 @@ private fun TripMatesList(tripMates: List<User>) {
     ) {
         visibleList.forEach { user ->
             ComposeImageView.CircularImageView(
-                imageURI = user.profilePicture,
+                imageURI = user.profilePicture ?: "",
                 diameter = 36.dp
             )
         }

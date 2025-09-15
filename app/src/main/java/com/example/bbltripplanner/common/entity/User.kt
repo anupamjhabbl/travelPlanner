@@ -5,11 +5,11 @@ data class User(
     val name: String,
     val phone: String?,
     val email: String?,
-    val bio: String = "",
+    val bio: String?,
     val followCount: Long = 0,
     val followersCount: Long = 0,
     val tripCount: Long = 0,
-    val profilePicture: String,
+    val profilePicture: String?,
     val userStory: String?
 )
 

@@ -274,7 +274,7 @@ private fun ProfileContainer(
             verticalAlignment = Alignment.CenterVertically
         ){
             com.example.bbltripplanner.common.composables.ComposeImageView.CircularImageView(
-                imageURI = user.profilePicture,
+                imageURI = user.profilePicture ?: "",
                 diameter = dimensionResource(id = R.dimen.module_90)
             )
 
