@@ -25,7 +25,7 @@ class TokenAuthenticator(
             val refreshToken = authPreferencesUseCase.getRefreshToken() ?: return null
 
             val refreshResponse = try {
-                userAuthUseCase.getNewAccessToken(refreshToken).execute()
+                userAuthUseCase.getNewAccessToken("${Constants.HTTPHeaders.AUTHORIZATION_BEARER} $refreshToken").execute()
             } catch (e: Exception) {
                 return null
             }

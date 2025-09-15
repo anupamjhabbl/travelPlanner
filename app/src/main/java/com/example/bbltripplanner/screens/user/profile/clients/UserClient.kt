@@ -3,6 +3,7 @@ package com.example.bbltripplanner.screens.user.profile.clients
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.common.entity.User
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -27,7 +28,7 @@ interface UserClient {
 
     @Multipart
     @POST("user/update")
-    suspend fun updateUser(@Part profilePic: MultipartBody.Part?, @Part("name") name: String?, @Part("bio") bio: String?, @Part("phone") phone: String?): Response<BaseResponse<User>>
+    suspend fun updateUser(@Part profilePic: MultipartBody.Part?, @Part("name") name: RequestBody?, @Part("bio") bio: RequestBody?, @Part("phone") phone: RequestBody?): Response<BaseResponse<User>>
 
     @POST("user/logout")
     suspend fun logoutUser(): Response<BaseResponse<String>>

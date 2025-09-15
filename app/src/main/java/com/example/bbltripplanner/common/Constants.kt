@@ -19,7 +19,7 @@ object Constants {
     const val FAVOURITES  = "FAVOURITES"
     const val CONTACTS = "CONTACTS"
     const val APP_NAME_URI = "tripplanner"
-    const val PROFILE_PICTURE_PART_NAME = "profile_picture"
+    const val PROFILE_PICTURE_PART_NAME = "profilePicture"
 
     object HTTPHeaders {
         const val AUTHORIZATION_BEARER = "Bearer"

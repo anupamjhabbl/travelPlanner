@@ -34,5 +34,5 @@ interface UserAuthClient {
     suspend fun resetPassword(@Body userResetBody: UserPasswordResetBody, @Header(Constants.HTTPHeaders.AUTHORIZATION) accessToken: String): Response<BaseResponse<PasswordResetResponse>>
 
     @POST("auth/refresh")
-    fun getNewAccessToken(refreshToken: String): Call<BaseResponse<AuthToken>>
+    fun getNewAccessToken(@Header(Constants.HTTPHeaders.AUTHORIZATION) refreshToken: String): Call<BaseResponse<AuthToken>>
 }

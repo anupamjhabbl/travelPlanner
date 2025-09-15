@@ -4,7 +4,9 @@ import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.common.entity.UpdateUserData
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.screens.user.profile.repositories.GetProfileRepository
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class ProfileUseCase(
     private val getProfileRepository: GetProfileRepository
@@ -26,7 +28,7 @@ class ProfileUseCase(
     }
 
     suspend fun updateUser(user: UpdateUserData?, profilePic: MultipartBody.Part?): User? {
-        return BaseResponse.processResponse { getProfileRepository.updateUser(profilePic, user?.name, user?.bio, user?.phone) }
+        return BaseResponse.processResponse { getProfileRepository.updateUser(profilePic, user?.name?.toRequestBody("text/plain".toMediaType()), user?.bio?.toRequestBody("text/plain".toMediaType()), user?.phone?.toRequestBody("text/plain".toMediaType())) }
     }
 
     suspend fun logoutUser(): String? {
