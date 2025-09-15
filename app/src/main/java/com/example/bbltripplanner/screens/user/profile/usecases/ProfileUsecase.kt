@@ -28,4 +28,8 @@ class ProfileUseCase(
     suspend fun updateUser(user: UpdateUserData?, profilePic: MultipartBody.Part?): User? {
         return BaseResponse.processResponse { getProfileRepository.updateUser(profilePic, user?.name, user?.bio, user?.phone) }
     }
+
+    suspend fun logoutUser(): String? {
+        return BaseResponse.processResponse { getProfileRepository.logoutUser() }
+    }
 }

@@ -14,7 +14,7 @@ import retrofit2.http.Query
 
 interface UserClient {
     @GET("/user/{userId}")
-    suspend fun getUser(@Path("userId") userId: String): Response<BaseResponse<User?>>
+    suspend fun getUser(@Path("userId") userId: String): Response<BaseResponse<User>>
 
     @GET("/user/follow")
     suspend fun followUser(@Query("userId") userId: String): Response<BaseResponse<String>>
@@ -28,4 +28,7 @@ interface UserClient {
     @Multipart
     @POST("user/update")
     suspend fun updateUser(@Part profilePic: MultipartBody.Part?, @Part("name") name: String?, @Part("bio") bio: String?, @Part("phone") phone: String?): Response<BaseResponse<User>>
+
+    @POST("user/logout")
+    suspend fun logoutUser(): Response<BaseResponse<String>>
 }
