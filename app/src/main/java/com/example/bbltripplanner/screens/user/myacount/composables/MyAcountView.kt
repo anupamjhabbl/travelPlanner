@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.screens.user.myacount.composables
 
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -52,11 +55,14 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionItem
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionResourceMapper
+import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountIntent
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountViewModel
 import com.example.bbltripplanner.screens.vault.entity.VaultScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -64,10 +70,31 @@ fun MyAccountView(
     navController: NavController
 ) {
     val viewModel: MyAccountViewModel = koinViewModel()
+    val context = LocalContext.current
+    val message = stringResource(R.string.generic_error)
     var logOutConfirmDialogVisibility by remember {
         mutableStateOf(false)
     }
+    var isLoading by remember { mutableStateOf(false) }
     val user = viewModel.getUser()
+
+    LaunchedEffect(Unit) {
+        viewModel.viewState.collectLatest { viewState ->
+            when (viewState) {
+                MyAccountIntent.ViewState.LogoutFailure -> {
+                    isLoading = false
+                    logoutFailure(context, message)
+                }
+                MyAccountIntent.ViewState.LogoutSuccess -> {
+                    isLoading = false
+                    logoutSuccess(navController)
+                }
+                MyAccountIntent.ViewState.Loading -> {
+                    isLoading = true
+                }
+            }
+        }
+    }
 
     if (logOutConfirmDialogVisibility) {
         AlertDialog(
@@ -75,11 +102,7 @@ fun MyAccountView(
             confirmButton = {
                 ConfirmButton {
                     logOutConfirmDialogVisibility = false
-                    viewModel.logOutUser()
-                    navController.navigate(AppNavigationScreen.AuthGraph.route) {
-                        popUpTo(0) { inclusive = true }
-                        launchSingleTop
-                    }
+                    viewModel.processEvent(MyAccountIntent.ViewEvent.LogoutUser)
                 }
             },
             dismissButton = {
@@ -113,47 +136,56 @@ fun MyAccountView(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .background(LocalCustomColors.current.primaryBackground)
-            .fillMaxWidth()
-    ) {
-        AccountToolbar(navController)
+    if (isLoading) {
+        ComposeViewUtils.FullScreenLoading()
+    } else {
+        Column(
+            modifier = Modifier
+                .background(LocalCustomColors.current.primaryBackground)
+                .fillMaxWidth()
+        ) {
+            AccountToolbar(navController)
 
-        if (user == null) {
-            ComposeViewUtils.FullScreenErrorComposable(
-                Pair(
-                    stringResource(R.string.inconvenience_sorry),
-                    stringResource(R.string.restart_app_message)
+            if (user == null) {
+                ComposeViewUtils.FullScreenErrorComposable(
+                    Pair(
+                        stringResource(R.string.inconvenience_sorry),
+                        stringResource(R.string.restart_app_message)
+                    )
                 )
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Column(
+            } else {
+                Box(
                     modifier = Modifier
-                        .wrapContentHeight()
+                        .fillMaxSize()
                 ) {
-                    ProfileContainer(user, navController) {
-                        navController.navigate(AppNavigationScreen.VaultScreen.createRoute(VaultScreens.TRIPS.value, user.id))
-                    }
-
-                    Spacer(Modifier.height(20.dp))
-
-                    LazyColumn(
+                    Column(
                         modifier = Modifier
-                            .padding(
-                                0.dp,
-                                dimensionResource(id = R.dimen.module_16),
-                            )
+                            .wrapContentHeight()
                     ) {
-                        items(ProfileActionResourceMapper.getAccountActions()) { item ->
-                            ProfileActionTile(
-                                item
-                            ) { key ->
-                                takeAction(navController, key)
+                        ProfileContainer(user, navController) {
+                            navController.navigate(
+                                AppNavigationScreen.VaultScreen.createRoute(
+                                    VaultScreens.TRIPS.value,
+                                    user.id
+                                )
+                            )
+                        }
+
+                        Spacer(Modifier.height(20.dp))
+
+                        LazyColumn(
+                            modifier = Modifier
+                                .padding(
+                                    0.dp,
+                                    dimensionResource(id = R.dimen.module_16),
+                                )
+                        ) {
+                            items(ProfileActionResourceMapper.getAccountActions()) { item ->
+                                ProfileActionTile(
+                                    item
+                                ) { key ->
+                                    takeAction(navController, key)
+                                }
                             }
                         }
                     }
@@ -243,6 +275,17 @@ private fun openMyProfilePage(navController: NavController, userId: String?) {
             AppNavigationScreen.ProfileScreen.createRoute(userId)
         )
     }
+}
+
+private fun logoutSuccess(navController: NavController) {
+    navController.navigate(AppNavigationScreen.AuthGraph.route) {
+        popUpTo(0) { inclusive = true }
+        launchSingleTop
+    }
+}
+
+private fun logoutFailure(context: Context, message: String) {
+    showToast(context, message)
 }
 
 

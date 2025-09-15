@@ -10,7 +10,7 @@ import retrofit2.Response
 class GetProfileNetwork(
     private val userClient: UserClient
 ): GetProfileRepository {
-    override suspend fun getUser(userId: String): Response<BaseResponse<User?>> {
+    override suspend fun getUser(userId: String): Response<BaseResponse<User>> {
         return userClient.getUser(userId)
     }
 
@@ -28,5 +28,9 @@ class GetProfileNetwork(
 
     override suspend fun updateUser(profilePic: MultipartBody.Part?, name: String?, bio: String?, phone: String?): Response<BaseResponse<User>> {
         return userClient.updateUser(profilePic, name, bio, phone)
+    }
+
+    override suspend fun logoutUser(): Response<BaseResponse<String>> {
+        return userClient.logoutUser()
     }
 }
