@@ -64,7 +64,7 @@ fun ProfileTpCommonSectionComposable(
         ) {
             ComposeImageView.CircularImageView(
                 diameter = 90.dp,
-                imageURI = user.profilePicture
+                imageURI = user.profilePicture ?: ""
             )
         }
 
@@ -75,7 +75,7 @@ fun ProfileTpCommonSectionComposable(
         )
 
         ComposeTextView.TextView(
-            text = user.bio,
+            text = user.bio ?: "",
             fontSize = 14.sp,
         )
 

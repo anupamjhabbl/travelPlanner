@@ -265,7 +265,7 @@ fun PostingInitScreen(
                         leadingIcon = {
                             ComposeImageView.CircularImageView(
                                 diameter = 24.dp,
-                                imageURI = user.profilePicture
+                                imageURI = user.profilePicture ?: ""
                             )
                         },
                         trailingIcon = {
