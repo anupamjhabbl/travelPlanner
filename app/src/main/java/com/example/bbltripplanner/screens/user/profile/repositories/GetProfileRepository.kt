@@ -3,6 +3,7 @@ package com.example.bbltripplanner.screens.user.profile.repositories
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.common.entity.User
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 
 interface GetProfileRepository {
@@ -10,6 +11,6 @@ interface GetProfileRepository {
     suspend fun followUser(userId: String): Response<BaseResponse<String>>
     suspend fun blockUser(userId: String): Response<BaseResponse<String>>
     suspend fun getLocalUser(): Response<BaseResponse<User>>
-    suspend fun updateUser(profilePic: MultipartBody.Part?, name: String?, bio: String?, phone: String?): Response<BaseResponse<User>>
+    suspend fun updateUser(profilePic: MultipartBody.Part?, name: RequestBody?, bio: RequestBody?, phone: RequestBody?): Response<BaseResponse<User>>
     suspend fun logoutUser(): Response<BaseResponse<String>>
 }
