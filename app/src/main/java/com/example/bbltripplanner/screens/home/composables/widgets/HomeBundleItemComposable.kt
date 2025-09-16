@@ -1,6 +1,5 @@
 package com.example.bbltripplanner.screens.home.composables.widgets
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -29,16 +28,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.utils.WindowSizeUtils
+import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.screens.home.entities.BundleWidgetItem
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 @Composable
-fun HomeBundleItemComposable(widget: HomeCxeWidget.BundleItemsWidget) {
+fun HomeBundleItemComposable(
+    navController: NavController,
+    widget: HomeCxeWidget.BundleItemsWidget
+) {
     val widgetItemList = widget.data.widgetList
 
     if (widgetItemList.isNullOrEmpty()) {
@@ -61,7 +65,9 @@ fun HomeBundleItemComposable(widget: HomeCxeWidget.BundleItemsWidget) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             itemsIndexed(widgetItemList) { index, item ->
-                BundleItemView(item, index, widgetItemList.size)
+                BundleItemView(item, index, widgetItemList.size) { itemId ->
+                    navController.navigate(AppNavigationScreen.DestinationScreen.createRoute(itemId))
+                }
             }
 
             item {
@@ -75,9 +81,9 @@ fun HomeBundleItemComposable(widget: HomeCxeWidget.BundleItemsWidget) {
 fun BundleItemView(
     bundleWidgetItem: BundleWidgetItem,
     index: Int,
-    size: Int
+    size: Int,
+    onClick: (String) -> Unit
 ) {
-    val context = LocalContext.current
     val width = ((WindowSizeUtils.getWindowWidth(LocalContext.current).toFloat() /  LocalContext.current.resources.displayMetrics.density) - 32) * 0.75f
     val starPadding =  if (index == 0) 16.dp else 8.dp
     val endPadding = if (index == size - 1) 16.dp else 8.dp
@@ -92,7 +98,7 @@ fun BundleItemView(
             .height(Dp(width/2))
             .padding(starPadding, 0.dp, endPadding, 0.dp)
             .clickable {
-                openBundleItem(context, bundleWidgetItem.itemId)
+                onClick(bundleWidgetItem.itemId)
             }
     ) {
         Box {
@@ -133,5 +139,3 @@ fun BundleItemView(
         }
     }
 }
-
-private fun openBundleItem(context: Context, itemId: String) {}

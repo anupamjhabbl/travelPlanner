@@ -26,7 +26,9 @@ sealed class AppNavigationScreen(
     }
 
     // Home Screens
+    data  object HomeNavGraph: AppNavigationScreen(route = Constants.NavigationScreen.HOME_NAV_GRAPH, hasBottomBar = true)
     data object HomeScreen: AppNavigationScreen(route = Constants.NavigationScreen.HOME_SCREEN, hasBottomBar = true)
+    data object SearchScreen: AppNavigationScreen(route = Constants.NavigationScreen.SEARCH_SCREEN)
 
     // User Screens
     data object UserScreenGraph: AppNavigationScreen(route = Constants.NavigationScreen.USER_SCREEN_GRAPH, hasBottomBar = true)
@@ -67,6 +69,11 @@ sealed class AppNavigationScreen(
                     "${Constants.NavigationArgs.PAGE_ID}=$pageId&" +
                     "${Constants.NavigationArgs.USER_ID}=$userId"
     }
+
+    // destination
+    data object DestinationScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.DESTINATION_SCREEN}/{${Constants.NavigationArgs.DESTINATION_ID}}") {
+        fun createRoute(destinationId: String) = "${Constants.NavigationScreen.DESTINATION_SCREEN}/$destinationId"
+    }
 }
 
 fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
@@ -82,7 +89,9 @@ fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
         Constants.NavigationScreen.PROFILE_SOCIAL_SCREEN -> AppNavigationScreen.ProfileSocialScreen
 
         // Home Screens
+        Constants.NavigationScreen.HOME_NAV_GRAPH -> AppNavigationScreen.HomeNavGraph
         Constants.NavigationScreen.HOME_SCREEN -> AppNavigationScreen.HomeScreen
+        Constants.NavigationScreen.SEARCH_SCREEN -> AppNavigationScreen.SearchScreen
 
         // General
         Constants.NavigationScreen.VAULT_SCREEN -> AppNavigationScreen.VaultScreen
@@ -99,6 +108,9 @@ fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
         Constants.NavigationScreen.RESET_PASSWORD_SCREEN -> AppNavigationScreen.ResetPasswordScreen
         Constants.NavigationScreen.FORGOT_PASSWORD_SCREEN -> AppNavigationScreen.ForgotPasswordScreen
         Constants.NavigationScreen.OTP_VERIFICATION_SCREEN -> AppNavigationScreen.OtpVerificationScreen
+
+        // Destination screen
+        Constants.NavigationScreen.DESTINATION_SCREEN -> AppNavigationScreen.DestinationScreen
         else -> null
     }
 }

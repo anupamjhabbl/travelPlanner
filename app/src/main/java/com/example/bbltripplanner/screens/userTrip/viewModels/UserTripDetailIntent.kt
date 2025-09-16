@@ -1,4 +1,4 @@
-package com.example.bbltripplanner.screens.posting.viewModels
+package com.example.bbltripplanner.screens.userTrip.viewModels
 
 class UserTripDetailIntent {
     sealed interface ViewEvent {

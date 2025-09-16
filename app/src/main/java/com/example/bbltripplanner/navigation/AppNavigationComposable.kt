@@ -23,10 +23,12 @@ import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.BottomNavigationPanel
 import com.example.bbltripplanner.common.entity.BottomNavigationItem
 import com.example.bbltripplanner.screens.buzz.composables.BuzzScreen
+import com.example.bbltripplanner.screens.destination.composables.DestinationScreen
 import com.example.bbltripplanner.screens.home.composables.HomeExperienceScreen
+import com.example.bbltripplanner.screens.home.composables.TripPlannerSearchScreen
 import com.example.bbltripplanner.screens.notification.composables.NotificationScreen
-import com.example.bbltripplanner.screens.posting.composables.PostingInitScreen
-import com.example.bbltripplanner.screens.posting.composables.UserTripDetailScreen
+import com.example.bbltripplanner.screens.userTrip.composables.PostingInitScreen
+import com.example.bbltripplanner.screens.userTrip.composables.UserTripDetailScreen
 import com.example.bbltripplanner.screens.user.auth.composables.AuthenticationFormScreen
 import com.example.bbltripplanner.screens.user.auth.composables.ForgotPasswordScreen
 import com.example.bbltripplanner.screens.user.auth.composables.OTPVerificationScreen
@@ -93,7 +95,7 @@ fun HomeNavigationComposable(
     val startDestination = if (accessToken.isEmpty()){
         AppNavigationScreen.AuthGraph.route
     } else  {
-        AppNavigationScreen.HomeScreen.route
+        AppNavigationScreen.HomeNavGraph.route
     }
     NavHost(
         navController = homeNavController,
@@ -155,8 +157,17 @@ fun HomeNavigationComposable(
             }
         }
 
-        composable(route = AppNavigationScreen.HomeScreen.route) {
-            HomeExperienceScreen(homeNavController)
+        navigation(
+            route = AppNavigationScreen.HomeNavGraph.route,
+            startDestination = AppNavigationScreen.HomeScreen.route
+        ) {
+            composable(route = AppNavigationScreen.HomeScreen.route) {
+                HomeExperienceScreen(homeNavController)
+            }
+        }
+
+        composable(route = AppNavigationScreen.SearchScreen.route) {
+            TripPlannerSearchScreen(homeNavController)
         }
 
         composable(route = AppNavigationScreen.NotificationScreen.route) {
@@ -180,6 +191,11 @@ fun HomeNavigationComposable(
         composable(route = AppNavigationScreen.UserTripDetailScreen.route) { navBackStackEntry ->
             val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
             UserTripDetailScreen(homeNavController, tripId)
+        }
+
+        composable(route = AppNavigationScreen.DestinationScreen.route) { navBackStackEntry ->
+            val destinationId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.DESTINATION_ID)
+            DestinationScreen(homeNavController, destinationId)
         }
     }
 }

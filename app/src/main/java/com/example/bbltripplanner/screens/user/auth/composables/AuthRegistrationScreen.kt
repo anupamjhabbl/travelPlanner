@@ -50,7 +50,6 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.navigation.AppNavigationScreen
-import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.auth.entity.PasswordStrengthValidityStatus
 import com.example.bbltripplanner.screens.user.auth.viewModels.UseRegistrationViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
@@ -84,12 +83,12 @@ fun AuthRegistrationScreen(
             when (authRegistrationRequestStatus) {
                 is RequestStatus.Error -> {
                     isLoading = false
-                    if ((authRegistrationRequestStatus as? RequestStatus.Error)?.message == Constants.DEFAULT_ERROR) {
-                        showToast(context, genericMessage)
+                    if (authRegistrationRequestStatus.message == Constants.DEFAULT_ERROR) {
+                        ComposeViewUtils.showToast(context, genericMessage)
                     } else {
-                        showToast(
+                        ComposeViewUtils.showToast(
                             context,
-                            (authRegistrationRequestStatus as? RequestStatus.Error)?.message ?: ""
+                            authRegistrationRequestStatus.message ?: ""
                         )
                     }
                 }
@@ -104,8 +103,7 @@ fun AuthRegistrationScreen(
                         AppNavigationScreen.OtpVerificationScreen.createRoute(
                             userEmail = state.email,
                             Constants.Origin.REGISTRATION,
-                            (authRegistrationRequestStatus as? RequestStatus.Success)?.data?.userId
-                                ?: ""
+                            authRegistrationRequestStatus.data.userId
                         )
                     )
                 }

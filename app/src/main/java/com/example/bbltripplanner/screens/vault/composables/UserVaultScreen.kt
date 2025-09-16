@@ -10,7 +10,8 @@ fun UserVaultScreen(
     pageId: String?,
     userId: String?
 ) {
-    ComposeViewUtils.FullScreenErrorComposable(
-        errorStrings = Pair("Work Under Progress",  "Vault Page will get live soon $pageId $userId"),
+    ComposeViewUtils.PageUnderProgressScreen(
+        navController,
+        pageName = "User Vault",
     )
 }

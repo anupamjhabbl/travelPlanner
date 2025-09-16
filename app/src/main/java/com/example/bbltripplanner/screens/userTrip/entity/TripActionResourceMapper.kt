@@ -1,4 +1,4 @@
-package com.example.bbltripplanner.screens.posting.entity
+package com.example.bbltripplanner.screens.userTrip.entity
 
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants

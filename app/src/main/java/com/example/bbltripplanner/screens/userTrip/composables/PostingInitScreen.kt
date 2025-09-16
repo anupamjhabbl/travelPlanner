@@ -1,7 +1,5 @@
-package com.example.bbltripplanner.screens.posting.composables
+package com.example.bbltripplanner.screens.userTrip.composables
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -65,10 +63,11 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
-import com.example.bbltripplanner.screens.posting.entity.TripVisibility
-import com.example.bbltripplanner.screens.posting.viewModels.PostingInitIntent
-import com.example.bbltripplanner.screens.posting.viewModels.PostingInitViewModel
+import com.example.bbltripplanner.screens.userTrip.entity.TripVisibility
+import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitIntent
+import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
@@ -97,9 +96,9 @@ fun PostingInitScreen(
         viewModel.viewEffect.collectLatest { viewEffect ->
             when (viewEffect) {
                 is PostingInitIntent.ViewEffect.GoNext -> moveToNextPage(navController, viewEffect.tripData.tripId) {
-                    showToast(context, genericMessage)
+                    ComposeViewUtils.showToast(context, genericMessage)
                 }
-                PostingInitIntent.ViewEffect.ShowError -> showToast(context, genericMessage)
+                PostingInitIntent.ViewEffect.ShowError -> ComposeViewUtils.showToast(context, genericMessage)
             }
         }
     }
@@ -482,8 +481,4 @@ fun moveToNextPage(navController: NavController, tripId: String?, showError: () 
         return
     }
     navController.navigate(AppNavigationScreen.UserTripDetailScreen.createRoute(tripId))
-}
-
-fun showToast(context: Context, stringResource: String) {
-    Toast.makeText(context, stringResource, Toast.LENGTH_SHORT).show()
 }

@@ -1,7 +1,7 @@
-package com.example.bbltripplanner.screens.posting.clients
+package com.example.bbltripplanner.screens.userTrip.clients
 
 import com.example.bbltripplanner.common.entity.BaseResponse
-import com.example.bbltripplanner.screens.posting.entity.TripData
+import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import retrofit2.http.GET
 import retrofit2.http.Query
 

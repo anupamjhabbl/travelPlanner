@@ -85,7 +85,7 @@ fun HomeExperienceScreen(
             }
             else -> {
                 val uiWidgetList = filterWidgetsForUI(widgets)
-                ShowItems(uiWidgetList, widgetsListState, viewModel)
+                ShowItems(navController,uiWidgetList, widgetsListState, viewModel)
             }
         }
     }
@@ -105,6 +105,7 @@ fun filterWidgetsForUI(widgets: List<HomeCxeWidget>): List<HomeCxeWidget> {
 
 @Composable
 fun ShowItems(
+    navController: NavController,
     widgets: List<HomeCxeWidget>,
     widgetsListState: LazyListState,
     viewModel: HomeExperienceViewModel
@@ -118,13 +119,13 @@ fun ShowItems(
             Spacer(modifier = Modifier.height(14.dp))
 
             when (homeCxeWidget) {
-                is HomeCxeWidget.GreetingWidget -> HomeGreetingComposable(homeCxeWidget, viewModel.geLoggedUserName())
+                is HomeCxeWidget.GreetingWidget -> HomeGreetingComposable(homeCxeWidget, viewModel.geLoggedUser()?.name)
                 is HomeCxeWidget.ImageCarouselWidget -> HomeImageCarouselComposable(homeCxeWidget)
-                is HomeCxeWidget.BundleItemsWidget -> HomeBundleItemComposable(homeCxeWidget)
+                is HomeCxeWidget.BundleItemsWidget -> HomeBundleItemComposable(navController, homeCxeWidget)
                 is HomeCxeWidget.NewsBannerWidget -> HomeNewsBannerComposable(homeCxeWidget)
                 is HomeCxeWidget.TopPicksByLocationCtaWidget -> HomeLocationFeedCtaComposable(homeCxeWidget)
                 is HomeCxeWidget.TravelThreadsBundleWidget -> HomeTravelThreadsBundleComposable(homeCxeWidget)
-                is HomeCxeWidget.UserTripBundleWidget -> HomeUserTripBundleWidgetComposable(homeCxeWidget)
+                is HomeCxeWidget.UserTripBundleWidget -> HomeUserTripBundleWidgetComposable(navController, homeCxeWidget, viewModel.geLoggedUser())
             }
 
             Spacer(modifier = Modifier.height(14.dp))
@@ -171,6 +172,7 @@ fun HomeToolbar(
             Box(
                 modifier = Modifier
                     .background(LocalCustomColors.current.secondaryBackground, CircleShape)
+                    .clickable { navController.navigate(AppNavigationScreen.SearchScreen.route) }
                     .padding(6.dp)
             ) {
                 ComposeImageView.ImageViewWitDrawableId(

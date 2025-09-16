@@ -61,7 +61,6 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.navigation.AppNavigationScreen
-import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.auth.entity.OTPAction
 import com.example.bbltripplanner.screens.user.auth.entity.OTPState
 import com.example.bbltripplanner.screens.user.auth.viewModels.OTPAuthViewModel
@@ -115,9 +114,9 @@ fun OTPVerificationScreen(
                 is RequestStatus.Error -> {
                     isLoading = false
                     if (otpResendRequestStatus.message == Constants.DEFAULT_ERROR) {
-                        showToast(context, genericMessage)
+                        ComposeViewUtils.showToast(context, genericMessage)
                     } else {
-                        showToast(
+                        ComposeViewUtils.showToast(
                             context,
                             otpResendRequestStatus.message ?: ""
                         )
@@ -143,7 +142,7 @@ fun OTPVerificationScreen(
                             )
                         )
                     }
-                    showToast(context, otpResendSuccessMessage)
+                    ComposeViewUtils.showToast(context, otpResendSuccessMessage)
                 }
             }
         }
@@ -159,9 +158,9 @@ fun OTPVerificationScreen(
                     is RequestStatus.Error -> {
                         isLoading = false
                         if (otpVerifyRequestStatus.message == Constants.DEFAULT_ERROR) {
-                            showToast(context, genericMessage)
+                            ComposeViewUtils.showToast(context, genericMessage)
                         } else {
-                            showToast(
+                            ComposeViewUtils.showToast(
                                 context,
                                 otpVerifyRequestStatus.message ?: ""
                             )

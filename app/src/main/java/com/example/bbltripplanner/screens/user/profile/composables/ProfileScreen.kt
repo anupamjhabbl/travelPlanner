@@ -46,7 +46,6 @@ import com.example.bbltripplanner.common.entity.MenuItems
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.common.utils.StringUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
-import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionItem
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileSocialScreens
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileIntent
@@ -78,10 +77,10 @@ fun ProfileScreen (
     LaunchedEffect(Unit) {
         profileViewModel.viewState.collectLatest { viewState ->
             when (viewState){
-                ProfileIntent.ViewState.BlockFailure -> showToast(context, blockFailureMessage)
-                ProfileIntent.ViewState.BlockSuccess -> showToast(context, blockSuccessMessage)
-                ProfileIntent.ViewState.FollowFailure -> showToast(context, followFailureMessage)
-                ProfileIntent.ViewState.FollowSuccess -> showToast(context, followSuccessMessage)
+                ProfileIntent.ViewState.BlockFailure -> ComposeViewUtils.showToast(context, blockFailureMessage)
+                ProfileIntent.ViewState.BlockSuccess -> ComposeViewUtils.showToast(context, blockSuccessMessage)
+                ProfileIntent.ViewState.FollowFailure -> ComposeViewUtils.showToast(context, followFailureMessage)
+                ProfileIntent.ViewState.FollowSuccess -> ComposeViewUtils.showToast(context, followSuccessMessage)
             }
         }
     }

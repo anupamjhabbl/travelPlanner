@@ -33,7 +33,9 @@ object Constants {
 
     object NavigationScreen {
         // Home & Listing
+        const val HOME_NAV_GRAPH = "home_nav_graph"
         const val HOME_SCREEN = "home_screen"
+        const val SEARCH_SCREEN = "search_screen"
 
         // general
         const val VAULT_SCREEN = "vault_screen"
@@ -59,6 +61,9 @@ object Constants {
         const val OTP_VERIFICATION_SCREEN = "otp_verification_screen"
         const val FORGOT_PASSWORD_SCREEN = "forgot_password_Screen"
         const val AUTH_GRAPH = "auth_graph"
+
+        // destination_screen
+        const val DESTINATION_SCREEN = "destination_screen"
     }
 
     object NavigationArgs {
@@ -67,6 +72,7 @@ object Constants {
         const val ORIGIN = "origin"
         const val USER_ID = "user_id"
         const val PAGE_ID = "page_id"
+        const val DESTINATION_ID = "destination_id"
     }
 
     object Origin {

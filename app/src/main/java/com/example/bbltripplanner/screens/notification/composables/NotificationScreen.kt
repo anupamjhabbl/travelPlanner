@@ -8,7 +8,8 @@ import com.example.bbltripplanner.common.composables.ComposeViewUtils
 fun NotificationScreen(
     navController: NavController
 ) {
-    ComposeViewUtils.FullScreenErrorComposable(
-        errorStrings = Pair("Work Under Progress", "Notification Page will get live soon")
+    ComposeViewUtils.PageUnderProgressScreen(
+        navController,
+        pageName  = "Notification"
     )
 }

@@ -1,13 +1,13 @@
-package com.example.bbltripplanner.screens.posting.viewModels
+package com.example.bbltripplanner.screens.userTrip.viewModels
 
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.home.entities.Location
-import com.example.bbltripplanner.screens.posting.entity.TripData
-import com.example.bbltripplanner.screens.posting.entity.TripVisibility
-import com.example.bbltripplanner.screens.posting.usecases.PostingUseCase
+import com.example.bbltripplanner.screens.userTrip.entity.TripData
+import com.example.bbltripplanner.screens.userTrip.entity.TripVisibility
+import com.example.bbltripplanner.screens.userTrip.usecases.PostingUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow

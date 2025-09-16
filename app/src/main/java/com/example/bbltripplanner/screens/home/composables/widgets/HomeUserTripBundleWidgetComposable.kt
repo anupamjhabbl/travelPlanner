@@ -1,6 +1,5 @@
 package com.example.bbltripplanner.screens.home.composables.widgets
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,15 +18,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
-import com.example.bbltripplanner.common.utils.openDeeplink
+import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
 import com.example.bbltripplanner.screens.home.entities.UserTripWidgetItem
+import com.example.bbltripplanner.screens.vault.entity.VaultScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -35,10 +36,13 @@ import com.google.accompanist.pager.rememberPagerState
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HomeUserTripBundleWidgetComposable(widget: HomeCxeWidget.UserTripBundleWidget) {
+fun HomeUserTripBundleWidgetComposable(
+    navController: NavController,
+    widget: HomeCxeWidget.UserTripBundleWidget,
+    user: User?
+) {
     val widgetItemList = widget.data.widgetList
     val pagerState = rememberPagerState()
-    val context = LocalContext.current
 
     if (widgetItemList.isNullOrEmpty()) {
         return
@@ -63,7 +67,13 @@ fun HomeUserTripBundleWidgetComposable(widget: HomeCxeWidget.UserTripBundleWidge
                     .background(LocalCustomColors.current.secondaryBackground, RoundedCornerShape(8.dp))
                     .padding(12.dp, 4.dp)
                     .clickable {
-                        context.openDeeplink(widget.data.content?.deeplink)
+                        user?.let {
+                            navController.navigate(
+                                AppNavigationScreen.VaultScreen.createRoute(
+                                    VaultScreens.TRIPS.value, it.id
+                                )
+                            )
+                        }
                     }
             ) {
                 ComposeTextView.TitleTextView(
@@ -80,14 +90,18 @@ fun HomeUserTripBundleWidgetComposable(widget: HomeCxeWidget.UserTripBundleWidge
             state = pagerState,
             count = widgetItemList.size
         ) { pageNo ->
-            UserTripWidgetItem(widgetItemList[pageNo])
+            UserTripWidgetItem(widgetItemList[pageNo]) { tripId ->
+                navController.navigate(AppNavigationScreen.UserTripDetailScreen.createRoute(tripId))
+            }
         }
     }
 }
 
 @Composable
-fun UserTripWidgetItem(userTripWidgetItem: UserTripWidgetItem) {
-    val context = LocalContext.current
+fun UserTripWidgetItem(
+    userTripWidgetItem: UserTripWidgetItem,
+    onClick: (String) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -95,7 +109,7 @@ fun UserTripWidgetItem(userTripWidgetItem: UserTripWidgetItem) {
             .border(1.dp, LocalCustomColors.current.defaultImageCardColor, RoundedCornerShape(12.dp))
             .padding(8.dp)
             .clickable {
-                openUserTrip(context, userTripWidgetItem.userTripId, false)
+                onClick(userTripWidgetItem.userTripId)
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -130,7 +144,7 @@ fun UserTripWidgetItem(userTripWidgetItem: UserTripWidgetItem) {
                     textColor = LocalCustomColors.current.secondaryBackground,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier.clickable {
-                        openUserTrip(context, userTripWidgetItem.userTripId, true)
+                        onClick(userTripWidgetItem.userTripId)
                     }
                 )
             }
@@ -158,5 +172,3 @@ fun UserTripWidgetItem(userTripWidgetItem: UserTripWidgetItem) {
         }
     }
 }
-
-private fun openUserTrip(context: Context, userTripId: String, shareStories: Boolean) {}
