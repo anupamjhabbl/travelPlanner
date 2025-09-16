@@ -1,11 +1,11 @@
-package com.example.bbltripplanner.screens.posting.repositoryImpl
+package com.example.bbltripplanner.screens.userTrip.repositoryImpl
 
 import com.example.bbltripplanner.common.entity.ApiFailureException
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.common.utils.JsonResponseUtils
-import com.example.bbltripplanner.screens.posting.entity.TripData
-import com.example.bbltripplanner.screens.posting.clients.PostingClient
-import com.example.bbltripplanner.screens.posting.repositories.PostingRepository
+import com.example.bbltripplanner.screens.userTrip.entity.TripData
+import com.example.bbltripplanner.screens.userTrip.clients.PostingClient
+import com.example.bbltripplanner.screens.userTrip.repositories.PostingRepository
 import com.google.gson.JsonParseException
 
 class PostingNetwork(

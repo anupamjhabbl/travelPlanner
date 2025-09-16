@@ -55,7 +55,6 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.navigation.AppNavigationScreen
-import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionItem
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionResourceMapper
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountIntent
@@ -285,7 +284,7 @@ private fun logoutSuccess(navController: NavController) {
 }
 
 private fun logoutFailure(context: Context, message: String) {
-    showToast(context, message)
+    ComposeViewUtils.showToast(context, message)
 }
 
 

@@ -54,7 +54,7 @@ fun ProfileTpCommonSectionComposable(
             modifier = Modifier
                 .clip(CircleShape)
                 .border(3.dp, storyCircleColor, CircleShape)
-                .size(100.dp)
+                .size(120.dp)
                 .clickable {
                     if (!user.userStory.isNullOrEmpty()) {
                         openTheUserStory(navController, user.userStory)
@@ -63,7 +63,7 @@ fun ProfileTpCommonSectionComposable(
             contentAlignment = Alignment.Center
         ) {
             ComposeImageView.CircularImageView(
-                diameter = 90.dp,
+                diameter = 110.dp,
                 imageURI = user.profilePicture ?: ""
             )
         }

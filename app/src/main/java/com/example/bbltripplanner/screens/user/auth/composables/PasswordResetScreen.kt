@@ -43,7 +43,6 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.navigation.AppNavigationScreen
-import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.auth.entity.PasswordStrengthValidityStatus
 import com.example.bbltripplanner.screens.user.auth.viewModels.PasswordResetVieModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
@@ -72,12 +71,12 @@ fun PasswordResetScreen(
             when (resetPasswordRequestStatus) {
                 is RequestStatus.Error -> {
                     isLoading = false
-                    if ((resetPasswordRequestStatus as? RequestStatus.Error)?.message == Constants.DEFAULT_ERROR) {
-                        showToast(context, genericMessage)
+                    if (resetPasswordRequestStatus.message == Constants.DEFAULT_ERROR) {
+                        ComposeViewUtils.showToast(context, genericMessage)
                     } else {
-                        showToast(
+                        ComposeViewUtils.showToast(
                             context,
-                            (resetPasswordRequestStatus as? RequestStatus.Error)?.message ?: ""
+                            resetPasswordRequestStatus.message ?: ""
                         )
                     }
                 }

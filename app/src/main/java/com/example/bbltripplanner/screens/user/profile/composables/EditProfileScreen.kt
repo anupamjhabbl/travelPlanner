@@ -67,7 +67,6 @@ import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.FileUtils
 import com.example.bbltripplanner.common.utils.StringUtils
 import com.example.bbltripplanner.common.utils.StringUtils.isValidPhoneNumber
-import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.profile.viewModels.EditProfileIntent
 import com.example.bbltripplanner.screens.user.profile.viewModels.EditProfileViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -121,15 +120,15 @@ fun EditProfileScreen(
                 is RequestStatus.Error -> {
                     isLoading = false
                     if (state.message == Constants.DEFAULT_ERROR) {
-                        showToast(context, defaultMessage)
+                        ComposeViewUtils.showToast(context, defaultMessage)
                     } else {
-                        showToast(context, state.message ?: "")
+                        ComposeViewUtils.showToast(context, state.message ?: "")
                     }
                 }
 
                 is RequestStatus.Success<String> -> {
                     isLoading = false
-                    showToast(context, state.data)
+                    ComposeViewUtils.showToast(context, state.data)
                     navController.popBackStack()
                 }
             }
@@ -257,23 +256,23 @@ private fun ProfileImageSection(
         Box(
             modifier = Modifier
                 .clip(CircleShape)
-                .size(100.dp)
+                .size(120.dp)
                 .border(2.dp, LocalCustomColors.current.secondaryBackground.copy(0.5f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
             if (imageBitMap != null) {
                 ComposeImageView.CircularImageView(
-                    diameter = 90.dp,
+                    diameter = 110.dp,
                     bitmap = imageBitMap.asImageBitmap()
                 )
             }  else if (imageUri != null) {
                 ComposeImageView.CircularImageView(
-                    diameter = 90.dp,
+                    diameter = 110.dp,
                     imageURI = imageUri
                 )
             } else {
                 ComposeImageView.CircularImageView(
-                    diameter = 90.dp,
+                    diameter = 110.dp,
                     imageURI = profilePicture ?: ""
                 )
             }

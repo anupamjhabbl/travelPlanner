@@ -1,4 +1,4 @@
-package com.example.bbltripplanner.screens.posting.entity
+package com.example.bbltripplanner.screens.userTrip.entity
 
 data class TripActionItem(
     val key: String,

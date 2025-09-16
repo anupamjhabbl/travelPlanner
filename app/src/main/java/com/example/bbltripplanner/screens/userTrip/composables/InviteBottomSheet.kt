@@ -1,4 +1,4 @@
-package com.example.bbltripplanner.screens.posting.composables
+package com.example.bbltripplanner.screens.userTrip.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,20 +18,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.common.composables.ComposeTextView
-import com.example.bbltripplanner.screens.home.entities.Location
+import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 @Composable
-fun LocationBottomSheet (
-    updateLocation: (user: Location) -> Unit
+fun InviteBottomSheet(
+    addUser: (user: User) -> Unit
 ) {
     Column(
         modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp, 0.dp, 16.dp, 16.dp)
+            .fillMaxWidth()
+            .padding(16.dp, 0.dp, 16.dp, 16.dp)
     ) {
-        val locationList = listOf<Location>()
-
+        val userList = emptyList<User>()
         OutlinedTextField(
             value = "",
             onValueChange = { },
@@ -49,10 +48,10 @@ fun LocationBottomSheet (
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn {
-            itemsIndexed(locationList) { index, location ->
+            itemsIndexed(userList) { index, user ->
                 val shape = when (index) {
                     0 -> RoundedCornerShape(12.dp, 12.dp, 2.dp, 2.dp)
-                    locationList.size - 1 -> RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
+                    userList.size - 1 -> RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
                     else -> RoundedCornerShape(2.dp, 2.dp, 2.dp, 2.dp)
                 }
 
@@ -63,11 +62,11 @@ fun LocationBottomSheet (
                         .fillMaxWidth()
                         .padding(vertical = 8.dp, horizontal = 16.dp)
                         .clickable {
-                            updateLocation(location)
+                            addUser(user)
                         }
                 ) {
                     ComposeTextView.TitleTextView(
-                        text = location.cityName,
+                        text = user.name,
                         fontSize = 14.sp,
                         modifier = Modifier.align(Alignment.CenterStart)
                     )

@@ -8,7 +8,8 @@ import com.example.bbltripplanner.common.composables.ComposeViewUtils
 fun UserSettingsScreen(
     navController: NavController
 ) {
-    ComposeViewUtils.FullScreenErrorComposable(
-        errorStrings = Pair("Work Under Progress", "Settings Page will get live soon"),
+    ComposeViewUtils.PageUnderProgressScreen(
+        navController,
+        pageName = "Settings"
     )
 }

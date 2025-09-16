@@ -51,7 +51,6 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.navigation.AppNavigationScreen
-import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserLoginAuthViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -84,9 +83,9 @@ fun AuthLoginScreen(
                 is RequestStatus.Error -> {
                     isLoading = false
                     if (userLoginRequestStatus.message == Constants.DEFAULT_ERROR) {
-                        showToast(context, genericMessage)
+                        ComposeViewUtils.showToast(context, genericMessage)
                     } else {
-                        showToast(
+                        ComposeViewUtils.showToast(
                             context,
                             userLoginRequestStatus.message ?: ""
                         )

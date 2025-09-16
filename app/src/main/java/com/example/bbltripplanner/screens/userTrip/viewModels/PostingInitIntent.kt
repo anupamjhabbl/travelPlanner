@@ -1,6 +1,6 @@
-package com.example.bbltripplanner.screens.posting.viewModels
+package com.example.bbltripplanner.screens.userTrip.viewModels
 
-import com.example.bbltripplanner.screens.posting.entity.TripData
+import com.example.bbltripplanner.screens.userTrip.entity.TripData
 
 class PostingInitIntent {
     sealed interface ViewEvent {

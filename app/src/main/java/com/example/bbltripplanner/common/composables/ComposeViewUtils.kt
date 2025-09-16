@@ -1,5 +1,7 @@
 package com.example.bbltripplanner.common.composables
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,12 +31,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
+import androidx.navigation.NavController
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 object ComposeViewUtils {
@@ -114,6 +119,60 @@ object ComposeViewUtils {
     }
 
     @Composable
+    fun PageUnderProgressScreen(
+        navController: NavController,
+        pageName: String
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ComposeImageView.ImageViewWitDrawableId(
+                imageId = R.drawable.ic_vault_filled,
+                contentDescription = "Under Progress",
+                modifier = Modifier
+                    .size(200.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ComposeTextView.TitleTextView(
+                text = stringResource(R.string.work_under_progress),
+                fontSize = 24.sp
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            ComposeTextView.TextView(
+                text = stringResource(R.string.live_soon, pageName),
+                fontSize = 18.sp,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = { navController.navigate(AppNavigationScreen.HomeScreen.route) },
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(LocalCustomColors.current.secondaryBackground)
+            ) {
+                ComposeTextView.TitleTextView(
+                    text = stringResource(R.string.back_to_home),
+                    textColor = LocalCustomColors.current.primaryBackground,
+                    fontSize = 16.sp
+                )
+            }
+        }
+    }
+
+    @Composable
     fun FullScreenLoading() {
         Loading(
             modifier = Modifier.size(40.dp)
@@ -170,5 +229,9 @@ object ComposeViewUtils {
                 }
             }
         }
+    }
+
+    fun showToast(context: Context, stringResource: String) {
+        Toast.makeText(context, stringResource, Toast.LENGTH_SHORT).show()
     }
 }

@@ -40,7 +40,6 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.navigation.AppNavigationScreen
-import com.example.bbltripplanner.screens.posting.composables.showToast
 import com.example.bbltripplanner.screens.user.auth.viewModels.ForgotPasswordAuthViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -66,12 +65,12 @@ fun ForgotPasswordScreen(
             when (forgotPasswordRequestStatus) {
                 is RequestStatus.Error -> {
                     isLoading = false
-                    if ((forgotPasswordRequestStatus as? RequestStatus.Error)?.message == Constants.DEFAULT_ERROR) {
-                        showToast(context, genericMessage)
+                    if (forgotPasswordRequestStatus.message == Constants.DEFAULT_ERROR) {
+                        ComposeViewUtils.showToast(context, genericMessage)
                     } else {
-                        showToast(
+                        ComposeViewUtils.showToast(
                             context,
-                            (forgotPasswordRequestStatus as? RequestStatus.Error)?.message ?: ""
+                            forgotPasswordRequestStatus.message ?: ""
                         )
                     }
                 }
@@ -85,8 +84,7 @@ fun ForgotPasswordScreen(
                         AppNavigationScreen.OtpVerificationScreen.createRoute(
                             state.email,
                             Constants.Origin.FORGOT_PASSWORD,
-                            (forgotPasswordRequestStatus as? RequestStatus.Success)?.data?.userId
-                                ?: ""
+                            forgotPasswordRequestStatus.data.userId
                         )
                     )
                 }

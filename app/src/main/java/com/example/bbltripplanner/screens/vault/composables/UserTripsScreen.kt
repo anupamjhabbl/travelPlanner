@@ -1,15 +1,15 @@
-package com.example.bbltripplanner.screens.user.general.composables
+package com.example.bbltripplanner.screens.vault.composables
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 
 @Composable
-fun HelpSupportScreen(
+fun UserTripsScreen(
     navController: NavController
 ) {
     ComposeViewUtils.PageUnderProgressScreen(
         navController,
-        "Help & Support"
+        "Search"
     )
 }

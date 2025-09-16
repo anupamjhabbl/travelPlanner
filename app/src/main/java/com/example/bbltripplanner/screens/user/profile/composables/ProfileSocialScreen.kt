@@ -10,7 +10,8 @@ fun ProfileSocialScreen(
     pageId: String?,
     userId: String?
 ) {
-    ComposeViewUtils.FullScreenErrorComposable(
-        errorStrings = Pair("Work Under Progress", "Social Page will get live soon $pageId $userId")
+    ComposeViewUtils.PageUnderProgressScreen(
+        navController,
+        pageName = "User Social"
     )
 }

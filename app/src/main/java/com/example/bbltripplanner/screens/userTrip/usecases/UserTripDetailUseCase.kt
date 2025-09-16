@@ -1,7 +1,7 @@
-package com.example.bbltripplanner.screens.posting.usecases
+package com.example.bbltripplanner.screens.userTrip.usecases
 
-import com.example.bbltripplanner.screens.posting.entity.TripData
-import com.example.bbltripplanner.screens.posting.repositories.UserTripDetailRepository
+import com.example.bbltripplanner.screens.userTrip.entity.TripData
+import com.example.bbltripplanner.screens.userTrip.repositories.UserTripDetailRepository
 
 class UserTripDetailUseCase(
     private val userTripDetailRepository: UserTripDetailRepository

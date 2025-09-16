@@ -3,6 +3,7 @@ package com.example.bbltripplanner.screens.home.viewModels
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
+import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.home.entities.CxeResponseError
 import com.example.bbltripplanner.screens.home.entities.HomeCxeResponse
@@ -46,8 +47,8 @@ class HomeExperienceViewModel(
         getCxeResponse()
     }
 
-    fun geLoggedUserName(): String {
-        return authPreferencesUseCase.getLoggedUser()?.name ?: ""
+    fun geLoggedUser(): User? {
+        return authPreferencesUseCase.getLoggedUser()
     }
 
     private fun getCxeResponse() {
