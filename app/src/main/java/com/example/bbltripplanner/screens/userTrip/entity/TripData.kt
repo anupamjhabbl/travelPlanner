@@ -22,7 +22,7 @@ data class TripData(
 )
 
 enum class TripVisibility(val value: String) {
-    PRIVATE("Private"), TRIP_MATES("TripMates"), PUBLIC("Public")
+    PRIVATE("Private"), PUBLIC("Public")
 }
 
 enum class TripStatus(val value: String) {
