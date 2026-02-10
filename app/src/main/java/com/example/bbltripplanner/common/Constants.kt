@@ -24,6 +24,7 @@ object Constants {
     object HTTPHeaders {
         const val AUTHORIZATION_BEARER = "Bearer"
         const val AUTHORIZATION = "Authorization"
+        const val DEVICE_ID = "x-device-id"
     }
 
     enum class Theme {

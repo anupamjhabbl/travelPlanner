@@ -114,4 +114,8 @@
     <string name="work_under_progress">Work Under Progress</string>
     <string name="live_soon">%1$s Page will get live soon</string>
     <string name="back_to_home">Back to Home</string>
+    <string name="following_empty_heading">Not following anyone</string>
+    <string name="following_empty_content">Follow other travelers to stay connected.</string>
+    <string name="followers_empty_heading">No followers yet</string>
+    <string name="followers_empty_content">When someone follows you, they’ll show up here.</string>
 </resources>

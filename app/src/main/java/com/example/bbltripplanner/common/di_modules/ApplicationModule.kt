@@ -30,11 +30,17 @@ import com.example.bbltripplanner.screens.user.auth.viewModels.PasswordResetVieM
 import com.example.bbltripplanner.screens.user.auth.viewModels.UseRegistrationViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserLoginAuthViewModel
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountViewModel
+import com.example.bbltripplanner.screens.user.profile.clients.ProfileRelationClient
 import com.example.bbltripplanner.screens.user.profile.clients.UserClient
 import com.example.bbltripplanner.screens.user.profile.repositories.GetProfileRepository
+import com.example.bbltripplanner.screens.user.profile.repositories.ProfileRelationRepository
 import com.example.bbltripplanner.screens.user.profile.repositoryImpl.GetProfileNetwork
+import com.example.bbltripplanner.screens.user.profile.repositoryImpl.ProfileRelationNetwork
+import com.example.bbltripplanner.screens.user.profile.usecases.ProfileRelationUsecase
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
 import com.example.bbltripplanner.screens.user.profile.viewModels.EditProfileViewModel
+import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowersViewModel
+import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowingViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileViewModel
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
@@ -51,7 +57,7 @@ val appModule = module {
     viewModel { MainActivityViewModel(get(), get()) }
 
     // User
-    single<UserClient> { Network.createWithAuth(UserClient::class.java, get(), get()) }
+    single<UserClient> { Network.createWithAuth(UserClient::class.java, get(), get(), androidContext()) }
     single<GetProfileRepository> { GetProfileNetwork(get()) }
     single<ProfileUseCase> { ProfileUseCase(get()) }
     viewModel { ProfileViewModel(get(), get()) }
@@ -61,16 +67,16 @@ val appModule = module {
     // Home & Listing
     single<HomeCxeLayoutRepository> { HomeCxeLayoutNetwork(get()) }
     single<HomeCxeUseCase> { HomeCxeUseCase(get()) }
-    single<HomeCxeClient> { Network.createWithAuth(HomeCxeClient::class.java, get(), get()) }
+    single<HomeCxeClient> { Network.createWithAuth(HomeCxeClient::class.java, get(), get(), androidContext()) }
     viewModel { HomeExperienceViewModel(get(), get()) }
 
     // Posting & Trips
-    single<PostingClient> { Network.createWithAuth(PostingClient::class.java, get(), get()) }
+    single<PostingClient> { Network.createWithAuth(PostingClient::class.java, get(), get(), androidContext()) }
     single<PostingRepository> { PostingNetwork(get()) }
     single<PostingUseCase> { PostingUseCase(get()) }
     single<UserTripDetailUseCase> { UserTripDetailUseCase(get()) }
     single<UserTripDetailRepository> { UseTripDetailNetwork(get()) }
-    single<UserTripDetailClient> { Network.createWithAuth(UserTripDetailClient::class.java, get(), get()) }
+    single<UserTripDetailClient> { Network.createWithAuth(UserTripDetailClient::class.java, get(), get(), androidContext()) }
     viewModel { PostingInitViewModel(get()) }
     viewModel { UserTripDetailViewModel(get()) }
 
@@ -78,10 +84,21 @@ val appModule = module {
     single<UserAuthRepository> { UserAuthNetwork(get()) }
     single<UserAuthUseCase> { UserAuthUseCase(get()) }
     single<AuthPreferencesUseCase> { AuthPreferencesUseCase(get(), get()) }
-    single<UserAuthClient> { Network.create(UserAuthClient::class.java) }
+    single<UserAuthClient> { Network.create(UserAuthClient::class.java, androidContext()) }
     viewModel { OTPAuthViewModel(get(), get(),get()) }
     viewModel { UserLoginAuthViewModel(get(), get(), get()) }
     viewModel { UseRegistrationViewModel(get()) }
     viewModel { ForgotPasswordAuthViewModel(get()) }
     viewModel { PasswordResetVieModel(get(), get()) }
+
+    // Profile Relations
+    single<ProfileRelationRepository> { ProfileRelationNetwork(get()) }
+    single<ProfileRelationUsecase> { ProfileRelationUsecase(get()) }
+    single<ProfileRelationClient> { Network.createWithAuth(ProfileRelationClient::class.java, get(), get(), androidContext()) }
+    viewModel { (userId: String?) ->
+        ProfileFollowersViewModel(get(), userId)
+    }
+    viewModel { (userId: String?) ->
+        ProfileFollowingViewModel(get(), userId)
+    }
 }
