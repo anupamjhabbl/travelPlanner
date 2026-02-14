@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -33,27 +34,28 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.auth.viewModels.ForgotPasswordAuthViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ForgotPasswordScreen(
-    navController: NavController
-) {
+fun ForgotPasswordScreen() {
     val context = LocalContext.current
     val genericMessage = stringResource(R.string.generic_error)
     val viewModel: ForgotPasswordAuthViewModel =  koinViewModel()
     val state by viewModel.state.collectAsState()
+    val scope = rememberCoroutineScope()
     var isEmailFocused by remember { mutableStateOf(false) }
     var hasEmailFocused by remember { mutableStateOf(false) }
     var isLoading by remember {
@@ -80,11 +82,13 @@ fun ForgotPasswordScreen(
 
                 is RequestStatus.Success -> {
                     isLoading = false
-                    navController.navigate(
-                        AppNavigationScreen.OtpVerificationScreen.createRoute(
-                            state.email,
-                            Constants.Origin.FORGOT_PASSWORD,
-                            forgotPasswordRequestStatus.data.userId
+                    CommonNavigationChannel.navigateTo(
+                        NavigationAction.Navigate(
+                            AppNavigationScreen.OtpVerificationScreen.createRoute(
+                                state.email,
+                                Constants.Origin.FORGOT_PASSWORD,
+                                forgotPasswordRequestStatus.data.userId
+                            )
                         )
                     )
                 }
@@ -113,7 +117,11 @@ fun ForgotPasswordScreen(
             ) {
                 IconButton(
                     onClick = {
-                        navController.popBackStack()
+                        scope.launch {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.NavigateUp
+                            )
+                        }
                     }
                 ) {
                     Icon(

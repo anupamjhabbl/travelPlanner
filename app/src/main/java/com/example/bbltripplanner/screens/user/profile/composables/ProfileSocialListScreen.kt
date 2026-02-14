@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +26,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
@@ -33,17 +33,20 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowersViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowingViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ProfileFollowersPage(
-    navController: NavController,
     userId: String?
 ) {
+    val scope = rememberCoroutineScope()
     val emptyTitle = stringResource(R.string.followers_empty_heading)
     val emptyContent = stringResource(R.string.followers_empty_content)
     val viewModel: ProfileFollowersViewModel = koinViewModel(parameters = { parametersOf(userId) })
@@ -72,11 +75,15 @@ fun ProfileFollowersPage(
                     SocialProfileItem(
                         user = user,
                         onUserClick = {
-                            navController.navigate(
-                                AppNavigationScreen.ProfileScreen.createRoute(
-                                    user.id
+                            scope.launch {
+                                CommonNavigationChannel.navigateTo(
+                                    NavigationAction.Navigate(
+                                        AppNavigationScreen.ProfileScreen.createRoute(
+                                            user.id
+                                        )
+                                    )
                                 )
-                            )
+                            }
                         }
                     )
                 }
@@ -87,9 +94,9 @@ fun ProfileFollowersPage(
 
 @Composable
 fun ProfileFollowingPage(
-    navController: NavController,
     userId: String?
 ) {
+    val scope = rememberCoroutineScope()
     val emptyTitle = stringResource(R.string.following_empty_heading)
     val emptyContent = stringResource(R.string.following_empty_content)
     val viewModel: ProfileFollowingViewModel = koinViewModel(parameters = { parametersOf(userId) })
@@ -118,11 +125,15 @@ fun ProfileFollowingPage(
                     SocialProfileItem(
                         user = user,
                         onUserClick = {
-                            navController.navigate(
-                                AppNavigationScreen.ProfileScreen.createRoute(
-                                    user.id
+                            scope.launch {
+                                CommonNavigationChannel.navigateTo(
+                                    NavigationAction.Navigate(
+                                        AppNavigationScreen.ProfileScreen.createRoute(
+                                            user.id
+                                        )
+                                    )
                                 )
-                            )
+                            }
                         }
                     )
                 }

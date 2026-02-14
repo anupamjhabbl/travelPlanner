@@ -47,6 +47,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,25 +59,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.TripVisibility
 import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun PostingInitScreen(
-    navController: NavController
-) {
+fun PostingInitScreen() {
     val viewModel: PostingInitViewModel = koinViewModel()
     val postingFormData by viewModel.tripFormData.collectAsState()
     val context = LocalContext.current
@@ -95,7 +96,7 @@ fun PostingInitScreen(
     LaunchedEffect(Unit) { 
         viewModel.viewEffect.collectLatest { viewEffect ->
             when (viewEffect) {
-                is PostingInitIntent.ViewEffect.GoNext -> moveToNextPage(navController, viewEffect.tripData.tripId) {
+                is PostingInitIntent.ViewEffect.GoNext -> moveToNextPage(viewEffect.tripData.tripId) {
                     ComposeViewUtils.showToast(context, genericMessage)
                 }
                 PostingInitIntent.ViewEffect.ShowError -> ComposeViewUtils.showToast(context, genericMessage)
@@ -143,7 +144,7 @@ fun PostingInitScreen(
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
         ) {
-            PostingInitScreenToolbar(postingFormData.visibility, navController) { tripVisibility ->
+            PostingInitScreenToolbar(postingFormData.visibility) { tripVisibility ->
                 viewModel.setTripVisibility(tripVisibility)
             }
         }
@@ -317,9 +318,9 @@ fun PostingInitScreen(
 @Composable
 fun PostingInitScreenToolbar(
     visibility: TripVisibility,
-    navController: NavController,
     onChange: (tripVisibility: TripVisibility) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -338,7 +339,11 @@ fun PostingInitScreenToolbar(
         ) {
             IconButton(
                 onClick = {
-                    navController.popBackStack()
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.NavigateUp
+                        )
+                    }
                 }
             ) {
                 Icon(
@@ -475,10 +480,14 @@ enum class BottomSheetType {
     LOCATION_SELECTION
 }
 
-fun moveToNextPage(navController: NavController, tripId: String?, showError: () -> Unit) {
+suspend fun moveToNextPage(tripId: String?, showError: () -> Unit) {
     if (tripId == null) {
         showError()
         return
     }
-    navController.navigate(AppNavigationScreen.UserTripDetailScreen.createRoute(tripId))
+    CommonNavigationChannel.navigateTo(
+        NavigationAction.Navigate(
+            AppNavigationScreen.UserTripDetailScreen.createRoute(tripId)
+        )
+    )
 }

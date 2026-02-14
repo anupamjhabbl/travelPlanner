@@ -34,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +46,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeButtonView
@@ -53,22 +53,25 @@ import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils.FullScreenLoading
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.TripActionItem
 import com.example.bbltripplanner.screens.userTrip.entity.TripActionResourceMapper
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun UserTripDetailScreen(
-    navController: NavController,
     tripId: String?
 ) {
     val tripActionList = TripActionResourceMapper.getTripActions()
     val viewModel: UserTripDetailViewModel = koinViewModel()
     val tripDataStatus = viewModel.userTripDetailFetchStatus.collectAsState()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         tripId?.let {
@@ -84,7 +87,7 @@ fun UserTripDetailScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            UserTripDetailToolbar(navController)
+            UserTripDetailToolbar()
 
             Spacer(Modifier.height(30.dp))
 
@@ -99,7 +102,9 @@ fun UserTripDetailScreen(
                         ActionTile(
                             item
                         ) { key ->
-                            takeAction(navController, key)
+                            scope.launch {
+                                takeAction(key)
+                            }
                         }
 
                         if (index != tripActionList.size - 1) {
@@ -273,7 +278,8 @@ private fun TripSummaryDetailItem(
 }
 
 @Composable
-private fun UserTripDetailToolbar(navController: NavController) {
+private fun UserTripDetailToolbar() {
+    val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -288,7 +294,11 @@ private fun UserTripDetailToolbar(navController: NavController) {
         ) {
             IconButton(
                 onClick = {
-                    navController.popBackStack()
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.NavigateUp
+                        )
+                    }
                 }
             ) {
                 Icon(
@@ -359,7 +369,7 @@ private fun ActionTile (
     }
 }
 
-private fun takeAction(navController: NavController, key: String) {
+private suspend fun takeAction(key: String) {
     when (key) {
         Constants.TripDetailScreen.GENERAL -> {}
         Constants.TripDetailScreen.ATTACHMENTS-> {}

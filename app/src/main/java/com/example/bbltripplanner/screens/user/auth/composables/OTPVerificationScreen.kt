@@ -33,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,13 +55,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.auth.entity.OTPAction
 import com.example.bbltripplanner.screens.user.auth.entity.OTPState
 import com.example.bbltripplanner.screens.user.auth.viewModels.OTPAuthViewModel
@@ -72,11 +74,11 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun OTPVerificationScreen(
-    navController: NavController,
     userEmail: String?,
     origin: String?,
     userId: String?
 ) {
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val genericMessage = stringResource(R.string.generic_error)
     val  otpResendSuccessMessage = stringResource(R.string.otp_resend_success_message)
@@ -182,10 +184,14 @@ fun OTPVerificationScreen(
                         } else {
                             AppNavigationScreen.HomeScreen.route
                         }
-                        navController.navigate(route) {
-                            popUpTo(0) { inclusive = true }
-                            launchSingleTop = true
-                        }
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.Navigate(
+                                route
+                            ) {
+                                popUpTo(0) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        )
                     }
                 }
             }
@@ -213,7 +219,11 @@ fun OTPVerificationScreen(
             ) {
                 IconButton(
                     onClick = {
-                        navController.popBackStack()
+                        scope.launch {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.NavigateUp
+                            )
+                        }
                     }
                 ) {
                     Icon(

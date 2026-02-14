@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileSocialScreens
@@ -28,7 +27,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ProfileSocialScreen(
-    navController: NavController,
     pageId: String?,
     userId: String?
 ) {
@@ -109,13 +107,13 @@ fun ProfileSocialScreen(
         ) { index ->
             when (index) {
                 followersPageIndex -> {
-                    ProfileFollowersPage(navController, userId)
+                    ProfileFollowersPage(userId)
                 }
                 followingPageIndex -> {
-                    ProfileFollowingPage(navController, userId)
+                    ProfileFollowingPage(userId)
                 }
                 else -> {
-                    ProfileFollowersPage(navController, userId)
+                    ProfileFollowersPage(userId)
                 }
             }
         }

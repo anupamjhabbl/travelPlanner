@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,25 +25,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileSocialScreens
 import com.example.bbltripplanner.screens.vault.entity.VaultScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileTpCommonSectionComposable(
     user: User,
-    navController: NavController,
     isOwnProfile: Boolean,
     onFollowClick: () -> Unit
 ) {
     val storyCircleColor = if (user.userStory.isNullOrEmpty()) Color.Transparent else LocalCustomColors.current.secondaryBackground
-
+    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -57,7 +59,9 @@ fun ProfileTpCommonSectionComposable(
                 .size(120.dp)
                 .clickable {
                     if (!user.userStory.isNullOrEmpty()) {
-                        openTheUserStory(navController, user.userStory)
+                        scope.launch {
+                            openTheUserStory(user.userStory)
+                        }
                     }
                 },
             contentAlignment = Alignment.Center
@@ -86,16 +90,22 @@ fun ProfileTpCommonSectionComposable(
             modifier = Modifier.fillMaxWidth()
         ) {
             ProfileStat(user.tripCount.toString(), stringResource(R.string.total_trips)) {
-                openUserTripPage(user, navController)
+                scope.launch {
+                    openUserTripPage(user)
+                }
             }
             ProfileStat(
                 user.followersCount.toString(),
                 stringResource(R.string.followers)
             ) {
-                openFollowersPage(user, navController)
+                scope.launch {
+                    openFollowersPage(user)
+                }
             }
             ProfileStat(user.followCount.toString(), stringResource(R.string.followings)) {
-                openFollowingPage(user, navController)
+                scope.launch {
+                    openFollowingPage(user)
+                }
             }
         }
 
@@ -122,25 +132,40 @@ fun ProfileTpCommonSectionComposable(
     }
 }
 
-private fun openFollowingPage(user: User, navController: NavController) {
-    navController.navigate(
-        AppNavigationScreen.ProfileSocialScreen.createRoute(ProfileSocialScreens.FOLLOWING.value, user.id)
+private suspend fun openFollowingPage(user: User) {
+    CommonNavigationChannel.navigateTo(
+        NavigationAction.Navigate(
+            AppNavigationScreen.ProfileSocialScreen.createRoute(
+                ProfileSocialScreens.FOLLOWING.value,
+                user.id
+            )
+        )
     )
 }
 
-private fun openFollowersPage(user: User, navController: NavController) {
-    navController.navigate(
-        AppNavigationScreen.ProfileSocialScreen.createRoute(ProfileSocialScreens.FOLLOWERS.value, user.id)
+private suspend fun openFollowersPage(user: User) {
+    CommonNavigationChannel.navigateTo(
+        NavigationAction.Navigate(
+            AppNavigationScreen.ProfileSocialScreen.createRoute(
+                ProfileSocialScreens.FOLLOWERS.value,
+                user.id
+            )
+        )
     )
 }
 
-private fun openUserTripPage(user: User, navController: NavController) {
-    navController.navigate(
-        AppNavigationScreen.VaultScreen.createRoute(VaultScreens.TRIPS.value, user.id)
+private suspend fun openUserTripPage(user: User) {
+    CommonNavigationChannel.navigateTo(
+        NavigationAction.Navigate(
+            AppNavigationScreen.VaultScreen.createRoute(
+                VaultScreens.TRIPS.value,
+                user.id
+            )
+        )
     )
 }
 
-private fun openTheUserStory(navController: NavController, userStory: String) {
+private suspend fun openTheUserStory(userStory: String) {
     // User Profile story page
 }
 

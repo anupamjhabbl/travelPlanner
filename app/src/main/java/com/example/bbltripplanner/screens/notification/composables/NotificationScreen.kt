@@ -1,15 +1,11 @@
 package com.example.bbltripplanner.screens.notification.composables
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 
 @Composable
-fun NotificationScreen(
-    navController: NavController
-) {
+fun NotificationScreen() {
     ComposeViewUtils.PageUnderProgressScreen(
-        navController,
         pageName  = "Notification"
     )
 }

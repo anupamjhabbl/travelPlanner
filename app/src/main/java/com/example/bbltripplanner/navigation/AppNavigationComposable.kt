@@ -21,6 +21,7 @@ import androidx.navigation.navigation
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.BottomNavigationPanel
+import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.entity.BottomNavigationItem
 import com.example.bbltripplanner.screens.buzz.composables.BuzzScreen
 import com.example.bbltripplanner.screens.destination.composables.DestinationScreen
@@ -62,6 +63,17 @@ fun AppNavigationComposable(
         }
     }
 
+    CommonLifecycleAwareLaunchedEffect(CommonNavigationChannel.navigationChannel) { navigationAction ->
+        when (navigationAction) {
+            is NavigationAction.Navigate -> {
+                homeNavController.navigate(navigationAction.destination) {
+                    navigationAction.navOptions?.invoke(this)
+                }
+            }
+            NavigationAction.NavigateUp -> homeNavController.navigateUp()
+        }
+    }
+
     Scaffold (
         modifier = Modifier
             .fillMaxSize()
@@ -69,7 +81,6 @@ fun AppNavigationComposable(
         bottomBar = {
             if (navBackStackEntry.toAppNavigationScreen()?.hasBottomBar == true) {
                 BottomNavigationPanel(
-                    homeNavController,
                     selectedTabIndex.intValue,
                     bottomNavigationItems
                 )
@@ -106,30 +117,30 @@ fun HomeNavigationComposable(
             startDestination = AppNavigationScreen.AccountScreen.route
         ) {
             composable(route = AppNavigationScreen.AccountScreen.route) {
-                MyAccountView(homeNavController)
+                MyAccountView()
             }
 
             composable(route = AppNavigationScreen.ProfileScreen.route) { navBackStackEntry ->
                 val userId =  navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_ID)
-                ProfileScreen(homeNavController, userId)
+                ProfileScreen(userId)
             }
 
             composable(route = AppNavigationScreen.HelpSupportScreen.route) {
-                HelpSupportScreen(homeNavController)
+                HelpSupportScreen()
             }
 
             composable(route = AppNavigationScreen.UserSettingsScreen.route) {
-                UserSettingsScreen(homeNavController)
+                UserSettingsScreen()
             }
 
             composable(route = AppNavigationScreen.ProfileSocialScreen.route) { navBackStackEntry ->
                 val pageId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.PAGE_ID)
                 val userId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_ID)
-                ProfileSocialScreen(homeNavController, pageId, userId)
+                ProfileSocialScreen(pageId, userId)
             }
 
             composable(route = AppNavigationScreen.EditProfileScreen.route) {
-                EditProfileScreen(homeNavController)
+                EditProfileScreen()
             }
         }
 
@@ -138,22 +149,22 @@ fun HomeNavigationComposable(
             startDestination = AppNavigationScreen.AuthenticationFormScreen.route
         ) {
             composable(route = AppNavigationScreen.AuthenticationFormScreen.route) {
-                AuthenticationFormScreen(homeNavController)
+                AuthenticationFormScreen()
             }
 
             composable(route = AppNavigationScreen.ForgotPasswordScreen.route) {
-                ForgotPasswordScreen(homeNavController)
+                ForgotPasswordScreen()
             }
 
             composable(route = AppNavigationScreen.ResetPasswordScreen.route) {
-                PasswordResetScreen(homeNavController)
+                PasswordResetScreen()
             }
 
             composable(route = AppNavigationScreen.OtpVerificationScreen.route) { navBackStackEntry ->
                 val userEmail =  navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_EMAIL)
                 val origin = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.ORIGIN)
                 val userId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_ID)
-                OTPVerificationScreen(homeNavController, userEmail, origin, userId)
+                OTPVerificationScreen(userEmail, origin, userId)
             }
         }
 
@@ -162,40 +173,40 @@ fun HomeNavigationComposable(
             startDestination = AppNavigationScreen.HomeScreen.route
         ) {
             composable(route = AppNavigationScreen.HomeScreen.route) {
-                HomeExperienceScreen(homeNavController)
+                HomeExperienceScreen()
             }
         }
 
         composable(route = AppNavigationScreen.SearchScreen.route) {
-            TripPlannerSearchScreen(homeNavController)
+            TripPlannerSearchScreen()
         }
 
         composable(route = AppNavigationScreen.NotificationScreen.route) {
-            NotificationScreen(homeNavController)
+            NotificationScreen()
         }
 
         composable(route = AppNavigationScreen.VaultScreen.route) { navBackStackEntry ->
             val pageId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.PAGE_ID)
             val userId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_ID)
-            UserVaultScreen(homeNavController, pageId, userId)
+            UserVaultScreen(pageId, userId)
         }
 
         composable(route = AppNavigationScreen.AddScreen.route) {
-            PostingInitScreen(homeNavController)
+            PostingInitScreen()
         }
 
         composable(route = AppNavigationScreen.BuzzScreen.route) {
-            BuzzScreen(homeNavController)
+            BuzzScreen()
         }
 
         composable(route = AppNavigationScreen.UserTripDetailScreen.route) { navBackStackEntry ->
             val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
-            UserTripDetailScreen(homeNavController, tripId)
+            UserTripDetailScreen(tripId)
         }
 
         composable(route = AppNavigationScreen.DestinationScreen.route) { navBackStackEntry ->
             val destinationId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.DESTINATION_ID)
-            DestinationScreen(homeNavController, destinationId)
+            DestinationScreen(destinationId)
         }
     }
 }

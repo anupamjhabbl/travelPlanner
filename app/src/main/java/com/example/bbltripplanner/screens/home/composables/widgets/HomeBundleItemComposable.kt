@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,23 +29,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.utils.WindowSizeUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.home.entities.BundleWidgetItem
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeBundleItemComposable(
-    navController: NavController,
     widget: HomeCxeWidget.BundleItemsWidget
 ) {
     val widgetItemList = widget.data.widgetList
-
+    val scope = rememberCoroutineScope()
     if (widgetItemList.isNullOrEmpty()) {
         return
     }
@@ -66,7 +68,15 @@ fun HomeBundleItemComposable(
         ) {
             itemsIndexed(widgetItemList) { index, item ->
                 BundleItemView(item, index, widgetItemList.size) { itemId ->
-                    navController.navigate(AppNavigationScreen.DestinationScreen.createRoute(itemId))
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.Navigate(
+                                AppNavigationScreen.DestinationScreen.createRoute(
+                                    itemId
+                                )
+                            )
+                        )
+                    }
                 }
             }
 

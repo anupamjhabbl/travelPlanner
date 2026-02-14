@@ -44,13 +44,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserLoginAuthViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -59,7 +60,6 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AuthLoginScreen(
-    navController: NavController,
     onSignUpClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
     onAppleLoginClick: () -> Unit,
@@ -98,10 +98,14 @@ fun AuthLoginScreen(
 
                 is RequestStatus.Success -> {
                     isLoading = false
-                    navController.navigate(AppNavigationScreen.HomeScreen.route) {
-                        popUpTo(0) { inclusive = true }
-                        launchSingleTop = true
-                    }
+                    CommonNavigationChannel.navigateTo(
+                        NavigationAction.Navigate(
+                            AppNavigationScreen.HomeScreen.route
+                        ) {
+                            popUpTo(0) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    )
                 }
             }
         }

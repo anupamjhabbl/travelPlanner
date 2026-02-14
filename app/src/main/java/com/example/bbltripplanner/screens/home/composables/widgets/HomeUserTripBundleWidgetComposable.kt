@@ -15,17 +15,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
 import com.example.bbltripplanner.screens.home.entities.UserTripWidgetItem
 import com.example.bbltripplanner.screens.vault.entity.VaultScreens
@@ -33,17 +35,17 @@ import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HomeUserTripBundleWidgetComposable(
-    navController: NavController,
     widget: HomeCxeWidget.UserTripBundleWidget,
     user: User?
 ) {
     val widgetItemList = widget.data.widgetList
     val pagerState = rememberPagerState()
-
+    val scope = rememberCoroutineScope()
     if (widgetItemList.isNullOrEmpty()) {
         return
     }
@@ -68,11 +70,15 @@ fun HomeUserTripBundleWidgetComposable(
                     .padding(12.dp, 4.dp)
                     .clickable {
                         user?.let {
-                            navController.navigate(
-                                AppNavigationScreen.VaultScreen.createRoute(
-                                    VaultScreens.TRIPS.value, it.id
+                            scope.launch {
+                                CommonNavigationChannel.navigateTo(
+                                    NavigationAction.Navigate(
+                                        AppNavigationScreen.VaultScreen.createRoute(
+                                            VaultScreens.TRIPS.value, it.id
+                                        )
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
             ) {
@@ -91,7 +97,13 @@ fun HomeUserTripBundleWidgetComposable(
             count = widgetItemList.size
         ) { pageNo ->
             UserTripWidgetItem(widgetItemList[pageNo]) { tripId ->
-                navController.navigate(AppNavigationScreen.UserTripDetailScreen.createRoute(tripId))
+                scope.launch {
+                    CommonNavigationChannel.navigateTo(
+                        NavigationAction.Navigate(
+                            AppNavigationScreen.UserTripDetailScreen.createRoute(tripId)
+                        )
+                    )
+                }
             }
         }
     }

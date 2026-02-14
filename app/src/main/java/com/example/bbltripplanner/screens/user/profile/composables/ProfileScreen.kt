@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -35,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeImageView
@@ -46,6 +46,8 @@ import com.example.bbltripplanner.common.entity.MenuItems
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.common.utils.StringUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionItem
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileSocialScreens
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileIntent
@@ -53,11 +55,11 @@ import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileViewMod
 import com.example.bbltripplanner.screens.vault.entity.VaultScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ProfileScreen (
-    navController: NavController,
     userId: String?
 ) {
     val profileViewModel: ProfileViewModel = koinViewModel()
@@ -110,11 +112,12 @@ fun ProfileScreen (
                     val profileActionList = profileViewModel.getProfileActionList()
                     val profileMenuItems = profileViewModel.getProfileMenuItem()
 
-                    ProfileViewToolbar(profileViewModel,  navController, profileMenuItems, user.data.id)
+                    ProfileViewToolbar(profileMenuItems, user.data.id) {
+                        profileViewModel.processEvent(ProfileIntent.ViewEvent.BlockUser)
+                    }
 
                     ProfileTpCommonSectionComposable(
                         user.data,
-                        navController,
                         profileViewModel.isMyProfile()
                     ) {
                         profileViewModel.processEvent(ProfileIntent.ViewEvent.FollowUser)
@@ -124,7 +127,6 @@ fun ProfileScreen (
 
                     ProfileActionComposable(
                         profileActionList,
-                        navController,
                         user.data.id
                     )
                 }
@@ -145,9 +147,9 @@ fun ProfileScreen (
 @Composable
 fun ProfileActionComposable(
     profileActionList: List<ProfileActionItem>,
-    navController: NavController,
     userId: String
 ) {
+    val scope = rememberCoroutineScope()
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -175,7 +177,9 @@ fun ProfileActionComposable(
                         shape
                     )
                     .clickable {
-                        takeAction(navController, item.key, userId)
+                        scope.launch {
+                            takeAction(item.key, userId)
+                        }
                     }
                     .fillMaxWidth()
                     .padding(vertical = 8.dp, horizontal = 16.dp),
@@ -190,12 +194,12 @@ fun ProfileActionComposable(
 
 @Composable
 fun ProfileViewToolbar(
-    profileViewModel: ProfileViewModel,
-    navController: NavController,
     profileMenuItems: List<String>,
-    userId: String
+    userId: String,
+    onBlock: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -209,7 +213,9 @@ fun ProfileViewToolbar(
         ) {
             IconButton(
                 onClick = {
-                    navController.popBackStack()
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
+                    }
                 }
             ) {
                 Icon(
@@ -223,26 +229,31 @@ fun ProfileViewToolbar(
         Menu(
             menuItems = profileMenuItems,
             { item ->
-                doMenuAction(context, profileViewModel, navController, item, userId)
+                scope.launch {
+                    doMenuAction(context, item, userId, onBlock)
+                }
             },
         )
     }
 }
 
-private fun doMenuAction(
+private suspend fun doMenuAction(
     context: Context,
-    profileViewModel: ProfileViewModel,
-    navController: NavController,
     item: String,
-    userId: String
+    userId: String,
+    onBlock: () -> Unit
 ) {
     when (item) {
         MenuItems.MyProfileMenuItem.EDIT.value -> {
-            navController.navigate(AppNavigationScreen.EditProfileScreen.route)
+            CommonNavigationChannel.navigateTo(
+                NavigationAction.Navigate(
+                    AppNavigationScreen.EditProfileScreen.route
+                )
+            )
         }
         MenuItems.MyProfileMenuItem.SHARE.value -> shareProfile(context, userId)
         MenuItems.OtherProfileMenuItem.BLOCK.value -> {
-            profileViewModel.processEvent(ProfileIntent.ViewEvent.BlockUser)
+            onBlock()
         }
     }
 }
@@ -259,25 +270,48 @@ private fun shareProfile(
     context.startActivity(shareIntent)
 }
 
-private fun takeAction(navController: NavController, key: String, userId: String) {
+private suspend fun takeAction(key: String, userId: String) {
     when (key) {
-        Constants.TRIP_PAGE -> navController.navigate(AppNavigationScreen.VaultScreen.createRoute(
-            VaultScreens.TRIPS.value,
-            userId
-        ))
-        Constants.FAVOURITES -> navController.navigate(AppNavigationScreen.VaultScreen.createRoute(
-            VaultScreens.FAVOURITES.value,
-            userId
-        ))
-        Constants.REVIEW_PAGES -> navController.navigate(AppNavigationScreen.VaultScreen.createRoute(
-            VaultScreens.THREADS.value,
-            userId
-        ))
-        Constants.BUZZ_PAGE -> navController.navigate(AppNavigationScreen.VaultScreen.createRoute(
-            VaultScreens.BUZZ.value,
-            userId
-        ))
-        Constants.CONTACTS -> navController.navigate(AppNavigationScreen.ProfileSocialScreen.createRoute(ProfileSocialScreens.CONTACTS.value, userId))
+        Constants.TRIP_PAGE -> CommonNavigationChannel.navigateTo(
+            NavigationAction.Navigate(
+                AppNavigationScreen.VaultScreen.createRoute(
+                    VaultScreens.TRIPS.value,
+                    userId
+                )
+            )
+        )
+        Constants.FAVOURITES -> CommonNavigationChannel.navigateTo(
+            NavigationAction.Navigate(
+                AppNavigationScreen.VaultScreen.createRoute(
+                    VaultScreens.FAVOURITES.value,
+                    userId
+                )
+            )
+        )
+        Constants.REVIEW_PAGES -> CommonNavigationChannel.navigateTo(
+            NavigationAction.Navigate(
+                AppNavigationScreen.VaultScreen.createRoute(
+                    VaultScreens.THREADS.value,
+                    userId
+                )
+            )
+        )
+        Constants.BUZZ_PAGE -> CommonNavigationChannel.navigateTo(
+            NavigationAction.Navigate(
+                AppNavigationScreen.VaultScreen.createRoute(
+                    VaultScreens.BUZZ.value,
+                    userId
+                )
+            )
+        )
+        Constants.CONTACTS -> CommonNavigationChannel.navigateTo(
+            NavigationAction.Navigate(
+                AppNavigationScreen.ProfileSocialScreen.createRoute(
+                    ProfileSocialScreens.CONTACTS.value,
+                    userId
+                )
+            )
+        )
     }
 }
 

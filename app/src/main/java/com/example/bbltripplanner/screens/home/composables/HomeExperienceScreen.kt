@@ -22,18 +22,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils.FullScreenErrorComposable
 import com.example.bbltripplanner.common.composables.ComposeViewUtils.FullScreenLoading
+import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeBundleItemComposable
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeGreetingComposable
 import com.example.bbltripplanner.screens.home.composables.widgets.HomeImageCarouselComposable
@@ -50,9 +53,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun HomeExperienceScreen(
-    navController: NavController
-) {
+fun HomeExperienceScreen() {
     val viewModel: HomeExperienceViewModel = koinViewModel()
     val widgets by viewModel.widgetsLiveData.collectAsState()
     val viewState by viewModel.viewStateLiveData.collectAsState()
@@ -74,7 +75,7 @@ fun HomeExperienceScreen(
             .fillMaxSize()
             .background(LocalCustomColors.current.primaryBackground)
     ) {
-        HomeToolbar(navController = navController)
+        HomeToolbar()
 
         when (val state = viewState) {
             HomeExperienceIntent.ViewState.ShowFullScreenLoading -> FullScreenLoading()
@@ -85,7 +86,7 @@ fun HomeExperienceScreen(
             }
             else -> {
                 val uiWidgetList = filterWidgetsForUI(widgets)
-                ShowItems(navController,uiWidgetList, widgetsListState, viewModel)
+                ShowItems(uiWidgetList, widgetsListState, viewModel.geLoggedUser())
             }
         }
     }
@@ -105,10 +106,9 @@ fun filterWidgetsForUI(widgets: List<HomeCxeWidget>): List<HomeCxeWidget> {
 
 @Composable
 fun ShowItems(
-    navController: NavController,
     widgets: List<HomeCxeWidget>,
     widgetsListState: LazyListState,
-    viewModel: HomeExperienceViewModel
+    loggedUser: User?
 ) {
     LazyColumn(
         modifier = Modifier
@@ -119,13 +119,13 @@ fun ShowItems(
             Spacer(modifier = Modifier.height(14.dp))
 
             when (homeCxeWidget) {
-                is HomeCxeWidget.GreetingWidget -> HomeGreetingComposable(homeCxeWidget, viewModel.geLoggedUser()?.name)
+                is HomeCxeWidget.GreetingWidget -> HomeGreetingComposable(homeCxeWidget, loggedUser?.name)
                 is HomeCxeWidget.ImageCarouselWidget -> HomeImageCarouselComposable(homeCxeWidget)
-                is HomeCxeWidget.BundleItemsWidget -> HomeBundleItemComposable(navController, homeCxeWidget)
+                is HomeCxeWidget.BundleItemsWidget -> HomeBundleItemComposable(homeCxeWidget)
                 is HomeCxeWidget.NewsBannerWidget -> HomeNewsBannerComposable(homeCxeWidget)
                 is HomeCxeWidget.TopPicksByLocationCtaWidget -> HomeLocationFeedCtaComposable(homeCxeWidget)
                 is HomeCxeWidget.TravelThreadsBundleWidget -> HomeTravelThreadsBundleComposable(homeCxeWidget)
-                is HomeCxeWidget.UserTripBundleWidget -> HomeUserTripBundleWidgetComposable(navController, homeCxeWidget, viewModel.geLoggedUser())
+                is HomeCxeWidget.UserTripBundleWidget -> HomeUserTripBundleWidgetComposable(homeCxeWidget, loggedUser)
             }
 
             Spacer(modifier = Modifier.height(14.dp))
@@ -138,9 +138,8 @@ fun ShowItems(
 }
 
 @Composable
-fun HomeToolbar(
-    navController: NavController
-) {
+fun HomeToolbar() {
+    val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -172,7 +171,15 @@ fun HomeToolbar(
             Box(
                 modifier = Modifier
                     .background(LocalCustomColors.current.secondaryBackground, CircleShape)
-                    .clickable { navController.navigate(AppNavigationScreen.SearchScreen.route) }
+                    .clickable {
+                        scope.launch {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.Navigate(
+                                    AppNavigationScreen.SearchScreen.route
+                                )
+                            )
+                        }
+                    }
                     .padding(6.dp)
             ) {
                 ComposeImageView.ImageViewWitDrawableId(
@@ -188,7 +195,13 @@ fun HomeToolbar(
                 imageId = R.drawable.ic_notification_action,
                 modifier = Modifier.size(30.dp)
                     .clickable {
-                        navController.navigate(AppNavigationScreen.NotificationScreen.route)
+                        scope.launch {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.Navigate(
+                                    AppNavigationScreen.NotificationScreen.route
+                                )
+                            )
+                        }
                     },
                 contentDescription = "search"
             )

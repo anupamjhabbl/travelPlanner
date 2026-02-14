@@ -43,13 +43,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.auth.entity.PasswordStrengthValidityStatus
 import com.example.bbltripplanner.screens.user.auth.viewModels.UseRegistrationViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserAuthIntent
@@ -59,7 +60,6 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AuthRegistrationScreen(
-    navController: NavController,
     onLoginClick: () -> Unit,
     onAppleLoginClick: () -> Unit,
     onGoogleLoginClick:  () -> Unit
@@ -99,11 +99,13 @@ fun AuthRegistrationScreen(
 
                 is RequestStatus.Success -> {
                     isLoading = false
-                    navController.navigate(
-                        AppNavigationScreen.OtpVerificationScreen.createRoute(
-                            userEmail = state.email,
-                            Constants.Origin.REGISTRATION,
-                            authRegistrationRequestStatus.data.userId
+                    CommonNavigationChannel.navigateTo(
+                        NavigationAction.Navigate(
+                            AppNavigationScreen.OtpVerificationScreen.createRoute(
+                                userEmail = state.email,
+                                Constants.Origin.REGISTRATION,
+                                authRegistrationRequestStatus.data.userId
+                            )
                         )
                     )
                 }

@@ -44,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,7 +57,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeImageView
@@ -67,19 +67,20 @@ import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.FileUtils
 import com.example.bbltripplanner.common.utils.StringUtils
 import com.example.bbltripplanner.common.utils.StringUtils.isValidPhoneNumber
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.profile.viewModels.EditProfileIntent
 import com.example.bbltripplanner.screens.user.profile.viewModels.EditProfileViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import org.koin.androidx.compose.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfileScreen(
-    navController: NavController,
-) {
+fun EditProfileScreen() {
     val viewModel: EditProfileViewModel = koinViewModel()
     val user = viewModel.getUser()
     val context = LocalContext.current
@@ -129,7 +130,7 @@ fun EditProfileScreen(
                 is RequestStatus.Success<String> -> {
                     isLoading = false
                     ComposeViewUtils.showToast(context, state.data)
-                    navController.popBackStack()
+                    CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
                 }
             }
         }
@@ -149,7 +150,7 @@ fun EditProfileScreen(
                 .fillMaxSize()
                 .background(LocalCustomColors.current.primaryBackground)
         ) {
-            EditProfileToolbar(navController, context, user.id)
+            EditProfileToolbar(context, user.id)
 
             Column {
                 Spacer(Modifier.height(60.dp))
@@ -196,10 +197,10 @@ private fun shareProfile(
 
 @Composable
 private fun EditProfileToolbar(
-    navController: NavController,
     context: Context,
     userId: String
 ) {
+    val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -208,7 +209,11 @@ private fun EditProfileToolbar(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(
-            onClick = { navController.popBackStack() },
+            onClick = {
+                scope.launch {
+                    CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
+                }
+            },
             modifier = Modifier.size(36.dp),
             colors = IconButtonDefaults.iconButtonColors().copy(
                 containerColor = LocalCustomColors.current.secondaryBackground,

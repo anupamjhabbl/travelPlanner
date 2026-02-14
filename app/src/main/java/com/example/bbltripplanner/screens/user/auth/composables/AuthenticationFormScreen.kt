@@ -15,10 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -27,9 +28,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun AuthenticationFormScreen(
-    navController: NavController
-) {
+fun AuthenticationFormScreen() {
     val pagerState = rememberPagerState(0)
     val scope = rememberCoroutineScope()
     val logInPageIndex = 0
@@ -97,14 +96,19 @@ fun AuthenticationFormScreen(
             when (index) {
                 logInPageIndex ->  {
                     AuthLoginScreen(
-                        navController = navController,
                         onSignUpClick = {
                             scope.launch {
                                 pagerState.scrollToPage(registerPageIndex)
                             }
                         },
                         onForgotPasswordClick = {
-                            navController.navigate(AppNavigationScreen.ForgotPasswordScreen.route)
+                            scope.launch {
+                                CommonNavigationChannel.navigateTo(
+                                    NavigationAction.Navigate(
+                                        AppNavigationScreen.ForgotPasswordScreen.route
+                                    )
+                                )
+                            }
                         },
                         onAppleLoginClick = {},
                         onGoogleLoginClick = {}
@@ -112,7 +116,6 @@ fun AuthenticationFormScreen(
                 }
                 registerPageIndex -> {
                     AuthRegistrationScreen(
-                        navController = navController,
                         onLoginClick = {
                             scope.launch {
                                 pagerState.scrollToPage(logInPageIndex)
