@@ -36,18 +36,22 @@ class MainActivity : AppCompatActivity() {
             )
         )
         super.onCreate(savedInstanceState)
-        splashScreen.setOnExitAnimationListener { splashScreenView ->
-            val animation = AnimationUtils.loadAnimation(this, R.anim.splas_plane_exit_animation)
+        if (savedInstanceState == null) {
+            splashScreen.setOnExitAnimationListener { splashScreenView ->
+                val animation =
+                    AnimationUtils.loadAnimation(this, R.anim.splas_plane_exit_animation)
 
-            animation.setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationEnd(animation: Animation?) {
-                    splashScreenView.remove()
-                }
-                override fun onAnimationStart(animation: Animation?) {}
-                override fun onAnimationRepeat(animation: Animation?) {}
-            })
+                animation.setAnimationListener(object : Animation.AnimationListener {
+                    override fun onAnimationEnd(animation: Animation?) {
+                        splashScreenView.remove()
+                    }
 
-            splashScreenView.iconView.startAnimation(animation)
+                    override fun onAnimationStart(animation: Animation?) {}
+                    override fun onAnimationRepeat(animation: Animation?) {}
+                })
+
+                splashScreenView.iconView.startAnimation(animation)
+            }
         }
 
         mainActivityViewModel.processEvent(MainActivityIntent.ViewEvent.Init)
