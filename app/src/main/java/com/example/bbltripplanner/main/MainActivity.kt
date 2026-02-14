@@ -4,13 +4,14 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.main.viewModels.MainActivityIntent
 import com.example.bbltripplanner.main.viewModels.MainActivityViewModel
@@ -28,6 +29,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(
+                Color.TRANSPARENT,
+                Color.TRANSPARENT
+            )
+        )
         super.onCreate(savedInstanceState)
         splashScreen.setOnExitAnimationListener { splashScreenView ->
             val animation = AnimationUtils.loadAnimation(this, R.anim.splas_plane_exit_animation)
@@ -43,8 +50,6 @@ class MainActivity : AppCompatActivity() {
             splashScreenView.iconView.startAnimation(animation)
         }
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        window.statusBarColor = Color.TRANSPARENT
         mainActivityViewModel.processEvent(MainActivityIntent.ViewEvent.Init)
 
         setContent {
@@ -52,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 Surface (
                     modifier = Modifier
                         .fillMaxSize()
-                ){
+                ) {
                     AppNavigationComposable(authPreferencesUseCase.getAccessToken())
                 }
             }
