@@ -2,6 +2,9 @@ package com.example.bbltripplanner.common.infra
 
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.entity.BaseResponse
+import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.auth.entity.AuthToken
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
@@ -58,6 +61,14 @@ class TokenAuthenticator(
     private fun removeTokens() {
         authPreferencesUseCase.removeAccessToken()
         authPreferencesUseCase.removeRefreshToken()
+        CommonNavigationChannel.navigateToSynchronous(
+            NavigationAction.Navigate(
+                AppNavigationScreen.AuthGraph.route
+            ) {
+                popUpTo(0) { inclusive = true }
+                launchSingleTop = true
+            }
+        )
     }
 
     private fun responseCount(response: Response): Int {

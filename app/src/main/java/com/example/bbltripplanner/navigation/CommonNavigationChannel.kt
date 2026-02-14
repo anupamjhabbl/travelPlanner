@@ -12,4 +12,8 @@ object CommonNavigationChannel {
     suspend fun navigateTo(navigationScreen: NavigationAction) {
         _navigationChannel.send(navigationScreen)
     }
+
+    fun navigateToSynchronous(navigationScreen: NavigationAction) {
+        _navigationChannel.trySend(navigationScreen)
+    }
 }
