@@ -179,7 +179,7 @@ fun UserTripWidgetItem(
             }
 
             ComposeTextView.TextView(
-                text = "${userTripWidgetItem.tripLocation?.cityName} - ${userTripWidgetItem.date}"
+                text = "${userTripWidgetItem.tripLocation?.address?.city} - ${userTripWidgetItem.date}"
             )
         }
     }

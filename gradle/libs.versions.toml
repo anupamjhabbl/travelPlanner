@@ -1,6 +1,6 @@
 [versions]
-agp = "8.5.0"
-kotlin = "1.9.0"
+agp = "8.13.2"
+kotlin = "1.9.24"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -12,7 +12,7 @@ googleFontVersion = "1.7.5"
 coilVersion = "2.7.0"
 constraintVersion = "1.0.0"
 koinVersion = "4.0.1"
-kspPlugin = "1.9.0-1.0.13"
+kspPlugin = "1.9.24-1.0.20"
 koinAnnotationVersion = "1.3.1"
 gsonVersion = "2.11.0"
 retrofitVersion = "2.11.0"
@@ -25,6 +25,8 @@ window = "1.4.0"
 accompanistVersion = "0.22.0-rc"
 securityCryptoVersion = "1.1.0"
 splashscreenVersion = "1.0.1"
+datetimeVersion = "0.6.2"
+material3Version = "1.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,6 +65,10 @@ androidx-window = { group = "androidx.window", name = "window", version.ref = "w
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanistVersion" }
 androidx-security-crypto =  { group = "androidx.security", name = "security-crypto", version.ref = "securityCryptoVersion" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreenVersion" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "datetimeVersion" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3Version" }
+composeMaterial = { group = "androidx.compose.material", name = "material" }
+composeMaterialIcons = { group = "androidx.compose.material", name = "material-icons-extended" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

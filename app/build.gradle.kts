@@ -42,7 +42,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
     packaging {
         resources {
@@ -80,6 +80,10 @@ dependencies {
     implementation(libs.google.accompanist)
     implementation(libs.androidx.security.crypto)
     implementation(libs.core.splashscreen)
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.composeMaterial)
+    implementation(libs.composeMaterialIcons)
     ksp(libs.ksp.room)
     ksp(libs.koin.ksp.compiler)
     testImplementation(libs.io.insert.koin.test)

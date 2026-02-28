@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.screens.home.entities
 
+import com.example.bbltripplanner.screens.userTrip.entity.Location
 import com.google.gson.annotations.SerializedName
 
 data class TravelThreadsWidgetItem(

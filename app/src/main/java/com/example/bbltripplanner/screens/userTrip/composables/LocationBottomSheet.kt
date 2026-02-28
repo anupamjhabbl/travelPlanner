@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,11 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.common.composables.ComposeTextView
-import com.example.bbltripplanner.screens.home.entities.Location
+import com.example.bbltripplanner.screens.userTrip.entity.Location
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 @Composable
 fun LocationBottomSheet (
+    locationList: List<Location>,
+    searchQuery: String,
+    onQueryChanged: (query: String) -> Unit,
     updateLocation: (user: Location) -> Unit
 ) {
     Column(
@@ -30,11 +34,9 @@ fun LocationBottomSheet (
         .fillMaxWidth()
         .padding(16.dp, 0.dp, 16.dp, 16.dp)
     ) {
-        val locationList = listOf<Location>()
-
         OutlinedTextField(
-            value = "",
-            onValueChange = { },
+            value = searchQuery,
+            onValueChange = { onQueryChanged(it) },
             modifier = Modifier.fillMaxWidth(),
             placeholder = {
                 ComposeTextView.TitleTextView(
@@ -48,32 +50,46 @@ fun LocationBottomSheet (
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyColumn {
-            itemsIndexed(locationList) { index, location ->
-                val shape = when (index) {
-                    0 -> RoundedCornerShape(12.dp, 12.dp, 2.dp, 2.dp)
-                    locationList.size - 1 -> RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
-                    else -> RoundedCornerShape(2.dp, 2.dp, 2.dp, 2.dp)
-                }
+        if (locationList.isEmpty()) {
+            Spacer(modifier = Modifier.height(32.dp))
 
-                Box(
-                    modifier = Modifier
-                        .background(LocalCustomColors.current.defaultImageCardColor, shape)
-                        .height(50.dp)
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp, horizontal = 16.dp)
-                        .clickable {
-                            updateLocation(location)
-                        }
-                ) {
-                    ComposeTextView.TitleTextView(
-                        text = location.cityName,
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.CenterStart)
-                    )
-                }
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                ComposeTextView.TitleTextView(
+                    text = "No results found"
+                )
+            }
+        } else {
+            LazyColumn {
+                itemsIndexed(
+                    locationList.filter { it.displayName != null }
+                ) { index, location ->
+                    val shape = when (index) {
+                        0 -> RoundedCornerShape(12.dp, 12.dp, 2.dp, 2.dp)
+                        locationList.size - 1 -> RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
+                        else -> RoundedCornerShape(2.dp, 2.dp, 2.dp, 2.dp)
+                    }
 
-                Spacer(Modifier.height(1.dp))
+                    Box(
+                        modifier = Modifier
+                            .background(LocalCustomColors.current.defaultImageCardColor, shape)
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp, horizontal = 16.dp)
+                            .clickable {
+                                updateLocation(location)
+                            }
+                    ) {
+                        ComposeTextView.TitleTextView(
+                            text = location.displayName ?: "",
+                            fontSize = 14.sp,
+                            modifier = Modifier.align(Alignment.CenterStart)
+                        )
+                    }
+
+                    Spacer(Modifier.height(1.dp))
+                }
             }
         }
     }

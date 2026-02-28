@@ -23,6 +23,7 @@ import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
 @Composable
 fun InviteBottomSheet(
+    userList: List<User>,
     addUser: (user: User) -> Unit
 ) {
     Column(
@@ -30,7 +31,6 @@ fun InviteBottomSheet(
             .fillMaxWidth()
             .padding(16.dp, 0.dp, 16.dp, 16.dp)
     ) {
-        val userList = emptyList<User>()
         OutlinedTextField(
             value = "",
             onValueChange = { },

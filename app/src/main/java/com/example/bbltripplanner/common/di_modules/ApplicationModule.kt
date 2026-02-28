@@ -30,6 +30,7 @@ import com.example.bbltripplanner.screens.user.auth.viewModels.PasswordResetVieM
 import com.example.bbltripplanner.screens.user.auth.viewModels.UseRegistrationViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserLoginAuthViewModel
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountViewModel
+import com.example.bbltripplanner.screens.userTrip.clients.LocationSearchClient
 import com.example.bbltripplanner.screens.user.profile.clients.ProfileRelationClient
 import com.example.bbltripplanner.screens.user.profile.clients.UserClient
 import com.example.bbltripplanner.screens.user.profile.repositories.GetProfileRepository
@@ -42,6 +43,9 @@ import com.example.bbltripplanner.screens.user.profile.viewModels.EditProfileVie
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowersViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowingViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileViewModel
+import com.example.bbltripplanner.screens.userTrip.repositories.LocationSearchRepository
+import com.example.bbltripplanner.screens.userTrip.repositoryImpl.LocationSearchNetwork
+import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCase
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -77,7 +81,7 @@ val appModule = module {
     single<UserTripDetailUseCase> { UserTripDetailUseCase(get()) }
     single<UserTripDetailRepository> { UseTripDetailNetwork(get()) }
     single<UserTripDetailClient> { Network.createWithAuth(UserTripDetailClient::class.java, get(), get(), androidContext()) }
-    viewModel { PostingInitViewModel(get()) }
+    viewModel { PostingInitViewModel(get(), get(), get(), get()) }
     viewModel { UserTripDetailViewModel(get()) }
 
     // User Auth
@@ -101,4 +105,9 @@ val appModule = module {
     viewModel { (userId: String?) ->
         ProfileFollowingViewModel(get(), userId)
     }
+
+    // Places Search
+    single<LocationSearchClient> { Network.createLocationSearch(LocationSearchClient::class.java, androidContext()) }
+    single<LocationSearchUseCase> { LocationSearchUseCase(get()) }
+    single<LocationSearchRepository> { LocationSearchNetwork(get()) }
 }

@@ -26,4 +26,12 @@ object Network {
             context
         ).create(service)
     }
+
+    fun <T> createLocationSearch(
+        service: Class<T>,
+        context: Context
+    ): T {
+        val networkModule = NetworkModule()
+        return networkModule.provideLocationSearchClient(context).create(service)
+    }
 }

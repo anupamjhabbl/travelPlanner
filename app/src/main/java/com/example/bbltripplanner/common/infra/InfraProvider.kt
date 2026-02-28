@@ -12,8 +12,16 @@ object InfraProvider :  KoinComponent {
         "https://tripplanner-zgqj.onrender.com/api/"
     }
 
+    private val getLocationSearchBaseUrl by lazy {
+        "https://api.locationiq.com/v1/"
+    }
+
     val getNetworkConfiguration by lazy {
         NetworkConfiguration(getBaseUrl)
+    }
+
+    val getLocationSearchNetworkConfiguration by lazy {
+        NetworkConfiguration(getLocationSearchBaseUrl)
     }
 
     val gson: Gson by lazy {

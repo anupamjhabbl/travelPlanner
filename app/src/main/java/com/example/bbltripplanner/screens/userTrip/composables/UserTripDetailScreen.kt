@@ -184,7 +184,7 @@ private fun TripSummarySection(
 
                 TripSummaryDetailItem(
                     Icons.Default.LocationOn,
-                    userTripData.tripLocation?.cityName ?: ""
+                    userTripData.tripLocation?.address?.name?.plus(", ")?.plus(userTripData.tripLocation.address.city) ?: ""
                 )
 
                 Spacer(Modifier.height(6.dp))

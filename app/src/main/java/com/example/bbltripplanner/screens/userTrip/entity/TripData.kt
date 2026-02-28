@@ -1,7 +1,6 @@
 package com.example.bbltripplanner.screens.userTrip.entity
 
 import com.example.bbltripplanner.common.entity.User
-import com.example.bbltripplanner.screens.home.entities.Location
 import com.google.gson.annotations.SerializedName
 
 data class TripData(
@@ -12,9 +11,9 @@ data class TripData(
     @SerializedName(value = "tripLocation", alternate = ["trip_location"])
     val tripLocation: Location? = null,
     @SerializedName(value = "startDate", alternate = ["start_date"])
-    val startDate: String? = null,
+    val startDate: Long? = null,
     @SerializedName(value = "endDate", alternate = ["end_date"])
-    val endDate: String? = null,
+    val endDate: Long? = null,
     @SerializedName(value = "tripMates", alternate = ["trip_mates"])
     val tripMates: List<User> = emptyList(),
     val visibility: TripVisibility = TripVisibility.PRIVATE,
