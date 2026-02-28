@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -16,10 +18,21 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val localProperties = Properties()
+        rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use {
+            localProperties.load(it)
+        }
+        val locationApiKey: String = localProperties.getProperty("LOCATION_API_KEY") ?: "null"
+        buildConfigField("String", "LOCATION_API_KEY", "\"$locationApiKey\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {

@@ -1,6 +1,5 @@
 package com.example.bbltripplanner.screens.userTrip.viewModels
 
-import android.view.View
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.screens.userTrip.entity.Location
 import com.example.bbltripplanner.screens.userTrip.entity.TripData

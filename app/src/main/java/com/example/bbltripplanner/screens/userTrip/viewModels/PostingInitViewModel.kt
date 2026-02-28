@@ -1,12 +1,11 @@
 package com.example.bbltripplanner.screens.userTrip.viewModels
 
 import androidx.lifecycle.viewModelScope
+import com.example.bbltripplanner.BuildConfig
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
-import com.example.bbltripplanner.screens.user.profile.entity.ProfileFollowersData
-import com.example.bbltripplanner.screens.user.profile.entity.ProfileFollowingData
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileRelationUsecase
 import com.example.bbltripplanner.screens.userTrip.entity.Location
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
@@ -14,7 +13,6 @@ import com.example.bbltripplanner.screens.userTrip.entity.TripVisibility
 import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.PostingUseCase
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -25,7 +23,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
-import kotlin.collections.emptyList
 
 @OptIn(FlowPreview::class)
 class PostingInitViewModel(
@@ -50,7 +47,7 @@ class PostingInitViewModel(
                 .filter { it.isNotBlank() }
                 .distinctUntilChanged()
                 .collect {
-                    getLocationSuggestions("pk.dc4c3974f72cf55deadbe611b1ea1895", it)
+                    getLocationSuggestions(BuildConfig.LOCATION_API_KEY, it)
                 }
         }
     }
