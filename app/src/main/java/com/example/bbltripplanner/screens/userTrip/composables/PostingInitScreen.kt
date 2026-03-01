@@ -389,10 +389,50 @@ fun PostingInitScreen() {
                 .align(Alignment.BottomCenter),
             contentAlignment = Alignment.Center
         ) {
+            val tripNameMessage = stringResource(R.string.trip_name_please)
+            val whereToMessage = stringResource(R.string.trip_location_please)
             BottomSaveButton {
-                viewModel.processEvent(PostingInitIntent.ViewEvent.SaveAndContinue)
+                if (
+                        isValidTripName(
+                            postingFormData.tripName,
+                            {
+                                ComposeViewUtils.showToast(context, tripNameMessage)
+                            }
+                        )
+                        && isValidLocation(
+                            postingFormData.whereTo, {
+                                ComposeViewUtils.showToast(context, whereToMessage)
+                            }
+                        )
+                    ) {
+                    viewModel.processEvent(PostingInitIntent.ViewEvent.SaveAndContinue)
+                }
             }
         }
+    }
+}
+
+private fun isValidTripName(
+    tripName: String,
+    onFail: () -> Unit
+): Boolean {
+    if (tripName.isEmpty()) {
+        onFail()
+        return false
+    } else {
+        return true
+    }
+}
+
+private fun isValidLocation(
+    whereTo: Location?,
+    onFail: () -> Unit
+): Boolean {
+    if (whereTo == null) {
+        onFail()
+        return false
+    } else {
+        return true
     }
 }
 

@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.screens.userTrip.repositoryImpl
 
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.entity.ApiFailureException
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.common.utils.JsonResponseUtils
@@ -21,8 +22,8 @@ class UseTripDetailNetwork(
         } else {
             if (userTripDetail.statusCode == JsonResponseUtils.HTTP_SUCCESS_RESPONSE_CODE) {
                 throw JsonParseException("Error during parsing")
-            } else{
-                throw ApiFailureException("Api Failure happened with status code ${userTripDetail.statusCode}")
+            } else {
+                throw ApiFailureException(userTripDetail.message?.ifEmpty { Constants.DEFAULT_ERROR_MESSAGE })
             }
         }
     }

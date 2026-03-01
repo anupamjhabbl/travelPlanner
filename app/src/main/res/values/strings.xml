@@ -121,4 +121,6 @@
     <string name="ok">OK</string>
     <string name="search_by_name">Search by name</string>
     <string name="no_result_found">No results found</string>
+    <string name="trip_name_please">Please enter your trip name.</string>
+    <string name="trip_location_please">Please select a trip location.</string>
 </resources>

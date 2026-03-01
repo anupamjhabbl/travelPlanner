@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
 import com.example.bbltripplanner.common.utils.SafeIOUtil
+import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class UserTripDetailViewModel(
-    private val userTripDetailUseCase: UserTripDetailUseCase
+    private val userTripDetailUseCase: UserTripDetailUseCase,
+    private val authPreferencesUseCase: AuthPreferencesUseCase
 ): BaseMVIVViewModel<UserTripDetailIntent.ViewEvent>() {
     private val _userTripDetailFetchStatus: MutableStateFlow<RequestResponseStatus<TripData>> = MutableStateFlow(RequestResponseStatus())
     val userTripDetailFetchStatus: StateFlow<RequestResponseStatus<TripData>> = _userTripDetailFetchStatus.asStateFlow()
@@ -36,5 +38,9 @@ class UserTripDetailViewModel(
                 _userTripDetailFetchStatus.value = userTripDetailFetchStatus.value.copy(isLoading = false, error = it.message)
             }
         }
+    }
+
+    fun getUserId(): String? {
+        return authPreferencesUseCase.getUserIdLogged()
     }
 }

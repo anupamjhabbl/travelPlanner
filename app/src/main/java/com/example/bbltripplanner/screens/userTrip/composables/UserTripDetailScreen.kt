@@ -53,6 +53,8 @@ import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils.FullScreenLoading
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.common.utils.DateUtils.toFormattedDateString
+import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.TripActionItem
@@ -60,6 +62,7 @@ import com.example.bbltripplanner.screens.userTrip.entity.TripActionResourceMapp
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailViewModel
+import com.example.bbltripplanner.screens.vault.entity.VaultScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -87,7 +90,7 @@ fun UserTripDetailScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            UserTripDetailToolbar()
+            UserTripDetailToolbar(viewModel.getUserId())
 
             Spacer(Modifier.height(30.dp))
 
@@ -177,7 +180,7 @@ private fun TripSummarySection(
             ) {
                 TripSummaryDetailItem(
                     Icons.Default.DateRange,
-                    "${userTripData.startDate} - ${userTripData.endDate}"
+                    "${userTripData.startDate.toFormattedDateString()} - ${userTripData.endDate.toFormattedDateString()}"
                 )
 
                 Spacer(Modifier.height(6.dp))
@@ -215,7 +218,9 @@ private fun TripSummarySection(
             text = stringResource(R.string.edit_details),
             fontSize = 16.sp,
             modifier = Modifier.fillMaxWidth()
-        ) { }
+        ) {
+
+        }
 
     }
 }
@@ -233,7 +238,8 @@ private fun TripMatesList(tripMates: List<User>) {
     FlowRow(
         modifier = Modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        itemVerticalAlignment = Alignment.CenterVertically
     ) {
         visibleList.forEach { user ->
             ComposeImageView.CircularImageView(
@@ -242,7 +248,7 @@ private fun TripMatesList(tripMates: List<User>) {
             )
         }
 
-        if (completeListVisibility) {
+        if (!completeListVisibility && tripMates.size > defaultShown) {
             ComposeTextView.TextView(
                 text = "+${tripMates.size - defaultShown}",
                 fontSize = 14.sp,
@@ -278,7 +284,7 @@ private fun TripSummaryDetailItem(
 }
 
 @Composable
-private fun UserTripDetailToolbar() {
+private fun UserTripDetailToolbar(userId: String?) {
     val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier
@@ -315,7 +321,20 @@ private fun UserTripDetailToolbar() {
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             textDecoration = TextDecoration.Underline,
-            modifier = Modifier.clickable {  }
+            modifier = Modifier.clickable {
+                scope.launch {
+                    userId?.let {
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.Navigate(
+                                AppNavigationScreen.VaultScreen.createRoute(
+                                    VaultScreens.TRIPS.value,
+                                    it
+                                )
+                            )
+                        )
+                    }
+                }
+            }
         )
     }
 }

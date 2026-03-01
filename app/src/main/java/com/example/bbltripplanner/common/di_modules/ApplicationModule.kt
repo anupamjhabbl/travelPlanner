@@ -82,7 +82,7 @@ val appModule = module {
     single<UserTripDetailRepository> { UseTripDetailNetwork(get()) }
     single<UserTripDetailClient> { Network.createWithAuth(UserTripDetailClient::class.java, get(), get(), androidContext()) }
     viewModel { PostingInitViewModel(get(), get(), get(), get()) }
-    viewModel { UserTripDetailViewModel(get()) }
+    viewModel { UserTripDetailViewModel(get(), get()) }
 
     // User Auth
     single<UserAuthRepository> { UserAuthNetwork(get()) }

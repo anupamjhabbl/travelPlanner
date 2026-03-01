@@ -21,6 +21,8 @@ object Constants {
     const val APP_NAME_URI = "tripplanner"
     const val PROFILE_PICTURE_PART_NAME = "profilePicture"
 
+    const val DEFAULT_ERROR_MESSAGE = "Something went wrong"
+
     object HTTPHeaders {
         const val AUTHORIZATION_BEARER = "Bearer"
         const val AUTHORIZATION = "Authorization"
