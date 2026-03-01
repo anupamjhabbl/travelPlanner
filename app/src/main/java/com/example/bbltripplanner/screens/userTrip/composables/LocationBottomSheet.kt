@@ -15,8 +15,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.screens.userTrip.entity.Location
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -39,7 +41,7 @@ fun LocationBottomSheet (
             modifier = Modifier.fillMaxWidth(),
             placeholder = {
                 ComposeTextView.TitleTextView(
-                    "Search by name, email, contact",
+                    stringResource(R.string.search_by_name),
                     fontSize = 16.sp
                 )
             },
@@ -57,7 +59,7 @@ fun LocationBottomSheet (
                 contentAlignment = Alignment.Center
             ) {
                 ComposeTextView.TitleTextView(
-                    text = "No results found"
+                    text = stringResource(R.string.no_result_found)
                 )
             }
         } else {

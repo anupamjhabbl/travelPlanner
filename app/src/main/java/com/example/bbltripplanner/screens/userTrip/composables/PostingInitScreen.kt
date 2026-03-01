@@ -50,7 +50,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,7 +71,6 @@ import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
-import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.DateUtils
 import com.example.bbltripplanner.common.utils.DateUtils.toFormattedDateString
 import com.example.bbltripplanner.navigation.AppNavigationScreen
@@ -91,14 +89,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun PostingInitScreen() {
     val viewModel: PostingInitViewModel = koinViewModel()
-    val postingFormData by viewModel.tripFormData.collectAsState()
+    val postingFormData by viewModel.tripFormData.collectAsStateWithLifecycle()
     val queryString by viewModel.searchQuery.collectAsStateWithLifecycle()
     var locationList by remember {
         mutableStateOf(emptyList<Location>())
     }
-    var userList by remember {
-        mutableStateOf(emptyList<User>())
-    }
+    val userList = viewModel.inviteList.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val genericMessage = stringResource(R.string.generic_error)
 
@@ -116,7 +112,7 @@ fun PostingInitScreen() {
     }
     val startDateState = rememberDatePickerState(
         initialSelectedDateMillis = System.currentTimeMillis(),
-        selectableDates = DateUtils.FutureOrPresentSelectableDates
+        selectableDates = DateUtils.FutureOrPresentSelectableDates(postingFormData.endDate)
     )
     val endDateState = rememberDatePickerState(
         initialSelectedDateMillis = postingFormData.startDate,
@@ -128,15 +124,19 @@ fun PostingInitScreen() {
     LaunchedEffect(Unit) { 
         viewModel.viewEffect.collectLatest { viewEffect ->
             when (viewEffect) {
-                is PostingInitIntent.ViewEffect.GoNext -> moveToNextPage(viewEffect.tripData.tripId) {
+                is PostingInitIntent.ViewEffect.GoNext -> moveToNextPage(
+                    viewEffect.tripData.tripId,
+                    {
+                        ComposeViewUtils.showToast(context, viewEffect.tripData.message)
+                    }
+                ) {
                     ComposeViewUtils.showToast(context, genericMessage)
                 }
+
                 PostingInitIntent.ViewEffect.ShowError -> ComposeViewUtils.showToast(context, genericMessage)
+
                 is PostingInitIntent.ViewEffect.ShowSuggestions -> {
                     locationList = viewEffect.suggestions
-                }
-                is PostingInitIntent.ViewEffect.InviteList -> {
-                    userList = viewEffect.inviteList
                 }
             }
         }
@@ -171,6 +171,7 @@ fun PostingInitScreen() {
     when (showBottomSheet) {
         BottomSheetType.USER_SELECTION -> {
             ModalBottomSheet(
+                modifier = Modifier.fillMaxHeight(),
                 onDismissRequest = {
                     showBottomSheet = null
                 },
@@ -178,8 +179,9 @@ fun PostingInitScreen() {
                 containerColor = LocalCustomColors.current.primaryBackground
             ) {
                 InviteBottomSheet(
-                    userList
+                    userList.value?.followers ?: emptyList()
                 ) { user ->
+                    showBottomSheet = null
                     viewModel.processEvent(PostingInitIntent.ViewEvent.AddTripMates(user))
                 }
             }
@@ -313,7 +315,7 @@ fun PostingInitScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             ClickableFieldBox(
-                text = postingFormData.tripLocation?.displayName ?: "",
+                text = postingFormData.whereTo?.displayName ?: "",
                 placeholder = stringResource(R.string.where_to)
             ) {
                 showBottomSheet = BottomSheetType.LOCATION_SELECTION
@@ -335,7 +337,7 @@ fun PostingInitScreen() {
                     .verticalScroll(scrollState),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                postingFormData.tripMates.forEach { user ->
+                postingFormData.invitedMembers.forEach { user ->
                     AssistChip(
                         onClick = {},
                         label = { ComposeTextView.TextView(user.name) },
@@ -351,6 +353,9 @@ fun PostingInitScreen() {
                                 contentDescription = "remove",
                                 tint = LocalCustomColors.current.fadedBackground,
                                 modifier = Modifier.size(20.dp)
+                                    .clickable {
+                                        viewModel.processEvent(PostingInitIntent.ViewEvent.RemoveTripMates(user))
+                                    }
                             )
                         },
                         shape = RoundedCornerShape(40),
@@ -363,7 +368,7 @@ fun PostingInitScreen() {
                         viewModel.processEvent(PostingInitIntent.ViewEvent.GetInviteList)
                         showBottomSheet = BottomSheetType.USER_SELECTION
                     },
-                    label = { ComposeTextView.TextView("Add") },
+                    label = { ComposeTextView.TextView(stringResource(R.string.add)) },
                     leadingIcon = {
                         Icon(
                             Icons.Default.Add,
@@ -560,6 +565,8 @@ fun CustomDatePicker(
     onDismiss: () -> Unit,
     onConfirm: (Long) -> Unit
 ) {
+    val okText = stringResource(R.string.ok)
+    val cancelText = stringResource(R.string.cancel)
     ModalBottomSheet(
         onDismissRequest = onDismiss
     ) {
@@ -579,7 +586,7 @@ fun CustomDatePicker(
             ) {
 
                 TextButton(onClick = onDismiss) {
-                    Text("Cancel")
+                    Text(cancelText)
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -592,7 +599,7 @@ fun CustomDatePicker(
                         onDismiss()
                     }
                 ) {
-                    Text("OK")
+                    Text(okText)
                 }
             }
         }
@@ -609,11 +616,12 @@ enum class DatePickerType {
     END_DATE
 }
 
-suspend fun moveToNextPage(tripId: String?, showError: () -> Unit) {
+suspend fun moveToNextPage(tripId: String?, showSuccess: () -> Unit, showError: () -> Unit) {
     if (tripId == null) {
         showError()
         return
     }
+    showSuccess()
     CommonNavigationChannel.navigateTo(
         NavigationAction.Navigate(
             AppNavigationScreen.UserTripDetailScreen.createRoute(tripId)

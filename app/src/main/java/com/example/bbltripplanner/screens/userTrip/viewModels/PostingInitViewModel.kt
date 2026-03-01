@@ -6,6 +6,7 @@ import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
+import com.example.bbltripplanner.screens.user.profile.entity.ProfileFollowersData
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileRelationUsecase
 import com.example.bbltripplanner.screens.userTrip.entity.Location
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
@@ -34,6 +35,9 @@ class PostingInitViewModel(
     private val _tripFormData: MutableStateFlow<TripData> = MutableStateFlow(TripData())
     val tripFormData: StateFlow<TripData> = _tripFormData.asStateFlow()
 
+    private val _inviteList: MutableStateFlow<ProfileFollowersData?> = MutableStateFlow(null)
+    val inviteList: StateFlow<ProfileFollowersData?> = _inviteList.asStateFlow()
+
     private val _viewEffects: MutableSharedFlow<PostingInitIntent.ViewEffect> = MutableSharedFlow()
     val viewEffect: SharedFlow<PostingInitIntent.ViewEffect> = _viewEffects.asSharedFlow()
 
@@ -47,7 +51,7 @@ class PostingInitViewModel(
                 .filter { it.isNotBlank() }
                 .distinctUntilChanged()
                 .collect {
-                    getLocationSuggestions(BuildConfig.LOCATION_API_KEY, it)
+                    getLocationSuggestions(it)
                 }
         }
     }
@@ -57,7 +61,7 @@ class PostingInitViewModel(
     }
 
     private fun updateTripLocation(location: Location) {
-        _tripFormData.value = tripFormData.value.copy(tripLocation = location)
+        _tripFormData.value = tripFormData.value.copy(whereTo = location)
     }
 
     private fun updateTripStartDate(startDate: Long) {
@@ -76,11 +80,14 @@ class PostingInitViewModel(
         _tripFormData.value = tripFormData.value.copy(visibility = tripVisibility)
     }
 
-    fun addTripMates(user: User) {
+    private fun addTripMates(user: User) {
         val newList = mutableListOf<User>()
-        newList.addAll(tripFormData.value.tripMates)
+        newList.addAll(tripFormData.value.invitedMembers)
         newList.add(user)
-        _tripFormData.value = tripFormData.value.copy(tripMates = newList)
+        _tripFormData.value = tripFormData.value.copy(invitedMembers = newList)
+        _inviteList.value = inviteList.value?.copy(
+            followers = inviteList.value?.followers?.filter { it.id != user.id } ?: emptyList()
+        )
     }
 
 
@@ -95,13 +102,26 @@ class PostingInitViewModel(
             is PostingInitIntent.ViewEvent.UpdateTripName -> updateTripName(viewEvent.tripName)
             is PostingInitIntent.ViewEvent.SetTripVisibility -> setTripVisibility(viewEvent.tripVisibility)
             is PostingInitIntent.ViewEvent.AddTripMates -> addTripMates(viewEvent.user)
+            is PostingInitIntent.ViewEvent.RemoveTripMates -> removeTripMates(viewEvent.user)
         }
     }
 
-    private fun getLocationSuggestions(key: String, query: String) {
+    private fun removeTripMates(user: User) {
+        val newInviteList = mutableListOf<User>()
+        newInviteList.addAll(inviteList.value?.followers ?: emptyList())
+        newInviteList.add(user)
+        _tripFormData.value = tripFormData.value.copy(
+            invitedMembers = tripFormData.value.invitedMembers.filter { it.id != user.id }
+        )
+        _inviteList.value = inviteList.value?.copy(
+            newInviteList
+        )
+    }
+
+    private fun getLocationSuggestions(query: String) {
         viewModelScope.launch {
             val locationSuggestionsResult = SafeIOUtil.safeCall {
-                locationSearchUseCase.getLocationSuggestions(key, query)
+                locationSearchUseCase.getLocationSuggestions(BuildConfig.LOCATION_API_KEY, query)
             }
             locationSuggestionsResult.onSuccess {
                 _viewEffects.emit(PostingInitIntent.ViewEffect.ShowSuggestions(it))
@@ -113,16 +133,19 @@ class PostingInitViewModel(
     }
 
     private fun getInviteList() {
+        if (_inviteList.value != null) {
+            return
+        }
         authPreferencesUseCase.getUserIdLogged()?.let { userId ->
             viewModelScope.launch {
                 val followersList = SafeIOUtil.safeCall {
                     profileRelationUseCase.getFollowers(userId)
                 }
                 followersList.onSuccess { followers ->
-                    _viewEffects.emit(PostingInitIntent.ViewEffect.InviteList(followers?.followers ?: emptyList()))
+                    _inviteList.value = followers
                 }
                 followersList.onFailure {
-                    _viewEffects.emit(PostingInitIntent.ViewEffect.InviteList(emptyList()))
+                    _inviteList.value = ProfileFollowersData(emptyList())
                 }
             }
         }

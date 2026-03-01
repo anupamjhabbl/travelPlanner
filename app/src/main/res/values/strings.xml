@@ -118,4 +118,7 @@
     <string name="following_empty_content">Follow other travelers to stay connected.</string>
     <string name="followers_empty_heading">No followers yet</string>
     <string name="followers_empty_content">When someone follows you, they’ll show up here.</string>
+    <string name="ok">OK</string>
+    <string name="search_by_name">Search by name</string>
+    <string name="no_result_found">No results found</string>
 </resources>

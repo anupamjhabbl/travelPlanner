@@ -21,14 +21,22 @@ object DateUtils {
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
-    object FutureOrPresentSelectableDates: SelectableDates {
+    class FutureOrPresentSelectableDates(
+        val endDate: Long?
+    ): SelectableDates {
         private val timeZone = TimeZone.currentSystemDefault()
         private val today = Clock.System.now().toLocalDateTime(timeZone).date
 
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
             val date = Instant.fromEpochMilliseconds(utcTimeMillis)
                 .toLocalDateTime(timeZone).date
-            return date >= today
+            return if (endDate != null) {
+                date >= today && date <= Instant.fromEpochMilliseconds(
+                    endDate
+                ).toLocalDateTime(timeZone).date
+            } else {
+                date >= today
+            }
         }
 
         override fun isSelectableYear(year: Int): Boolean {

@@ -49,6 +49,7 @@ fun ProfileFollowersPage(
     val scope = rememberCoroutineScope()
     val emptyTitle = stringResource(R.string.followers_empty_heading)
     val emptyContent = stringResource(R.string.followers_empty_content)
+
     val viewModel: ProfileFollowersViewModel = koinViewModel(parameters = { parametersOf(userId) })
     val uiState by viewModel.userList.collectAsStateWithLifecycle()
 
@@ -56,7 +57,7 @@ fun ProfileFollowersPage(
         ComposeViewUtils.FullScreenLoading()
     } else if (uiState.data == null || uiState.error != null) {
         ComposeViewUtils.FullScreenErrorComposable(
-            errorStrings = Pair(Constants.DEFAULT_ERROR, uiState.error ?: "")
+            errorStrings = Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
         )
     } else {
         if (uiState.data.isNullOrEmpty()) {

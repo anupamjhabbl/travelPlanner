@@ -5,17 +5,18 @@ import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.common.utils.JsonResponseUtils
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.clients.PostingClient
+import com.example.bbltripplanner.screens.userTrip.entity.TripCreationResponse
 import com.example.bbltripplanner.screens.userTrip.repositories.PostingRepository
 import com.google.gson.JsonParseException
 
 class PostingNetwork(
     private val postingClient: PostingClient
 ): PostingRepository {
-    override suspend fun postTrip(tripData: TripData): TripData {
+    override suspend fun postTrip(tripData: TripData): TripCreationResponse {
         return processResponse(postingClient.postTrip(tripData))
     }
 
-    private fun processResponse(postTrip: BaseResponse<TripData>): TripData {
+    private fun processResponse(postTrip: BaseResponse<TripCreationResponse>): TripCreationResponse {
         if (postTrip.isSuccess && postTrip.data != null) {
             return postTrip.data
         } else {

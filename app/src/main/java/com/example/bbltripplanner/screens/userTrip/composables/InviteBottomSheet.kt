@@ -13,10 +13,16 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -26,18 +32,28 @@ fun InviteBottomSheet(
     userList: List<User>,
     addUser: (user: User) -> Unit
 ) {
+    var name by remember {
+        mutableStateOf("")
+    }
+    var mainList by remember(name, userList) {
+        mutableStateOf(
+            userList.filter { it.name.contains(name, ignoreCase = true) }
+        )
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp, 0.dp, 16.dp, 16.dp)
     ) {
         OutlinedTextField(
-            value = "",
-            onValueChange = { },
+            value = name,
+            onValueChange = {
+                name = it
+            },
             modifier = Modifier.fillMaxWidth(),
             placeholder = {
                 ComposeTextView.TitleTextView(
-                    "Search by name, email, contact",
+                    stringResource(R.string.search_by_name),
                     fontSize = 16.sp
                 )
             },
@@ -48,7 +64,7 @@ fun InviteBottomSheet(
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn {
-            itemsIndexed(userList) { index, user ->
+            itemsIndexed(mainList) { index, user ->
                 val shape = when (index) {
                     0 -> RoundedCornerShape(12.dp, 12.dp, 2.dp, 2.dp)
                     userList.size - 1 -> RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
