@@ -17,11 +17,14 @@ class PostingInitIntent {
         data class AddTripMates(val user: User): ViewEvent
         data object GetInviteList: ViewEvent
         data class RemoveTripMates(val user: User): ViewEvent
+        data class GetTripDetails(val tripId: String): ViewEvent
     }
 
     sealed interface ViewEffect  {
         data class GoNext(val tripData: TripCreationResponse): ViewEffect
         data object ShowError: ViewEffect
         data class ShowSuggestions(val suggestions: List<Location>): ViewEffect
+        data class ShowFullScreenError(val message: String): ViewEffect
+        data object ShowSuccess: ViewEffect
     }
 }

@@ -41,6 +41,7 @@ import com.example.bbltripplanner.screens.user.myacount.composables.MyAccountVie
 import com.example.bbltripplanner.screens.user.profile.composables.EditProfileScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileSocialScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileScreen
+import com.example.bbltripplanner.screens.userTrip.composables.PostingEditScreen
 import com.example.bbltripplanner.screens.vault.composables.UserVaultScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
@@ -204,6 +205,11 @@ fun HomeNavigationComposable(
         composable(route = AppNavigationScreen.UserTripDetailScreen.route) { navBackStackEntry ->
             val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
             UserTripDetailScreen(tripId)
+        }
+
+        composable(route = AppNavigationScreen.EditTripScreen.route) { navBackStackEntry ->
+            val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+            PostingEditScreen(tripId)
         }
 
         composable(route = AppNavigationScreen.DestinationScreen.route) { navBackStackEntry ->

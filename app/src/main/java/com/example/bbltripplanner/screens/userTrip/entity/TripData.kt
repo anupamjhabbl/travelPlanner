@@ -1,8 +1,10 @@
 package com.example.bbltripplanner.screens.userTrip.entity
 
+import androidx.compose.runtime.Stable
 import com.example.bbltripplanner.common.entity.User
 import com.google.gson.annotations.SerializedName
 
+@Stable
 data class TripData(
     @SerializedName(value = "tripId", alternate = ["trip_id"])
     val tripId: String? = null,
@@ -17,7 +19,9 @@ data class TripData(
     @SerializedName(value = "invitedMembers", alternate = ["invited_members"])
     val invitedMembers: List<User> = emptyList(),
     @SerializedName(value = "tripVisibility", alternate = ["trip_visibility"])
-    val visibility: TripVisibility = TripVisibility.PRIVATE
+    val visibility: TripVisibility = TripVisibility.PRIVATE,
+    @SerializedName(value = "acceptanceNeeded", alternate = ["acceptance_needed"])
+    val acceptanceNeeded: Boolean = false
 )
 
 enum class TripVisibility(val value: String) {

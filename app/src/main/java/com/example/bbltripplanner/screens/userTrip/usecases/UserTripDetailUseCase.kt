@@ -9,4 +9,9 @@ class UserTripDetailUseCase(
     suspend fun getUserTripDetail(tripId: String): TripData {
         return userTripDetailRepository.getUserTripDetail(tripId)
     }
+
+    suspend fun acceptInvitation(tripId: String): Boolean {
+        return userTripDetailRepository.acceptInvitation(tripId)
+
+    }
 }

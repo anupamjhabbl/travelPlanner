@@ -8,12 +8,31 @@ import com.example.bbltripplanner.screens.userTrip.clients.UserTripDetailClient
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.repositories.UserTripDetailRepository
 import com.google.gson.JsonParseException
+import kotlin.text.ifEmpty
 
 class UseTripDetailNetwork(
     private val userTripDetailClient: UserTripDetailClient
 ): UserTripDetailRepository {
     override suspend fun getUserTripDetail(tripId: String): TripData {
         return processResponse(userTripDetailClient.getUserTripDetail(tripId))
+    }
+
+    override suspend fun acceptInvitation(
+        tripId: String
+    ): Boolean {
+        return processAcceptInvitationResponse(userTripDetailClient.acceptInvitation(tripId))
+    }
+
+    private fun processAcceptInvitationResponse(acceptInvitation: BaseResponse<Boolean>): Boolean {
+        if (acceptInvitation.isSuccess && acceptInvitation.data != null) {
+            return acceptInvitation.data
+        } else {
+            if (acceptInvitation.statusCode == JsonResponseUtils.HTTP_SUCCESS_RESPONSE_CODE) {
+                throw JsonParseException("Error during parsing")
+            } else {
+                throw ApiFailureException(acceptInvitation.message?.ifEmpty { Constants.DEFAULT_ERROR_MESSAGE })
+            }
+        }
     }
 
     private fun processResponse(userTripDetail: BaseResponse<TripData>): TripData {
@@ -27,5 +46,4 @@ class UseTripDetailNetwork(
             }
         }
     }
-
 }

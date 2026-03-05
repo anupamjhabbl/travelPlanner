@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun <T> CommonLifecycleAwareLaunchedEffect(
     flow: Flow<T>,
-    action: (T) -> Unit
+    action: suspend (T) -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(Unit) {

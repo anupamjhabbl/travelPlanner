@@ -1,5 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -48,9 +51,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
+import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.composables.ComposeViewUtils.FullScreenLoading
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.DateUtils.toFormattedDateString
@@ -75,6 +80,11 @@ fun UserTripDetailScreen(
     val viewModel: UserTripDetailViewModel = koinViewModel()
     val tripDataStatus = viewModel.userTripDetailFetchStatus.collectAsState()
     val scope = rememberCoroutineScope()
+    var acceptButtonVisibility by remember {
+        mutableStateOf(true)
+    }
+    val successMessage = stringResource(R.string.trip_accept_success)
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         tripId?.let {
@@ -82,10 +92,23 @@ fun UserTripDetailScreen(
         }
     }
 
+    CommonLifecycleAwareLaunchedEffect(viewModel.viewEffect) { viewEffect ->
+        when (viewEffect) {
+            is UserTripDetailIntent.ViewEffect.ShowMessage -> {
+                if (viewEffect.isSuccess) {
+                    acceptButtonVisibility = false
+                    ComposeViewUtils.showToast(context, successMessage)
+                } else {
+                    ComposeViewUtils.showToast(context, viewEffect.message ?: "")
+                }
+            }
+        }
+    }
+
     if (tripDataStatus.value.isLoading) {
         FullScreenLoading()
     } else if(tripDataStatus.value.data == null ||  tripDataStatus.value.error != null) {
-        FullScreenError()
+        FullScreenError(tripDataStatus.value.error)
     } else {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -94,7 +117,9 @@ fun UserTripDetailScreen(
 
             Spacer(Modifier.height(30.dp))
 
-            TripSummarySection(tripDataStatus.value.data)
+            TripSummarySection(tripDataStatus.value.data, acceptButtonVisibility) { tripId ->
+                viewModel.processEvent(UserTripDetailIntent.ViewEvent.AcceptInvitation(tripId))
+            }
 
             LazyColumn(
                 modifier = Modifier
@@ -126,17 +151,23 @@ fun UserTripDetailScreen(
 }
 
 @Composable
-private fun FullScreenError() {
-
+private fun FullScreenError(error: String?) {
+    val errorHeading = stringResource(R.string.generic_error)
+    ComposeViewUtils.FullScreenErrorComposable(Pair(errorHeading, error ?: ""))
 }
 
 @Composable
 private fun TripSummarySection(
-    userTripData: TripData?
+    userTripData: TripData?,
+    acceptButtonVisibility: Boolean,
+    onAccept: (String) -> Unit
 ) {
+    val shareMessage = stringResource(R.string.share_message)
+    val context = LocalContext.current
     if (userTripData == null) {
         return
     }
+    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -158,7 +189,9 @@ private fun TripSummarySection(
                     .background(color = LocalCustomColors.current.secondaryBackground, CircleShape)
             ) {
                 IconButton(
-                    onClick = {}
+                    onClick = {
+                        shareDeepLink(context, shareMessage)
+                    }
                 ) {
                     Icon(
                         Icons.Default.Share,
@@ -195,16 +228,23 @@ private fun TripSummarySection(
                 TripSummaryDetailItem(Icons.Filled.Face, userTripData.visibility.value)
             }
 
-            Box(
-                modifier = Modifier
-                    .background(LocalCustomColors.current.secondaryBackground, RoundedCornerShape(8.dp))
-                    .padding(16.dp, 8.dp)
-                    .clickable {  }
-            ) {
-                ComposeTextView.TextView(
-                    text = stringResource(R.string.accept),
-                    textColor = LocalCustomColors.current.primaryBackground
-                )
+            if (acceptButtonVisibility && userTripData.acceptanceNeeded) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            LocalCustomColors.current.secondaryBackground,
+                            RoundedCornerShape(8.dp)
+                        )
+                        .padding(16.dp, 8.dp)
+                        .clickable {
+                            userTripData.tripId?.let { onAccept(it) }
+                        }
+                ) {
+                    ComposeTextView.TextView(
+                        text = stringResource(R.string.accept),
+                        textColor = LocalCustomColors.current.primaryBackground
+                    )
+                }
             }
         }
 
@@ -219,15 +259,39 @@ private fun TripSummarySection(
             fontSize = 16.sp,
             modifier = Modifier.fillMaxWidth()
         ) {
-
+            scope.launch {
+                userTripData.tripId?.let {
+                    CommonNavigationChannel.navigateTo(
+                        NavigationAction.Navigate(
+                            AppNavigationScreen.EditTripScreen.createRoute(
+                                it
+                            )
+                        )
+                    )
+                }
+            }
         }
 
     }
 }
 
+fun shareDeepLink(context: Context, message: String) {
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, "Check out this product!")
+        putExtra(Intent.EXTRA_TEXT, "$message ${getDeeplinkUrl()}")
+    }
+    context.startActivity(Intent.createChooser(shareIntent, "Share deep link via"))
+}
+
+fun getDeeplinkUrl(): String {
+    return "https://www.tripplanner.com/trips/1234"
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TripMatesList(tripMates: List<User>) {
+    val coroutineScope = rememberCoroutineScope()
     var completeListVisibility by remember {
         mutableStateOf(false)
     }
@@ -242,10 +306,22 @@ private fun TripMatesList(tripMates: List<User>) {
         itemVerticalAlignment = Alignment.CenterVertically
     ) {
         visibleList.forEach { user ->
-            ComposeImageView.CircularImageView(
-                imageURI = user.profilePicture ?: "",
-                diameter = 36.dp
-            )
+            Box(
+                modifier = Modifier.clickable {
+                    coroutineScope.launch {
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.Navigate(
+                                AppNavigationScreen.ProfileScreen.createRoute(user.id)
+                            )
+                        )
+                    }
+                }
+            ) {
+                ComposeImageView.CircularImageView(
+                    imageURI = user.profilePicture ?: "",
+                    diameter = 36.dp
+                )
+            }
         }
 
         if (!completeListVisibility && tripMates.size > defaultShown) {

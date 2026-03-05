@@ -13,6 +13,7 @@ import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.entity.TripVisibility
 import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.PostingUseCase
+import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +31,8 @@ class PostingInitViewModel(
     private val postingUseCase: PostingUseCase,
     private val locationSearchUseCase: LocationSearchUseCase,
     private val profileRelationUseCase: ProfileRelationUsecase,
-    private val authPreferencesUseCase: AuthPreferencesUseCase
+    private val authPreferencesUseCase: AuthPreferencesUseCase,
+    private val userTripDetailUseCase: UserTripDetailUseCase
 ): BaseMVIVViewModel<PostingInitIntent.ViewEvent>() {
     private val _tripFormData: MutableStateFlow<TripData> = MutableStateFlow(TripData())
     val tripFormData: StateFlow<TripData> = _tripFormData.asStateFlow()
@@ -103,6 +105,22 @@ class PostingInitViewModel(
             is PostingInitIntent.ViewEvent.SetTripVisibility -> setTripVisibility(viewEvent.tripVisibility)
             is PostingInitIntent.ViewEvent.AddTripMates -> addTripMates(viewEvent.user)
             is PostingInitIntent.ViewEvent.RemoveTripMates -> removeTripMates(viewEvent.user)
+            is PostingInitIntent.ViewEvent.GetTripDetails -> getTripDetails(viewEvent.tripId)
+        }
+    }
+
+    private fun getTripDetails(tripId: String) {
+        viewModelScope.launch {
+            val tripDetailResult = SafeIOUtil.safeCall {
+                userTripDetailUseCase.getUserTripDetail(tripId)
+            }
+            tripDetailResult.onSuccess { tripData ->
+                _tripFormData.value = tripData
+                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowSuccess)
+            }
+            tripDetailResult.onFailure {
+                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowFullScreenError(it.message ?: ""))
+            }
         }
     }
 

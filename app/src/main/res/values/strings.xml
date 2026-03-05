@@ -123,4 +123,6 @@
     <string name="no_result_found">No results found</string>
     <string name="trip_name_please">Please enter your trip name.</string>
     <string name="trip_location_please">Please select a trip location.</string>
+    <string name="trip_accept_success">You have successfully acepted the invitation.</string>
+    <string name="share_message">Your friend has invited you for this trip.</string>
 </resources>

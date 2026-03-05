@@ -55,6 +55,9 @@ sealed class AppNavigationScreen(
     data object UserTripDetailScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.USER_TRIP_DETAIL_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}") {
         fun createRoute(tripId: String) = "${Constants.NavigationScreen.USER_TRIP_DETAIL_SCREEN}/$tripId"
     }
+    data object EditTripScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.EDIT_TRIP_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}") {
+        fun createRoute(tripId: String) = "${Constants.NavigationScreen.EDIT_TRIP_SCREEN}/$tripId"
+    }
 
     // General
     data object BuzzScreen: AppNavigationScreen(route = Constants.NavigationScreen.BUZZ_SCREEN, hasBottomBar = true)
