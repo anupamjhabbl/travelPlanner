@@ -2,21 +2,21 @@ package com.example.bbltripplanner.common.utils
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock.System.now
+import kotlin.time.Instant.Companion.fromEpochMilliseconds
 
 object DateUtils {
     fun Long?.toFormattedDateString(): String {
-        val instant = Instant.fromEpochMilliseconds(this ?: System.currentTimeMillis())
+        val instant = fromEpochMilliseconds(this ?: System.currentTimeMillis())
         val date = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
 
         val formatter = LocalDate.Format {
-            dayOfMonth(); char('/'); monthNumber(); char('/'); year()
+            day()
+            char('/'); monthNumber(); char('/'); year()
         }
         return formatter.format(date)
     }
@@ -29,10 +29,10 @@ object DateUtils {
         private val today = now().toLocalDateTime(timeZone).date
 
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-            val date = Instant.fromEpochMilliseconds(utcTimeMillis)
+            val date = fromEpochMilliseconds(utcTimeMillis)
                 .toLocalDateTime(timeZone).date
             return if (endDate != null) {
-                date >= today && date <= Instant.fromEpochMilliseconds(
+                date >= today && date <= fromEpochMilliseconds(
                     endDate
                 ).toLocalDateTime(timeZone).date
             } else {
@@ -52,9 +52,9 @@ object DateUtils {
             if (startDate == null) {
                 return false
             }
-            val date = Instant.fromEpochMilliseconds(utcTimeMillis)
+            val date = fromEpochMilliseconds(utcTimeMillis)
                 .toLocalDateTime(TimeZone.currentSystemDefault()).date
-            return date >= Instant.fromEpochMilliseconds(startDate)
+            return date >= fromEpochMilliseconds(startDate)
                 .toLocalDateTime(TimeZone.currentSystemDefault()).date
         }
     }
