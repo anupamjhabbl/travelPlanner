@@ -8,6 +8,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock.System.now
 
 object DateUtils {
     fun Long?.toFormattedDateString(): String {
@@ -25,7 +26,7 @@ object DateUtils {
         val endDate: Long?
     ): SelectableDates {
         private val timeZone = TimeZone.currentSystemDefault()
-        private val today = Clock.System.now().toLocalDateTime(timeZone).date
+        private val today = now().toLocalDateTime(timeZone).date
 
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
             val date = Instant.fromEpochMilliseconds(utcTimeMillis)
