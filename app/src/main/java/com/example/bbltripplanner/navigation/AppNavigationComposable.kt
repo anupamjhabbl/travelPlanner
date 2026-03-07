@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -29,8 +28,6 @@ import com.example.bbltripplanner.screens.destination.composables.DestinationScr
 import com.example.bbltripplanner.screens.home.composables.HomeExperienceScreen
 import com.example.bbltripplanner.screens.home.composables.TripPlannerSearchScreen
 import com.example.bbltripplanner.screens.notification.composables.NotificationScreen
-import com.example.bbltripplanner.screens.userTrip.composables.PostingInitScreen
-import com.example.bbltripplanner.screens.userTrip.composables.UserTripDetailScreen
 import com.example.bbltripplanner.screens.user.auth.composables.AuthenticationFormScreen
 import com.example.bbltripplanner.screens.user.auth.composables.ForgotPasswordScreen
 import com.example.bbltripplanner.screens.user.auth.composables.OTPVerificationScreen
@@ -39,9 +36,11 @@ import com.example.bbltripplanner.screens.user.general.composables.HelpSupportSc
 import com.example.bbltripplanner.screens.user.general.composables.UserSettingsScreen
 import com.example.bbltripplanner.screens.user.myacount.composables.MyAccountView
 import com.example.bbltripplanner.screens.user.profile.composables.EditProfileScreen
-import com.example.bbltripplanner.screens.user.profile.composables.ProfileSocialScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileScreen
+import com.example.bbltripplanner.screens.user.profile.composables.ProfileSocialScreen
 import com.example.bbltripplanner.screens.userTrip.composables.PostingEditScreen
+import com.example.bbltripplanner.screens.userTrip.composables.PostingInitScreen
+import com.example.bbltripplanner.screens.userTrip.composables.UserTripDetailScreen
 import com.example.bbltripplanner.screens.vault.composables.UserVaultScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 
@@ -79,7 +78,6 @@ fun AppNavigationComposable(
     Scaffold (
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
             .background(LocalCustomColors.current.primaryBackground),
         bottomBar = {
             if (navBackStackEntry.toAppNavigationScreen()?.hasBottomBar == true) {

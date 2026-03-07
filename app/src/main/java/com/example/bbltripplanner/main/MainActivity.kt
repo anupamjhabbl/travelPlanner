@@ -1,10 +1,8 @@
 package com.example.bbltripplanner.main
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -29,12 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(
-                Color.TRANSPARENT,
-                Color.TRANSPARENT
-            )
-        )
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             splashScreen.setOnExitAnimationListener { splashScreenView ->

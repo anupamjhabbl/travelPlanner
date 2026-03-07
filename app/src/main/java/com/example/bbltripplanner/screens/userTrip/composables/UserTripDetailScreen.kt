@@ -365,7 +365,7 @@ private fun UserTripDetailToolbar(userId: String?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp, 0.dp),
+            .padding(16.dp, 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
