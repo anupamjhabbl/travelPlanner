@@ -19,7 +19,7 @@ data class CustomColors(
     val success: Color,
     val defaultImageCardColor: Color,
     val deepPurpleGlow: Color,
-    val oppositePrimaryBackground: Color
+    val oppositePrimaryBackground: Color,
 )
 
 val LocalCustomColors = staticCompositionLocalOf {

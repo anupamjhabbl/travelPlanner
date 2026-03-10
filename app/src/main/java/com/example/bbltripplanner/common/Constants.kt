@@ -49,6 +49,7 @@ object Constants {
         const val USER_TRIP_DETAIL_SCREEN = "user_trip_detail_screen"
         const val ADD_SCREEN = "add_screen"
         const val EDIT_TRIP_SCREEN = "edit_trip_screen"
+        const val EXPENSE_SCREEN = "expense_screen"
 
         // User Screens
         const val PROFILE_SCREEN = "profile_screen"

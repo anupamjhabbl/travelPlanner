@@ -125,4 +125,8 @@
     <string name="trip_location_please">Please select a trip location.</string>
     <string name="trip_accept_success">You have successfully acepted the invitation.</string>
     <string name="share_message">Your friend has invited you for this trip.</string>
+    <string name="budget">Budget: \u20B9%1$s</string>
+    <string name="remaining">Remaining: \u20B9%1$s</string>
+    <string name="rupee_formatting">\u20B9%1$s</string>
+    <string name="total_spent">Total Spent</string>
 </resources>
