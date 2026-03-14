@@ -6,21 +6,27 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -42,6 +48,7 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
+import com.example.bbltripplanner.screens.userTrip.entity.TripVisibility
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
 
@@ -244,5 +251,65 @@ object ComposeViewUtils {
 
     fun showToast(context: Context, stringResource: String) {
         Toast.makeText(context, stringResource, Toast.LENGTH_SHORT).show()
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun ExposedDropDownMenu(
+        selected: String,
+        onChange: (String) -> Unit
+    ) {
+        var expanded by remember {
+            mutableStateOf(false)
+        }
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = {
+                expanded = !expanded
+            }
+        ) {
+            Box(
+                modifier = Modifier
+                    .menuAnchor()
+                    .background(color = LocalCustomColors.current.secondaryBackground, RoundedCornerShape(50))
+                    .height(32.dp)
+                    .padding(horizontal = 16.dp)
+                    .wrapContentWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ComposeTextView.TitleTextView(
+                        selected,
+                        fontSize = 14.sp,
+                        textColor = LocalCustomColors.current.primaryBackground
+                    )
+                    Spacer(Modifier.width(2.dp))
+                    Icon(
+                        Icons.Default.ArrowDropDown,
+                        modifier = Modifier.size(24.dp),
+                        contentDescription = "DropDown",
+                        tint = LocalCustomColors.current.primaryBackground
+                    )
+                }
+            }
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+            ) {
+                TripVisibility.entries.forEach { item ->
+                    DropdownMenuItem(
+                        text = { ComposeTextView.TextView(item.value) },
+                        onClick = {
+                            onChange(item.value)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
     }
 }

@@ -25,5 +25,13 @@ data class TripData(
 )
 
 enum class TripVisibility(val value: String) {
-    PRIVATE("Private"), PUBLIC("Public")
+    PRIVATE("Private"), PUBLIC("Public");
+
+    companion object {
+        fun getEnum(value: String): TripVisibility {
+            return TripVisibility.entries.find { visibility ->
+                visibility.value == value
+            } ?: PRIVATE
+        }
+    }
 }

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,7 +25,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -35,9 +33,7 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
@@ -447,9 +443,6 @@ fun PostingInitScreenToolbar(
     onChange: (tripVisibility: TripVisibility) -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    var expanded by remember {
-        mutableStateOf(false)
-    }
 
     Row(
         modifier = Modifier
@@ -480,54 +473,8 @@ fun PostingInitScreenToolbar(
             }
         }
 
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = {
-                expanded = !expanded
-            }
-        ) {
-            Box(
-                modifier = Modifier
-                    .menuAnchor()
-                    .background(color = LocalCustomColors.current.secondaryBackground, RoundedCornerShape(50))
-                    .height(32.dp)
-                    .padding(horizontal = 16.dp)
-                    .wrapContentWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ComposeTextView.TitleTextView(
-                        visibility.value,
-                        fontSize = 14.sp,
-                        textColor = LocalCustomColors.current.primaryBackground
-                    )
-                    Spacer(Modifier.width(2.dp))
-                    Icon(
-                        Icons.Default.ArrowDropDown,
-                        modifier = Modifier.size(24.dp),
-                        contentDescription = "DropDown",
-                        tint = LocalCustomColors.current.primaryBackground
-                    )
-                }
-            }
-
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-            ) {
-                TripVisibility.entries.forEach { item ->
-                    DropdownMenuItem(
-                        text = { ComposeTextView.TextView(item.value) },
-                        onClick = {
-                            onChange(item)
-                            expanded = false
-                        }
-                    )
-                }
-            }
+        ComposeViewUtils.ExposedDropDownMenu(visibility.value) {
+            onChange(TripVisibility.getEnum(it))
         }
     }
 }
