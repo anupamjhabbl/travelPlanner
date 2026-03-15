@@ -61,6 +61,12 @@ sealed class AppNavigationScreen(
     data object ExpenseScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.EXPENSE_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}") {
         fun createRoute(tripId: String) = "${Constants.NavigationScreen.EXPENSE_SCREEN}/$tripId"
     }
+    data object AddExpenseScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.ADD_EXPENSE_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}") {
+        fun createRoute(tripId: String) = "${Constants.NavigationScreen.ADD_EXPENSE_SCREEN}/$tripId"
+    }
+    data object ExpenseSettlementScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.EXPENSE_SETTLEMENT_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}") {
+        fun createRoute(tripId: String) = "${Constants.NavigationScreen.EXPENSE_SETTLEMENT_SCREEN}/$tripId"
+    }
 
     // General
     data object BuzzScreen: AppNavigationScreen(route = Constants.NavigationScreen.BUZZ_SCREEN, hasBottomBar = true)

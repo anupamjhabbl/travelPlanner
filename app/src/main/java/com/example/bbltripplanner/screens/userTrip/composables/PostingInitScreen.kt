@@ -473,7 +473,7 @@ fun PostingInitScreenToolbar(
             }
         }
 
-        ComposeViewUtils.ExposedDropDownMenu(visibility.value) {
+        ComposeViewUtils.ExposedDropDownMenu(TripVisibility.entries.map { it.value }, visibility.value) {
             onChange(TripVisibility.getEnum(it))
         }
     }

@@ -50,6 +50,8 @@ object Constants {
         const val ADD_SCREEN = "add_screen"
         const val EDIT_TRIP_SCREEN = "edit_trip_screen"
         const val EXPENSE_SCREEN = "expense_screen"
+        const val ADD_EXPENSE_SCREEN = "add_expense_screen"
+        const val EXPENSE_SETTLEMENT_SCREEN = "expense_settlement_screen"
 
         // User Screens
         const val PROFILE_SCREEN = "profile_screen"

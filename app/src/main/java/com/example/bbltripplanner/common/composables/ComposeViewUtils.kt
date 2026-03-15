@@ -48,7 +48,6 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
-import com.example.bbltripplanner.screens.userTrip.entity.TripVisibility
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
 
@@ -256,6 +255,7 @@ object ComposeViewUtils {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun ExposedDropDownMenu(
+        itemList: List<String>,
         selected: String,
         onChange: (String) -> Unit
     ) {
@@ -272,7 +272,7 @@ object ComposeViewUtils {
                 modifier = Modifier
                     .menuAnchor()
                     .background(color = LocalCustomColors.current.secondaryBackground, RoundedCornerShape(50))
-                    .height(32.dp)
+                    .height(38.dp)
                     .padding(horizontal = 16.dp)
                     .wrapContentWidth(),
                 contentAlignment = Alignment.Center
@@ -285,7 +285,9 @@ object ComposeViewUtils {
                         fontSize = 14.sp,
                         textColor = LocalCustomColors.current.primaryBackground
                     )
+
                     Spacer(Modifier.width(2.dp))
+
                     Icon(
                         Icons.Default.ArrowDropDown,
                         modifier = Modifier.size(24.dp),
@@ -300,11 +302,11 @@ object ComposeViewUtils {
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
             ) {
-                TripVisibility.entries.forEach { item ->
+                itemList.forEach { item ->
                     DropdownMenuItem(
-                        text = { ComposeTextView.TextView(item.value) },
+                        text = { ComposeTextView.TextView(item) },
                         onClick = {
-                            onChange(item.value)
+                            onChange(item)
                             expanded = false
                         }
                     )

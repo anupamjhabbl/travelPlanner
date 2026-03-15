@@ -129,4 +129,26 @@
     <string name="remaining">Remaining: \u20B9%1$s</string>
     <string name="rupee_formatting">\u20B9%1$s</string>
     <string name="total_spent">Total Spent</string>
+    <string name="paid_by">To Be Paid By</string>
+    <string name="type">Type</string>
+    <string name="description">Description</string>
+    <string name="amount">Amount</string>
+    <string name="split">Split</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="none">None</string>
+    <string name="everyone">Everyone</string>
+    <string name="individual">Individual</string>
+    <string name="select_type">Select Type</string>
+    <string name="select_split_type">Select Split Type</string>
+    <string name="receive_money">Receive Money</string>
+    <string name="pay_money">Pay Money</string>
+    <string name="to_receive">TO RECEIVE</string>
+    <string name="to_pay">TO PAY</string>
+    <string name="request">Request</string>
+    <string name="pay">Pay</string>
+    <string name="paid">Paid</string>
+    <string name="received">Received</string>
+    <string name="paid_to">Pay to</string>
+    <string name="rs">\u20A8 %1$s</string>
+    <string name="settlements">Settlements</string>
 </resources>

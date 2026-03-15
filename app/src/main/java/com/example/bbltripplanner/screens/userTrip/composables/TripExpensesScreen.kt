@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -135,32 +136,41 @@ fun TripExpensesScreen(
 
         Spacer(Modifier.height(16.dp))
 
-        ToolBoxRowView()
+        ToolBoxRowView(tripId)
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
 
         LazyColumn {
             items(list) {
-                Spacer(Modifier.height(8.dp))
-
                 ExpenseItem()
 
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(16.dp))
             }
         }
     }
 }
 
 @Composable
-fun ColumnScope.ToolBoxRowView() {
+fun ColumnScope.ToolBoxRowView(
+    tripId: String?
+) {
+    val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier.align(Alignment.End)
     ) {
         Button(
-            modifier = Modifier.height(38.dp).wrapContentWidth().padding(horizontal = 16.dp),
+            modifier = Modifier.height(38.dp).wrapContentWidth(),
             shape = RoundedCornerShape(16.dp),
             onClick = {
-
+                tripId?.let {
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.Navigate(
+                                AppNavigationScreen.AddExpenseScreen.createRoute(it)
+                            )
+                        )
+                    }
+                }
             },
             colors = ButtonDefaults.buttonColors().copy(
                 containerColor = LocalCustomColors.current.secondaryBackground
@@ -177,6 +187,44 @@ fun ColumnScope.ToolBoxRowView() {
 
                 ComposeTextView.TextView(
                     text = stringResource(R.string.add),
+                    textColor = LocalCustomColors.current.primaryButtonText,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500
+                )
+            }
+        }
+
+        Spacer(Modifier.width(8.dp))
+
+        Button(
+            modifier = Modifier.height(38.dp).wrapContentWidth().padding(end = 16.dp),
+            shape = RoundedCornerShape(16.dp),
+            onClick = {
+                tripId?.let {
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.Navigate(
+                                AppNavigationScreen.ExpenseSettlementScreen.createRoute(it)
+                            )
+                        )
+                    }
+                }
+            },
+            colors = ButtonDefaults.buttonColors().copy(
+                containerColor = LocalCustomColors.current.secondaryBackground
+            ),
+        ) {
+            Row {
+                Icon(
+                    Icons.Default.Payment,
+                    contentDescription = "Add",
+                    tint = LocalCustomColors.current.primaryButtonText
+                )
+
+                Spacer(Modifier.width(4.dp))
+
+                ComposeTextView.TextView(
+                    text = stringResource(R.string.settlements),
                     textColor = LocalCustomColors.current.primaryButtonText,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W500
