@@ -58,4 +58,27 @@ object DateUtils {
                 .toLocalDateTime(TimeZone.currentSystemDefault()).date
         }
     }
+
+    fun getTimeAgo(timeMillis: Long): String {
+        val now = System.currentTimeMillis()
+        val diff = now - timeMillis
+
+        val seconds = diff / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        val days = hours / 24
+        val weeks = days / 7
+        val months = days / 30
+        val years = days / 365
+
+        return when {
+            seconds < 60 -> "${seconds}s ago"
+            minutes < 60 -> "${minutes}m ago"
+            hours < 24 -> "${hours}h ago"
+            days < 7 -> "${days}d ago"
+            weeks < 5 -> "${weeks}w ago"
+            months < 12 -> "${months}mo ago"
+            else -> "${years}y ago"
+        }
+    }
 }

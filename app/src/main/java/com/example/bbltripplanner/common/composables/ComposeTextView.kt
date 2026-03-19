@@ -51,7 +51,8 @@ object ComposeTextView {
         textColor: Color = LocalCustomColors.current.textColor,
         fontWeight: FontWeight = FontWeight.W400,
         maxLines: Int = Int.MAX_VALUE,
-        textDecoration: TextDecoration = TextDecoration.None
+        textDecoration: TextDecoration = TextDecoration.None,
+        minLines: Int = 1
     ) {
         Text(
             text = text,
@@ -64,6 +65,7 @@ object ComposeTextView {
             maxLines = maxLines,
             fontFamily = primaryFontFamily,
             textDecoration = textDecoration,
+            minLines = minLines,
             overflow = TextOverflow.Ellipsis
         )
     }

@@ -151,4 +151,7 @@
     <string name="paid_to">Pay to</string>
     <string name="rs">\u20A8 %1$s</string>
     <string name="settlements">Settlements</string>
+    <string name="no_notifications_to_show">No Notification to show</string>
+    <string name="no_notifications_subtitle">You currently have no notifications. We will notify you when something new happens!</string>
+    <string name="explore">Explore</string>
 </resources>

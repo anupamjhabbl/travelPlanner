@@ -9,6 +9,11 @@ import com.example.bbltripplanner.screens.home.repositories.HomeCxeLayoutReposit
 import com.example.bbltripplanner.screens.home.repositoryImpl.HomeCxeLayoutNetwork
 import com.example.bbltripplanner.screens.home.usecases.HomeCxeUseCase
 import com.example.bbltripplanner.screens.home.viewModels.HomeExperienceViewModel
+import com.example.bbltripplanner.screens.notification.client.NotificationClient
+import com.example.bbltripplanner.screens.notification.repositories.NotificationRepository
+import com.example.bbltripplanner.screens.notification.repositoryImpl.NotificationNetwork
+import com.example.bbltripplanner.screens.notification.usecases.NotificationUseCase
+import com.example.bbltripplanner.screens.notification.viewModels.NotificationViewModel
 import com.example.bbltripplanner.screens.userTrip.clients.PostingClient
 import com.example.bbltripplanner.screens.userTrip.clients.UserTripDetailClient
 import com.example.bbltripplanner.screens.userTrip.repositories.PostingRepository
@@ -110,4 +115,12 @@ val appModule = module {
     single<LocationSearchClient> { Network.createLocationSearch(LocationSearchClient::class.java, androidContext()) }
     single<LocationSearchUseCase> { LocationSearchUseCase(get()) }
     single<LocationSearchRepository> { LocationSearchNetwork(get()) }
+
+    // notification
+    single<NotificationClient> { Network.createWithAuth(NotificationClient::class.java, get(), get(), androidContext()) }
+    single<NotificationRepository> { NotificationNetwork(get()) }
+    single<NotificationUseCase> { NotificationUseCase(get()) }
+    viewModel {
+        NotificationViewModel(get())
+    }
 }
