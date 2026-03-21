@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class NotificationViewModel(
     val notificationUseCase: NotificationUseCase
-): BaseMVIVViewModel<NotificationViewModelIntent.ViewEvent>(){
+): BaseMVIVViewModel<NotificationViewModelIntent.ViewEvent>() {
     private val _notificationsFetchStatus: MutableStateFlow<RequestResponseStatus<List<NotificationModel>>> = MutableStateFlow(RequestResponseStatus())
     val notificationsFetchStatus: StateFlow<RequestResponseStatus<List<NotificationModel>>> = _notificationsFetchStatus.asStateFlow()
 

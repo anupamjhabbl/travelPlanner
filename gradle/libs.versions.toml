@@ -27,6 +27,7 @@ securityCryptoVersion = "1.1.0"
 splashscreenVersion = "1.2.0"
 datetimeVersion = "0.7.1"
 material3Version = "1.4.0"
+chuckerVersion = "4.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -69,6 +70,8 @@ kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime",
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3Version" }
 composeMaterial = { group = "androidx.compose.material", name = "material" }
 composeMaterialIcons = { group = "androidx.compose.material", name = "material-icons-extended" }
+chucker-debug = { group = "com.github.chuckerteam.chucker", name = "library", version.ref = "chuckerVersion" }
+chucker-release = { group = "com.github.chuckerteam.chucker", name = "library-no-op", version.ref = "chuckerVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.common.infra
 
 import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
 import okhttp3.OkHttpClient
@@ -36,6 +37,7 @@ class NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(authPreferencesUseCase))
             .addInterceptor(HeaderInterceptor(context))
+            .addInterceptor(ChuckerInterceptor(context))
             .addInterceptor(LoggerInterceptor())
             .authenticator(TokenAuthenticator(authPreferencesUseCase, userAuthUseCase))
             .build()
@@ -45,6 +47,7 @@ class NetworkModule {
          return OkHttpClient.Builder()
              .addInterceptor(HeaderInterceptor(context))
              .addInterceptor(LoggerInterceptor())
+             .addInterceptor(ChuckerInterceptor(context))
              .build()
     }
 
