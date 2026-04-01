@@ -27,7 +27,8 @@ securityCryptoVersion = "1.1.0"
 splashscreenVersion = "1.2.0"
 datetimeVersion = "0.7.1"
 material3Version = "1.4.0"
-chuckerVersion = "4.2.0"
+chuckerVersion = "4.3.1"
+mapboxVersion = "11.20.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -72,6 +73,8 @@ composeMaterial = { group = "androidx.compose.material", name = "material" }
 composeMaterialIcons = { group = "androidx.compose.material", name = "material-icons-extended" }
 chucker-debug = { group = "com.github.chuckerteam.chucker", name = "library", version.ref = "chuckerVersion" }
 chucker-release = { group = "com.github.chuckerteam.chucker", name = "library-no-op", version.ref = "chuckerVersion" }
+mapbox-sdk =  { group = "com.mapbox.maps", name = "android-ndk27", version.ref = "mapboxVersion" }
+mapbox-sdk-compose = { group = "com.mapbox.extension", name = "maps-compose-ndk27", version.ref = "mapboxVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

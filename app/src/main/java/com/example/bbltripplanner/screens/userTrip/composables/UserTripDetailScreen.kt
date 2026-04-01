@@ -472,7 +472,13 @@ private suspend fun takeAction(key: String) {
 
         Constants.TripDetailScreen.GROUP -> {}
 
-        Constants.TripDetailScreen.ITINERARY-> {}
+        Constants.TripDetailScreen.ITINERARY-> {
+            CommonNavigationChannel.navigateTo(
+                NavigationAction.Navigate(
+                    AppNavigationScreen.ItineraryMapViewScreen.createRoute("1234")
+                )
+            )
+        }
 
         Constants.TripDetailScreen.EXPENSES -> {
             CommonNavigationChannel.navigateTo(

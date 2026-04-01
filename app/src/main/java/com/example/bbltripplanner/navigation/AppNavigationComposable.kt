@@ -2,6 +2,7 @@ package com.example.bbltripplanner.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -13,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -40,6 +42,7 @@ import com.example.bbltripplanner.screens.user.profile.composables.ProfileScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileSocialScreen
 import com.example.bbltripplanner.screens.userTrip.composables.AddExpensesScreen
 import com.example.bbltripplanner.screens.userTrip.composables.ExpenseSettlementScreen
+import com.example.bbltripplanner.screens.userTrip.composables.ItineraryMapView
 import com.example.bbltripplanner.screens.userTrip.composables.PostingEditScreen
 import com.example.bbltripplanner.screens.userTrip.composables.PostingInitScreen
 import com.example.bbltripplanner.screens.userTrip.composables.TripExpensesScreen
@@ -92,10 +95,15 @@ fun AppNavigationComposable(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
+        val paddingToApply = if (navBackStackEntry.toAppNavigationScreen()?.isFullScreen == true) {
+            PaddingValues(0.dp)
+        } else {
+            padding
+        }
         Box(
             modifier = Modifier
                 .background(LocalCustomColors.current.primaryBackground)
-                .padding(padding)
+                .padding(paddingToApply)
         ) {
             HomeNavigationComposable(accessToken, homeNavController)
         }
@@ -226,6 +234,11 @@ fun HomeNavigationComposable(
         composable(route = AppNavigationScreen.AddExpenseScreen.route) { navBackStackEntry ->
             val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
             AddExpensesScreen(tripId)
+        }
+
+        composable(route = AppNavigationScreen.ItineraryMapViewScreen.route) { navBackStackEntry ->
+            val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+            ItineraryMapView(tripId)
         }
 
         composable(route = AppNavigationScreen.DestinationScreen.route) { navBackStackEntry ->

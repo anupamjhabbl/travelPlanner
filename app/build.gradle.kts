@@ -25,6 +25,7 @@ android {
         }
         val locationApiKey: String = localProperties.getProperty("LOCATION_API_KEY") ?: "null"
         buildConfigField("String", "LOCATION_API_KEY", "\"$locationApiKey\"")
+        resValue("string", "mapbox_access_token", localProperties["MAPBOX_ACCESS_TOKEN"] as String)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -97,6 +98,8 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.composeMaterial)
     implementation(libs.composeMaterialIcons)
+    implementation(libs.mapbox.sdk)
+    implementation(libs.mapbox.sdk.compose)
     ksp(libs.ksp.room)
     ksp(libs.koin.ksp.compiler)
     testImplementation(libs.io.insert.koin.test)

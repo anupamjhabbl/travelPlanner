@@ -5,7 +5,8 @@ import com.example.bbltripplanner.common.Constants
 
 sealed class AppNavigationScreen(
     val route: String,
-    val hasBottomBar: Boolean = false
+    val hasBottomBar: Boolean = false,
+    val isFullScreen: Boolean = false
 ) {
     // User Auth Screens
     data object AuthGraph: AppNavigationScreen(Constants.NavigationScreen.AUTH_GRAPH)
@@ -67,6 +68,9 @@ sealed class AppNavigationScreen(
     data object ExpenseSettlementScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.EXPENSE_SETTLEMENT_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}") {
         fun createRoute(tripId: String) = "${Constants.NavigationScreen.EXPENSE_SETTLEMENT_SCREEN}/$tripId"
     }
+    data object ItineraryMapViewScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}", isFullScreen = true) {
+        fun createRoute(tripId: String) = "${Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN}/$tripId"
+    }
 
     // General
     data object BuzzScreen: AppNavigationScreen(route = Constants.NavigationScreen.BUZZ_SCREEN, hasBottomBar = true)
@@ -90,39 +94,43 @@ sealed class AppNavigationScreen(
 
 fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
     val route = this?.route ?: return null
-    return when (route) {
-        // User Screens
-        Constants.NavigationScreen.ACCOUNT_SCREEN -> AppNavigationScreen.AccountScreen
-        Constants.NavigationScreen.PROFILE_SCREEN -> AppNavigationScreen.ProfileScreen
-        Constants.NavigationScreen.USER_SCREEN_GRAPH -> AppNavigationScreen.UserScreenGraph
-        Constants.NavigationScreen.EDIT_PROFILE_SCREEN -> AppNavigationScreen.EditProfileScreen
-        Constants.NavigationScreen.USER_SETTING_SCREEN -> AppNavigationScreen.UserSettingsScreen
-        Constants.NavigationScreen.HELP_SUPPORT_SCREEN -> AppNavigationScreen.HelpSupportScreen
-        Constants.NavigationScreen.PROFILE_SOCIAL_SCREEN -> AppNavigationScreen.ProfileSocialScreen
+    return when {
+        route.startsWith(Constants.NavigationScreen.ACCOUNT_SCREEN) -> AppNavigationScreen.AccountScreen
+        route.startsWith(Constants.NavigationScreen.PROFILE_SCREEN) -> AppNavigationScreen.ProfileScreen
+        route.startsWith(Constants.NavigationScreen.USER_SCREEN_GRAPH) -> AppNavigationScreen.UserScreenGraph
+        route.startsWith(Constants.NavigationScreen.EDIT_PROFILE_SCREEN) -> AppNavigationScreen.EditProfileScreen
+        route.startsWith(Constants.NavigationScreen.USER_SETTING_SCREEN) -> AppNavigationScreen.UserSettingsScreen
+        route.startsWith(Constants.NavigationScreen.HELP_SUPPORT_SCREEN) -> AppNavigationScreen.HelpSupportScreen
+        route.startsWith(Constants.NavigationScreen.PROFILE_SOCIAL_SCREEN) -> AppNavigationScreen.ProfileSocialScreen
 
         // Home Screens
-        Constants.NavigationScreen.HOME_NAV_GRAPH -> AppNavigationScreen.HomeNavGraph
-        Constants.NavigationScreen.HOME_SCREEN -> AppNavigationScreen.HomeScreen
-        Constants.NavigationScreen.SEARCH_SCREEN -> AppNavigationScreen.SearchScreen
+        route.startsWith(Constants.NavigationScreen.HOME_NAV_GRAPH) -> AppNavigationScreen.HomeNavGraph
+        route.startsWith(Constants.NavigationScreen.HOME_SCREEN) -> AppNavigationScreen.HomeScreen
+        route.startsWith(Constants.NavigationScreen.SEARCH_SCREEN) -> AppNavigationScreen.SearchScreen
 
         // General
-        Constants.NavigationScreen.VAULT_SCREEN -> AppNavigationScreen.VaultScreen
-        Constants.NavigationScreen.BUZZ_SCREEN -> AppNavigationScreen.BuzzScreen
-        Constants.NavigationScreen.NOTIFICATION_SCREEN -> AppNavigationScreen.NotificationScreen
+        route.startsWith(Constants.NavigationScreen.VAULT_SCREEN) -> AppNavigationScreen.VaultScreen
+        route.startsWith(Constants.NavigationScreen.BUZZ_SCREEN) -> AppNavigationScreen.BuzzScreen
+        route.startsWith(Constants.NavigationScreen.NOTIFICATION_SCREEN) -> AppNavigationScreen.NotificationScreen
 
         // User Trip And Posting Screens
-        Constants.NavigationScreen.ADD_SCREEN -> AppNavigationScreen.AddScreen
-        Constants.NavigationScreen.USER_TRIP_DETAIL_SCREEN -> AppNavigationScreen.UserTripDetailScreen
+        route.startsWith(Constants.NavigationScreen.ADD_SCREEN) -> AppNavigationScreen.AddScreen
+        route.startsWith(Constants.NavigationScreen.USER_TRIP_DETAIL_SCREEN) -> AppNavigationScreen.UserTripDetailScreen
+        route.startsWith(Constants.NavigationScreen.EDIT_TRIP_SCREEN) -> AppNavigationScreen.EditTripScreen
+        route.startsWith(Constants.NavigationScreen.EXPENSE_SCREEN) -> AppNavigationScreen.ExpenseScreen
+        route.startsWith(Constants.NavigationScreen.ADD_EXPENSE_SCREEN) -> AppNavigationScreen.AddExpenseScreen
+        route.startsWith(Constants.NavigationScreen.EXPENSE_SETTLEMENT_SCREEN) -> AppNavigationScreen.ExpenseSettlementScreen
+        route.startsWith(Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN) -> AppNavigationScreen.ItineraryMapViewScreen
 
         // Authentication
-        Constants.NavigationScreen.AUTH_GRAPH -> AppNavigationScreen.AuthGraph
-        Constants.NavigationScreen.AUTHENTICATION_FORM_SCREEN -> AppNavigationScreen.AuthenticationFormScreen
-        Constants.NavigationScreen.RESET_PASSWORD_SCREEN -> AppNavigationScreen.ResetPasswordScreen
-        Constants.NavigationScreen.FORGOT_PASSWORD_SCREEN -> AppNavigationScreen.ForgotPasswordScreen
-        Constants.NavigationScreen.OTP_VERIFICATION_SCREEN -> AppNavigationScreen.OtpVerificationScreen
+        route.startsWith(Constants.NavigationScreen.AUTH_GRAPH) -> AppNavigationScreen.AuthGraph
+        route.startsWith(Constants.NavigationScreen.AUTHENTICATION_FORM_SCREEN) -> AppNavigationScreen.AuthenticationFormScreen
+        route.startsWith(Constants.NavigationScreen.RESET_PASSWORD_SCREEN) -> AppNavigationScreen.ResetPasswordScreen
+        route.startsWith(Constants.NavigationScreen.FORGOT_PASSWORD_SCREEN) -> AppNavigationScreen.ForgotPasswordScreen
+        route.startsWith(Constants.NavigationScreen.OTP_VERIFICATION_SCREEN) -> AppNavigationScreen.OtpVerificationScreen
 
         // Destination screen
-        Constants.NavigationScreen.DESTINATION_SCREEN -> AppNavigationScreen.DestinationScreen
+        route.startsWith(Constants.NavigationScreen.DESTINATION_SCREEN) -> AppNavigationScreen.DestinationScreen
         else -> null
     }
 }
