@@ -25,6 +25,9 @@ class ItineraryViewModel(
     }
 
     private fun fetchItinerary(tripId: String) {
+        if (itineraryStatus.value.data != null) {
+            return
+        }
         _itineraryStatus.value = RequestResponseStatus(isLoading = true)
         viewModelScope.launch {
             val result = SafeIOUtil.safeCall {

@@ -67,7 +67,6 @@ fun HomeExperienceScreen() {
                 }
             }
         }
-        viewModel.processEvent(HomeExperienceIntent.ViewEvent.Initialize)
     }
 
     Column(

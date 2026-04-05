@@ -38,6 +38,10 @@ class HomeExperienceViewModel(
         }
     }
 
+    init {
+        getCxeResponse()
+    }
+
     private fun init() {
         clearCxeWidgets()
     }
