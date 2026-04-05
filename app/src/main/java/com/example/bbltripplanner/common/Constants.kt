@@ -55,6 +55,7 @@ object Constants {
         const val ITINERARY_MAP_VIEW_SCREEN = "itinerary_map_view_screen"
         const val ITINERARY_DETAIL_VIEW = "itinerary_detail_view"
         const val ITINERARY_LIST_VIEW = "itinerary_list_view"
+        const val ITINERARY_NAV_ENTRY = "itinerary_nav_entry"
 
         // User Screens
         const val PROFILE_SCREEN = "profile_screen"

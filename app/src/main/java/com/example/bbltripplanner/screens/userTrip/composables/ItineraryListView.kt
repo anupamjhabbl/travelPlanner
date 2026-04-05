@@ -45,13 +45,12 @@ import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ItineraryListView(
+    viewModel: ItineraryViewModel,
     tripId: String?
 ) {
-    val viewModel: ItineraryViewModel = koinViewModel()
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
     val itineraryStatus by viewModel.itineraryStatus.collectAsState()
