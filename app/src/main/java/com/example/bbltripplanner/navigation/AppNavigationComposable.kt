@@ -49,8 +49,10 @@ import com.example.bbltripplanner.screens.userTrip.composables.PostingEditScreen
 import com.example.bbltripplanner.screens.userTrip.composables.PostingInitScreen
 import com.example.bbltripplanner.screens.userTrip.composables.TripExpensesScreen
 import com.example.bbltripplanner.screens.userTrip.composables.UserTripDetailScreen
+import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.example.bbltripplanner.screens.vault.composables.UserVaultScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppNavigationComposable(
@@ -238,19 +240,33 @@ fun HomeNavigationComposable(
             AddExpensesScreen(tripId)
         }
 
-        composable(route = AppNavigationScreen.ItineraryMapViewScreen.route) { navBackStackEntry ->
-            val tripSelectedDate = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_SELECTED_DATE)
-            ItineraryMapView(tripSelectedDate)
-        }
+        navigation(
+            startDestination = AppNavigationScreen.ItineraryListView.route,
+            route = AppNavigationScreen.ItineraryNavEntry.route
+        ) {
+            composable(route = AppNavigationScreen.ItineraryMapViewScreen.route) { navBackStackEntry ->
+                val parentEntry = remember(navBackStackEntry) {
+                    homeNavController.getBackStackEntry(AppNavigationScreen.ItineraryNavEntry.route)
+                }
+                val viewModel: ItineraryViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+                val tripSelectedDate = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_SELECTED_DATE)
+                ItineraryMapView(viewModel, tripSelectedDate)
+            }
 
-        composable(route = AppNavigationScreen.ItineraryListView.route) { navBackStackEntry ->
-            val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
-            ItineraryListView(tripId)
-        }
+            composable(route = AppNavigationScreen.ItineraryListView.route) { navBackStackEntry ->
+                val parentEntry = remember(navBackStackEntry) {
+                    homeNavController.getBackStackEntry(AppNavigationScreen.ItineraryNavEntry.route)
+                }
+                val viewModel: ItineraryViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+                val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+                ItineraryListView(viewModel, tripId)
+            }
 
-        composable(route = AppNavigationScreen.ItineraryDetailView.route) { navBackStackEntry ->
-            val placeId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.ITINERARY_PLACE_ID)
-            ItineraryDetailView(placeId)
+            composable(route = AppNavigationScreen.ItineraryDetailView.route) { navBackStackEntry ->
+                val placeId =
+                    navBackStackEntry.arguments?.getString(Constants.NavigationArgs.ITINERARY_PLACE_ID)
+                ItineraryDetailView(placeId)
+            }
         }
 
         composable(route = AppNavigationScreen.DestinationScreen.route) { navBackStackEntry ->

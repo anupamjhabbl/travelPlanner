@@ -9,5 +9,14 @@ data class Itinerary(
 data class ItineraryDay(
     val date: Long,
     val spotCount: Int,
-    val imageUrl: String
+    val imageUrl: String,
+    val itineraryPlaceList: List<ItineraryPlace> = emptyList()
+)
+
+data class ItineraryPlace(
+    val placeName: String,
+    val locationId: String,
+    val description: String,
+    val imageUrl: String,
+    val activityCount: Int
 )
