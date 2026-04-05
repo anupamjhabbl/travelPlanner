@@ -55,6 +55,7 @@ import com.example.bbltripplanner.screens.userTrip.repositoryImpl.ItineraryNetwo
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.LocationSearchNetwork
 import com.example.bbltripplanner.screens.userTrip.usecases.ItineraryUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCase
+import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryDetailViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
@@ -99,6 +100,7 @@ val appModule = module {
     single<ItineraryRepository> { ItineraryNetwork(get()) }
     single<ItineraryUseCase> { ItineraryUseCase(get()) }
     viewModel { ItineraryViewModel(get()) }
+    viewModel { ItineraryDetailViewModel(get()) }
 
     // User Auth
     single<UserAuthRepository> { UserAuthNetwork(get()) }
