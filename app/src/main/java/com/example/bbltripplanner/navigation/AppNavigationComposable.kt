@@ -263,8 +263,7 @@ fun HomeNavigationComposable(
             }
 
             composable(route = AppNavigationScreen.ItineraryDetailView.route) { navBackStackEntry ->
-                val placeId =
-                    navBackStackEntry.arguments?.getString(Constants.NavigationArgs.ITINERARY_PLACE_ID)
+                val placeId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.ITINERARY_PLACE_ID)
                 ItineraryDetailView(placeId)
             }
         }

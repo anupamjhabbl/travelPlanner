@@ -14,6 +14,7 @@ data class ItineraryDay(
 )
 
 data class ItineraryPlace(
+    val placeId: String,
     val placeName: String,
     val locationId: String,
     val description: String,

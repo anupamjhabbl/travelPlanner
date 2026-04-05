@@ -163,4 +163,8 @@
     <string name="your_itineary">Your Journey</string>
     <string name="curated_place_count">%1$d spots curated for you</string>
     <string name="from_to_day">Day %1$d - %2$s</string>
+    <string name="no_such_place">There is no such place in your itinerary.</string>
+    <string name="no_place_in_itinerary">No place in Itinerary</string>
+    <string name="activities">Activities</string>
+    <string name="about">Highlights of the Place</string>
 </resources>

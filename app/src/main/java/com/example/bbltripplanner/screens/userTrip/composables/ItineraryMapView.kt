@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +37,9 @@ import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.navigation.AppNavigationScreen
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryPlace
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -42,6 +47,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.style.MapStyle
+import kotlinx.coroutines.launch
 
 @Composable
 fun ItineraryMapView(
@@ -49,6 +55,7 @@ fun ItineraryMapView(
     tripSelectedDate: String? = null
 ) {
     val itineraryStatus by viewModel.itineraryStatus.collectAsState()
+    val scope = rememberCoroutineScope()
 
     val mapViewportState = rememberMapViewportState {
         setCameraOptions {
@@ -94,7 +101,15 @@ fun ItineraryMapView(
                 ) {
                     itemsIndexed(places) { index, place ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            PlaceCard(place)
+                            PlaceCard(place) {
+                                scope.launch {
+                                    CommonNavigationChannel.navigateTo(
+                                        NavigationAction.Navigate(
+                                            AppNavigationScreen.ItineraryDetailView.createRoute(place.placeId)
+                                        )
+                                    )
+                                }
+                            }
 
                             if (index < places.size - 1) {
                                 DottedArrowSeparator()
@@ -109,7 +124,8 @@ fun ItineraryMapView(
 
 @Composable
 fun PlaceCard(
-    place: ItineraryPlace
+    place: ItineraryPlace,
+    onPlaceClick: () -> Unit
 ) {
     val customColors = LocalCustomColors.current
 
@@ -119,6 +135,9 @@ fun PlaceCard(
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.module_20)))
             .background(customColors.primaryBackground)
             .padding(dimensionResource(id = R.dimen.module_12))
+            .clickable {
+                onPlaceClick()
+            }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ComposeImageView.ImageViewWithUrl(

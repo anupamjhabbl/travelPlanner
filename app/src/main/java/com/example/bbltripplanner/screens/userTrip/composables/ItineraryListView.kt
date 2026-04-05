@@ -95,7 +95,7 @@ fun ItineraryListView(
 
                 ComposeTextView.TitleTextView(
                     text = stringResource(id = R.string.choose_date),
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
                     textColor = customColors.secondaryBackground
                 )
             }
