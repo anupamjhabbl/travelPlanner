@@ -475,7 +475,7 @@ private suspend fun takeAction(key: String) {
         Constants.TripDetailScreen.ITINERARY-> {
             CommonNavigationChannel.navigateTo(
                 NavigationAction.Navigate(
-                    AppNavigationScreen.ItineraryMapViewScreen.createRoute("1234")
+                    AppNavigationScreen.ItineraryListView.createRoute("1234")
                 )
             )
         }

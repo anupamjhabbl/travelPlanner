@@ -48,9 +48,14 @@ import com.example.bbltripplanner.screens.user.profile.viewModels.EditProfileVie
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowersViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowingViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileViewModel
+import com.example.bbltripplanner.screens.userTrip.clients.ItineraryClient
+import com.example.bbltripplanner.screens.userTrip.repositories.ItineraryRepository
 import com.example.bbltripplanner.screens.userTrip.repositories.LocationSearchRepository
+import com.example.bbltripplanner.screens.userTrip.repositoryImpl.ItineraryNetwork
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.LocationSearchNetwork
+import com.example.bbltripplanner.screens.userTrip.usecases.ItineraryUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCase
+import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -88,6 +93,12 @@ val appModule = module {
     single<UserTripDetailClient> { Network.createWithAuth(UserTripDetailClient::class.java, get(), get(), androidContext()) }
     viewModel { PostingInitViewModel(get(), get(), get(), get(), get()) }
     viewModel { UserTripDetailViewModel(get(), get()) }
+
+    // Itinerary
+    single<ItineraryClient> { Network.createWithAuth(ItineraryClient::class.java, get(), get(), androidContext()) }
+    single<ItineraryRepository> { ItineraryNetwork(get()) }
+    single<ItineraryUseCase> { ItineraryUseCase(get()) }
+    viewModel { ItineraryViewModel(get()) }
 
     // User Auth
     single<UserAuthRepository> { UserAuthNetwork(get()) }

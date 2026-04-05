@@ -52,8 +52,9 @@ object Constants {
         const val EXPENSE_SCREEN = "expense_screen"
         const val ADD_EXPENSE_SCREEN = "add_expense_screen"
         const val EXPENSE_SETTLEMENT_SCREEN = "expense_settlement_screen"
-
         const val ITINERARY_MAP_VIEW_SCREEN = "itinerary_map_view_screen"
+        const val ITINERARY_DETAIL_VIEW = "itinerary_detail_view"
+        const val ITINERARY_LIST_VIEW = "itinerary_list_view"
 
         // User Screens
         const val PROFILE_SCREEN = "profile_screen"
@@ -82,6 +83,8 @@ object Constants {
         const val USER_ID = "user_id"
         const val PAGE_ID = "page_id"
         const val DESTINATION_ID = "destination_id"
+        const val TRIP_SELECTED_DATE = "trip_selected_date"
+        const val ITINERARY_PLACE_ID = "itinerary_place_id"
     }
 
     object Origin {
