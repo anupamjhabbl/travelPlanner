@@ -10,7 +10,6 @@ import com.mapbox.maps.extension.compose.style.MapStyle
 
 @Composable
 fun ItineraryMapView(
-    tripId: String?,
     tripSelectedDate: String? = null
 ) {
     MapboxMap(

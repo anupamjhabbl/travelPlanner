@@ -42,6 +42,8 @@ import com.example.bbltripplanner.screens.user.profile.composables.ProfileScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileSocialScreen
 import com.example.bbltripplanner.screens.userTrip.composables.AddExpensesScreen
 import com.example.bbltripplanner.screens.userTrip.composables.ExpenseSettlementScreen
+import com.example.bbltripplanner.screens.userTrip.composables.ItineraryDetailView
+import com.example.bbltripplanner.screens.userTrip.composables.ItineraryListView
 import com.example.bbltripplanner.screens.userTrip.composables.ItineraryMapView
 import com.example.bbltripplanner.screens.userTrip.composables.PostingEditScreen
 import com.example.bbltripplanner.screens.userTrip.composables.PostingInitScreen
@@ -237,8 +239,18 @@ fun HomeNavigationComposable(
         }
 
         composable(route = AppNavigationScreen.ItineraryMapViewScreen.route) { navBackStackEntry ->
+            val tripSelectedDate = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_SELECTED_DATE)
+            ItineraryMapView(tripSelectedDate)
+        }
+
+        composable(route = AppNavigationScreen.ItineraryListView.route) { navBackStackEntry ->
             val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
-            ItineraryMapView(tripId)
+            ItineraryListView(tripId)
+        }
+
+        composable(route = AppNavigationScreen.ItineraryDetailView.route) { navBackStackEntry ->
+            val placeId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.ITINERARY_PLACE_ID)
+            ItineraryDetailView(placeId)
         }
 
         composable(route = AppNavigationScreen.DestinationScreen.route) { navBackStackEntry ->

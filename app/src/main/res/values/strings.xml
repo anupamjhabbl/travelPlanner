@@ -158,4 +158,9 @@
     <string name="notification_permission_rationale">We need notification permission to keep you updated on your trips and settlements.</string>
     <string name="notification_permission_settings_message">Notification permission is permanently denied. Please enable it from settings to receive updates.</string>
     <string name="open_settings">Open Settings</string>
+    <string name="choose_date">Choose Dates</string>
+    <string name="select_date_summary">Select a single day or the complete experience to begin exploring your curated itinerary.</string>
+    <string name="your_itineary">Your Journey</string>
+    <string name="curated_place_count">%1$d spots curated for you</string>
+    <string name="from_to_day">Day %1$d - %2$s</string>
 </resources>
