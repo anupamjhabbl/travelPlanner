@@ -43,12 +43,28 @@ import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryPlace
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
+import com.mapbox.maps.MapboxDelicateApi
+import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
+import com.mapbox.maps.extension.compose.style.BooleanValue
+import com.mapbox.maps.extension.compose.style.ColorValue
+import com.mapbox.maps.extension.compose.style.DoubleListValue
+import com.mapbox.maps.extension.compose.style.DoubleValue
 import com.mapbox.maps.extension.compose.style.MapStyle
+import com.mapbox.maps.extension.compose.style.layers.generated.LineCapValue
+import com.mapbox.maps.extension.compose.style.layers.generated.LineJoinValue
+import com.mapbox.maps.extension.compose.style.layers.generated.LineLayer
+import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
+import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
+import com.mapbox.maps.viewannotation.geometry
+import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import kotlinx.coroutines.launch
 
+@OptIn(MapboxDelicateApi::class)
 @Composable
 fun ItineraryMapView(
     viewModel: ItineraryViewModel,
@@ -56,15 +72,7 @@ fun ItineraryMapView(
 ) {
     val itineraryStatus by viewModel.itineraryStatus.collectAsState()
     val scope = rememberCoroutineScope()
-
-    val mapViewportState = rememberMapViewportState {
-        setCameraOptions {
-            zoom(12.0)
-            center(Point.fromLngLat(77.0958, 28.6573))
-            pitch(0.0)
-            bearing(0.0)
-        }
-    }
+    val customColors = LocalCustomColors.current
 
     val places = remember(itineraryStatus.data, tripSelectedDate) {
         val selectedDateLong = tripSelectedDate?.toLongOrNull()
@@ -73,6 +81,34 @@ fun ItineraryMapView(
         } else {
             emptyList()
         }
+    }
+
+    val points = remember(places) {
+        places.filter { it.location.lat != null && it.location.lon != null }
+            .map { Point.fromLngLat(it.location.lon?.toDouble() ?: 0.0, it.location.lat?.toDouble() ?: 0.0) }
+    }
+
+    val firstLocation = points.firstOrNull()
+    val initialPoint = remember(firstLocation) {
+        firstLocation ?: Point.fromLngLat(0.0, 0.0)
+    }
+
+    val mapViewportState = rememberMapViewportState {
+        setCameraOptions {
+            zoom(12.0)
+            center(initialPoint)
+            pitch(0.0)
+            bearing(0.0)
+        }
+    }
+
+    val routeSourceState = rememberGeoJsonSourceState {
+        lineMetrics = BooleanValue(true)
+    }
+
+    if (points.size > 1) {
+        val lineString = LineString.fromLngLats(points)
+        routeSourceState.data = GeoJSONData(lineString)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -85,7 +121,40 @@ fun ItineraryMapView(
             style = {
                 MapStyle(style = "mapbox://styles/mapbox/satellite-streets-v12")
             }
-        )
+        ) {
+            if (points.size > 1) {
+                LineLayer(
+                    sourceState = routeSourceState,
+                    layerId = "route-layer"
+                ) {
+                    lineColor = ColorValue(customColors.secondaryBackground)
+                    lineWidth = DoubleValue(4.0)
+                    lineDasharray = DoubleListValue(listOf(2.0, 2.0))
+                    lineCap = LineCapValue.ROUND
+                    lineJoin = LineJoinValue.ROUND
+                }
+            }
+
+            places.forEachIndexed { index, place ->
+                if (place.location.lat != null && place.location.lon != null) {
+                    val point = Point.fromLngLat(place.location.lon.toDouble(), place.location.lat.toDouble())
+                    ViewAnnotation(
+                        options = viewAnnotationOptions {
+                            geometry(point)
+                        }
+                    ) {
+                        ViewAnnotationContent(index) {
+                            mapViewportState.flyTo(
+                                cameraOptions {
+                                    center(point)
+                                    zoom(15.0)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
 
         if (places.isNotEmpty()) {
             Column(
@@ -207,6 +276,28 @@ fun DottedArrowSeparator() {
             contentDescription = null,
             tint = color,
             modifier = Modifier.size(18.dp)
+        )
+    }
+}
+
+@Composable
+fun ViewAnnotationContent(
+    placeIndex: Int,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier.size(30.dp)
+            .clip(CircleShape)
+            .background(LocalCustomColors.current.secondaryBackground)
+            .clickable {
+                onClick()
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        ComposeTextView.TextView(
+            text = (placeIndex + 1).toString(),
+            fontSize = 16.sp,
+            textColor = Color.White
         )
     }
 }
