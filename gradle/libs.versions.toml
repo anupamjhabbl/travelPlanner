@@ -29,6 +29,7 @@ datetimeVersion = "0.7.1"
 material3Version = "1.4.0"
 chuckerVersion = "4.3.1"
 mapboxVersion = "11.20.2"
+mapboxGeojsonVersion = "7.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -75,6 +76,10 @@ chucker-debug = { group = "com.github.chuckerteam.chucker", name = "library", ve
 chucker-release = { group = "com.github.chuckerteam.chucker", name = "library-no-op", version.ref = "chuckerVersion" }
 mapbox-sdk =  { group = "com.mapbox.maps", name = "android-ndk27", version.ref = "mapboxVersion" }
 mapbox-sdk-compose = { group = "com.mapbox.extension", name = "maps-compose-ndk27", version.ref = "mapboxVersion" }
+mapbox-sdk-geojson = { group = "com.mapbox.mapboxsdk", name = "mapbox-sdk-geojson", version.ref = "mapboxGeojsonVersion" }
+mapbox-sdk-services = { group = "com.mapbox.mapboxsdk", name = "mapbox-sdk-services", version.ref = "mapboxGeojsonVersion" }
+mapbox-sdk-turf = { group = "com.mapbox.mapboxsdk", name = "mapbox-sdk-turf", version.ref = "mapboxGeojsonVersion" }
+mapbox-sdk-core = { group = "com.mapbox.mapboxsdk", name = "mapbox-sdk-core", version.ref = "mapboxGeojsonVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -82,4 +87,3 @@ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = 
 ksp-plugin = { id = "com.google.devtools.ksp", version.ref = "kspPlugin" }
 google-services =  { id = "com.google.gms.google-services", version.ref = "google-services" }
 compose-plugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-

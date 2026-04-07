@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -31,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +45,11 @@ import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryPlace
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import com.mapbox.api.directions.v5.DirectionsCriteria
+import com.mapbox.api.directions.v5.MapboxDirections
+import com.mapbox.api.directions.v5.models.DirectionsResponse
+import com.mapbox.api.directions.v5.models.RouteOptions
+import com.mapbox.core.constants.Constants
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxDelicateApi
@@ -63,6 +70,9 @@ import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJson
 import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @OptIn(MapboxDelicateApi::class)
 @Composable
@@ -73,6 +83,7 @@ fun ItineraryMapView(
     val itineraryStatus by viewModel.itineraryStatus.collectAsState()
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
+    val accessToken = stringResource(id = R.string.mapbox_access_token)
 
     val places = remember(itineraryStatus.data, tripSelectedDate) {
         val selectedDateLong = tripSelectedDate?.toLongOrNull()
@@ -106,9 +117,37 @@ fun ItineraryMapView(
         lineMetrics = BooleanValue(true)
     }
 
-    if (points.size > 1) {
-        val lineString = LineString.fromLngLats(points)
-        routeSourceState.data = GeoJSONData(lineString)
+    LaunchedEffect(points) {
+        if (points.size > 1) {
+            val routeOptions = RouteOptions.builder()
+                .baseUrl(Constants.BASE_API_URL)
+                .user(Constants.MAPBOX_USER)
+                .profile(DirectionsCriteria.PROFILE_DRIVING)
+                .coordinatesList(points)
+                .overview(DirectionsCriteria.OVERVIEW_FULL)
+                .build()
+
+            val builder = MapboxDirections.builder()
+                .routeOptions(routeOptions)
+                .accessToken(accessToken)
+
+            builder.build().enqueueCall(object : Callback<DirectionsResponse> {
+                override fun onResponse(
+                    call: Call<DirectionsResponse>,
+                    response: Response<DirectionsResponse>
+                ) {
+                    val routes = response.body()?.routes()
+                    if (!routes.isNullOrEmpty()) {
+                        val routeGeometry = routes[0].geometry()
+                        if (routeGeometry != null) {
+                            routeSourceState.data = GeoJSONData(LineString.fromPolyline(routeGeometry, 6))
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<DirectionsResponse>, t: Throwable) {}
+            })
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -118,21 +157,20 @@ fun ItineraryMapView(
             scaleBar = {},
             logo = {},
             attribution = {},
+            compass = {},
             style = {
                 MapStyle(style = "mapbox://styles/mapbox/satellite-streets-v12")
             }
         ) {
-            if (points.size > 1) {
-                LineLayer(
-                    sourceState = routeSourceState,
-                    layerId = "route-layer"
-                ) {
-                    lineColor = ColorValue(customColors.secondaryBackground)
-                    lineWidth = DoubleValue(4.0)
-                    lineDasharray = DoubleListValue(listOf(2.0, 2.0))
-                    lineCap = LineCapValue.ROUND
-                    lineJoin = LineJoinValue.ROUND
-                }
+            LineLayer(
+                sourceState = routeSourceState,
+                layerId = "route-layer"
+            ) {
+                lineColor = ColorValue(customColors.secondaryBackground)
+                lineWidth = DoubleValue(4.0)
+                lineDasharray = DoubleListValue(listOf(2.0, 2.0))
+                lineCap = LineCapValue.ROUND
+                lineJoin = LineJoinValue.ROUND
             }
 
             places.forEachIndexed { index, place ->
