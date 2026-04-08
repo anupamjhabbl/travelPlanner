@@ -620,6 +620,10 @@ suspend fun moveToNextPage(tripId: String?, showSuccess: () -> Unit, showError: 
     CommonNavigationChannel.navigateTo(
         NavigationAction.Navigate(
             AppNavigationScreen.UserTripDetailScreen.createRoute(tripId)
-        )
+        ) {
+            popUpTo(AppNavigationScreen.AddScreen.route) {
+                inclusive = true
+            }
+        }
     )
 }

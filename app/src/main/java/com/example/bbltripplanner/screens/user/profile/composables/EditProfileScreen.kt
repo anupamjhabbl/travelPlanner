@@ -310,8 +310,8 @@ private fun UserFieldsSection(
         val maxBioLength = 100
         var username by remember { mutableStateOf(user.name) }
         var bio by remember { mutableStateOf(user.bio) }
-        var countryCode by remember { mutableStateOf(user.phone?.take(3) ?: "+91") }
-        var phoneNumber by remember { mutableStateOf(user.phone?.drop(3) ?: "") }
+        var countryCode by remember { mutableStateOf(user.phone?.take(4) ?: "+91") }
+        var phoneNumber by remember { mutableStateOf(user.phone?.drop(4) ?: "") }
         var hasPhoneFocused by remember { mutableStateOf(false) }
         var isPhoneFocused by remember { mutableStateOf(false) }
 
