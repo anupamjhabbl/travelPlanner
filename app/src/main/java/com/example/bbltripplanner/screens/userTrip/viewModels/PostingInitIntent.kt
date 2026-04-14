@@ -8,6 +8,7 @@ import com.example.bbltripplanner.screens.userTrip.entity.TripVisibility
 class PostingInitIntent {
     sealed interface ViewEvent {
         data object SaveAndContinue: ViewEvent
+        data object UpdateAndContinue: ViewEvent
         data class OnQueryChanged(val query: String): ViewEvent
         data class UpdateStartDate(val startDate: Long): ViewEvent
         data class UpdateEndDate(val endDate: Long): ViewEvent

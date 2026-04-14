@@ -9,6 +9,7 @@ import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseC
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileFollowersData
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileRelationUsecase
 import com.example.bbltripplanner.screens.userTrip.entity.Location
+import com.example.bbltripplanner.screens.userTrip.entity.TripCreationResponse
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.entity.TripVisibility
 import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCase
@@ -96,6 +97,7 @@ class PostingInitViewModel(
     override fun processEvent(viewEvent: PostingInitIntent.ViewEvent) {
         when (viewEvent) {
             PostingInitIntent.ViewEvent.SaveAndContinue -> saveTheTripDataAndContinue()
+            PostingInitIntent.ViewEvent.UpdateAndContinue -> updateTheTripDataAndContinue()
             PostingInitIntent.ViewEvent.GetInviteList -> getInviteList()
             is PostingInitIntent.ViewEvent.OnQueryChanged -> onQueryChanged(viewEvent.query)
             is PostingInitIntent.ViewEvent.UpdateEndDate -> updateTripEndDate(viewEvent.endDate)
@@ -106,6 +108,23 @@ class PostingInitViewModel(
             is PostingInitIntent.ViewEvent.AddTripMates -> addTripMates(viewEvent.user)
             is PostingInitIntent.ViewEvent.RemoveTripMates -> removeTripMates(viewEvent.user)
             is PostingInitIntent.ViewEvent.GetTripDetails -> getTripDetails(viewEvent.tripId)
+        }
+    }
+
+    private fun updateTheTripDataAndContinue() {
+        val tripId = _tripFormData.value.tripId
+        if (tripId != null) {
+            viewModelScope.launch {
+                val postTripResult = SafeIOUtil.safeCall {
+                    postingUseCase.updateTrip(tripId, _tripFormData.value)
+                }
+                postTripResult.onSuccess {
+                    _viewEffects.emit(PostingInitIntent.ViewEffect.GoNext(TripCreationResponse(tripId)))
+                }
+                postTripResult.onFailure {
+                    _viewEffects.emit(PostingInitIntent.ViewEffect.ShowError)
+                }
+            }
         }
     }
 

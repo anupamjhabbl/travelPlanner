@@ -10,4 +10,8 @@ class PostingUseCase(
     suspend fun postTrip(tripData: TripData): TripCreationResponse {
         return postingRepository.postTrip(tripData)
     }
+
+    suspend fun updateTrip(tripId: String, tripData: TripData): Boolean {
+        return postingRepository.updateTrip(tripId, tripData)
+    }
 }

@@ -8,9 +8,9 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ItineraryClient {
-    @GET("getItinerary/{tripId}")
+    @GET("trips/getItinerary/{tripId}")
     suspend fun getItinerary(@Path("tripId") tripId: String): Response<BaseResponse<Itinerary>>
 
-    @GET("getItineraryPlaceDetail/{placeId}")
+    @GET("trips/getItineraryPlaceDetail/{placeId}")
     suspend fun getItineraryPlaceDetail(@Path("placeId") placeId: String): Response<BaseResponse<ItineraryPlaceDetail>>
 }

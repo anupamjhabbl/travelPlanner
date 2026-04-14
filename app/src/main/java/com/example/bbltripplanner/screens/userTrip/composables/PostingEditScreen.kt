@@ -416,7 +416,7 @@ fun PostingEditScreen(
                         }
                     )
                 ) {
-                    viewModel.processEvent(PostingInitIntent.ViewEvent.SaveAndContinue)
+                    viewModel.processEvent(PostingInitIntent.ViewEvent.UpdateAndContinue)
                 }
             }
         }

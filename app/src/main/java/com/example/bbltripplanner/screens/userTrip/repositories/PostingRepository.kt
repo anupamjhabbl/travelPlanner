@@ -5,4 +5,5 @@ import com.example.bbltripplanner.screens.userTrip.entity.TripData
 
 interface PostingRepository {
     suspend fun postTrip(tripData: TripData): TripCreationResponse
+    suspend fun updateTrip(tripId: String, tripData: TripData): Boolean
 }
