@@ -42,7 +42,10 @@ data class TripDataRequestModel(
 )
 
 enum class TripVisibility(val value: String) {
-    PRIVATE("private"), PUBLIC("public");
+    @SerializedName("private")
+    PRIVATE("private"),
+    @SerializedName("public")
+    PUBLIC("public");
 
     companion object {
         fun getEnum(value: String): TripVisibility {
