@@ -190,7 +190,7 @@ private fun TripSummarySection(
             ) {
                 IconButton(
                     onClick = {
-                        shareDeepLink(context, shareMessage)
+                        shareDeepLink(context, shareMessage, userTripData.tripId)
                     }
                 ) {
                     Icon(
@@ -220,7 +220,9 @@ private fun TripSummarySection(
 
                 TripSummaryDetailItem(
                     Icons.Default.LocationOn,
-                    userTripData.whereTo?.address?.name?.plus(", ")?.plus(userTripData.whereTo.address.city) ?: ""
+                    userTripData.whereTo?.displayName
+                        ?: userTripData.whereTo?.address?.name?.plus(", ")?.plus(userTripData.whereTo.address.city)
+                        ?: ""
                 )
 
                 Spacer(Modifier.height(6.dp))
@@ -275,17 +277,21 @@ private fun TripSummarySection(
     }
 }
 
-fun shareDeepLink(context: Context, message: String) {
+fun shareDeepLink(context: Context, message: String, tripId: String?) {
     val shareIntent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra(Intent.EXTRA_SUBJECT, "Check out this product!")
-        putExtra(Intent.EXTRA_TEXT, "$message ${getDeeplinkUrl()}")
+        putExtra(Intent.EXTRA_TEXT, "$message ${getDeeplinkUrl(tripId)}")
     }
     context.startActivity(Intent.createChooser(shareIntent, "Share deep link via"))
 }
 
-fun getDeeplinkUrl(): String {
-    return "https://www.tripplanner.com/trips/1234"
+fun getDeeplinkUrl(tripId: String?): String {
+    return if (tripId.isNullOrEmpty()) {
+        "https://www.tripplanner.com"
+    } else {
+        "https://www.tripplanner.com/trips/$tripId"
+    }
 }
 
 @OptIn(ExperimentalLayoutApi::class)

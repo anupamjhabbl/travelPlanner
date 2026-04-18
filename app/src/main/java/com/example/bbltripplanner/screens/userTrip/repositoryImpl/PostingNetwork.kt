@@ -51,7 +51,7 @@ private fun TripData.toModel(): TripDataRequestModel {
 private fun Location.toModel(): LocationRequestModel {
     return LocationRequestModel(
         name = address?.name,
-        displayName = displayName,
+        address = displayName,
         city = address?.city,
         state = address?.state,
         country = address?.country,
