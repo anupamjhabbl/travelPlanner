@@ -111,7 +111,9 @@ fun PostingEditScreen(
             is PostingInitIntent.ViewEffect.GoNext -> moveToNextPage(
                 viewEffect.tripData.tripId,
                 {
-                    ComposeViewUtils.showToast(context, viewEffect.tripData.message)
+                    viewEffect.tripData.message?.let {
+                        ComposeViewUtils.showToast(context, it)
+                    }
                 }
             ) {
                 ComposeViewUtils.showToast(context, genericMessage)
