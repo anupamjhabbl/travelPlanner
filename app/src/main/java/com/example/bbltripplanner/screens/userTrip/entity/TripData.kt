@@ -29,8 +29,8 @@ data class TripDataRequestModel(
     val tripId: String? = null,
     @SerializedName(value = "tripName", alternate = ["trip_name"])
     val tripName: String  = "",
-    @SerializedName(value = "tripLocation", alternate = ["trip_location"])
-    val whereTo: Location? = null,
+    @SerializedName(value = "whereTo")
+    val whereTo: LocationRequestModel? = null,
     @SerializedName(value = "startDate", alternate = ["start_date"])
     val startDate: Long? = null,
     @SerializedName(value = "endDate", alternate = ["end_date"])
@@ -42,12 +42,12 @@ data class TripDataRequestModel(
 )
 
 enum class TripVisibility(val value: String) {
-    PRIVATE("Private"), PUBLIC("Public");
+    PRIVATE("private"), PUBLIC("public");
 
     companion object {
         fun getEnum(value: String): TripVisibility {
             return TripVisibility.entries.find { visibility ->
-                visibility.value == value
+                visibility.value.equals(value, ignoreCase = true)
             } ?: PRIVATE
         }
     }
