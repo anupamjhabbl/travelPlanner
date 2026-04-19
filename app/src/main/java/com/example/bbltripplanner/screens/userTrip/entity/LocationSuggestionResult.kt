@@ -3,7 +3,9 @@ package com.example.bbltripplanner.screens.userTrip.entity
 import com.google.gson.annotations.SerializedName
 
 data class Location(
+    @SerializedName("latitude")
     val lat: String?,
+    @SerializedName("longitude")
     val lon: String?,
     @SerializedName("display_name")
     val displayName: String?,

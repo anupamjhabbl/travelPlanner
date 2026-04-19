@@ -108,4 +108,6 @@ object Constants {
         const val EXPENSES = "Expenses"
         const val GROUP = "Group"
     }
+
+    const val CONTACT_EMAIL = "anupamimpbbl@gmail.com"
 }

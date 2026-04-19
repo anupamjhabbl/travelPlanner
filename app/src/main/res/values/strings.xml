@@ -171,7 +171,7 @@
     <string name="search_faqs">Search FAQs</string>
     <string name="smart_suggestions">Smart Suggestions</string>
     <string name="popular">POPULAR</string>
-    <string name="update_flight_itinerary">Update your flight\nitinerary details</string>
+    <string name="update_flight_itinerary">Update your itinerary details</string>
     <string name="expense_sync_issues">Expense reports\nsync issues</string>
     <string name="managing_push_alerts">Managing push\nalerts</string>
     <string name="browse_by_category">Browse by Category</string>
@@ -189,4 +189,5 @@
     <string name="upload_screenshot">Upload\nScreenshot</string>
     <string name="send_report">Send\nReport</string>
     <string name="ai_assistant">AI Assistant</string>
+    <string name="earn_by_review">Earn by Review</string>
 </resources>

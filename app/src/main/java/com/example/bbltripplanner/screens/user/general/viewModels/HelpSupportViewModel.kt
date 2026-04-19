@@ -39,14 +39,6 @@ class HelpSupportViewModel : BaseMVIVViewModel<HelpSupportViewModelIntent.ViewEv
             _expandedCategories.value = current + titleResId
         }
     }
-
-    fun getSmartSuggestions(): List<SmartSuggestion> {
-        return listOf(
-            SmartSuggestion("Update your flight\nitinerary details"),
-            SmartSuggestion("Update your hotel\nbooking details"),
-            SmartSuggestion("Check your rental\ncar agreement")
-        )
-    }
     
     fun getFAQCategories(
         tripsIcon: androidx.compose.ui.graphics.vector.ImageVector,
