@@ -167,4 +167,26 @@
     <string name="no_place_in_itinerary">No place in Itinerary</string>
     <string name="activities">Activities</string>
     <string name="about">Highlights of the Place</string>
+    <string name="how_can_we_assist">How can we assist your\njourney?</string>
+    <string name="search_faqs">Search FAQs</string>
+    <string name="smart_suggestions">Smart Suggestions</string>
+    <string name="popular">POPULAR</string>
+    <string name="update_flight_itinerary">Update your flight\nitinerary details</string>
+    <string name="expense_sync_issues">Expense reports\nsync issues</string>
+    <string name="managing_push_alerts">Managing push\nalerts</string>
+    <string name="browse_by_category">Browse by Category</string>
+    <string name="still_need_help">Still need help?</string>
+    <string name="support_team_available">Our support team is available 24/7 for you.</string>
+    <string name="contact_support">Contact Support</string>
+    <string name="trips_itinerary">Trips &amp; Itinerary</string>
+    <string name="media">Media</string>
+    <string name="social_profile">Social &amp; Profile</string>
+    <string name="account_security">Account &amp; Security</string>
+    <string name="app_issues">App Issues</string>
+    <string name="report_a_problem">Report a Problem</string>
+    <string name="report_a_problem_subtitle">Encountered a bug or an issue? Let us know and we’ll fix it right away.</string>
+    <string name="describe_what_went_wrong">Describe what went wrong…</string>
+    <string name="upload_screenshot">Upload\nScreenshot</string>
+    <string name="send_report">Send\nReport</string>
+    <string name="ai_assistant">AI Assistant</string>
 </resources>
