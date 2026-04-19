@@ -10,7 +10,7 @@ data class TripData(
     val tripId: String? = null,
     @SerializedName(value = "tripName", alternate = ["trip_name"])
     val tripName: String  = "",
-    @SerializedName(value = "tripLocation", alternate = ["trip_location"])
+    @SerializedName(value = "whereTo", alternate = ["where_to"])
     val whereTo: Location? = null,
     @SerializedName(value = "startDate", alternate = ["start_date"])
     val startDate: Long? = null,
