@@ -664,6 +664,7 @@ private fun HelpSupportToolbar(
                     tint = customColors.secondaryBackground
                 )
             }
+
             Text(
                 text = stringResource(id = R.string.help_support),
                 style = MaterialTheme.typography.titleMedium.copy(

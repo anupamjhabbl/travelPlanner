@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 class LightColor {
     companion object {
-        val primaryBackGround = Color(0xFFFFFFFF)
+        val primaryBackGround = Color(0xFFF7F8FC)
         val secondaryBackground = Color(0xFF6851EB)
         val fadedBackground = Color(0xFFB6ACE0)
         val titleTextColor = Color(0xFF070821)

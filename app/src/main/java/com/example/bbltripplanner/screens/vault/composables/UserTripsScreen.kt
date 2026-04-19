@@ -25,6 +25,8 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
@@ -149,34 +152,30 @@ fun UserTripsToolbar() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp, 8.dp),
+            .padding(4.dp, 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(36.dp)
-                .background(color = customColors.secondaryBackground, CircleShape)
-        ) {
-            IconButton(
-                onClick = {
-                    scope.launch {
-                        CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
-                    }
+        IconButton(
+            onClick = {
+                scope.launch {
+                    CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
                 }
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = customColors.primaryBackground
-                )
             }
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = customColors.secondaryBackground
+            )
         }
 
-        Spacer(Modifier.width(16.dp))
-
-        ComposeTextView.TitleTextView(
+        Text(
             text = stringResource(R.string.your_trips),
-            fontSize = 20.sp
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = customColors.secondaryBackground,
+                fontWeight = FontWeight.Bold
+            ),
+            fontSize = 18.sp
         )
     }
 }

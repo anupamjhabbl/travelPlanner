@@ -4,8 +4,8 @@ import androidx.compose.ui.graphics.Color
 
 class DarkColor {
     companion object {
-        val primaryBackGround = Color(0xFF000000)
-        val secondaryBackground = Color(0xFFB5ADFF)
+        val primaryBackGround = Color(0xFF12131A)
+        val secondaryBackground = Color(0xFFA89EFF)
         val fadedBackground = Color(0xFF4A4376)
         val titleTextColor = Color(0xFFDADAF5)
         val textColor = Color(0xFFDADAF5)
