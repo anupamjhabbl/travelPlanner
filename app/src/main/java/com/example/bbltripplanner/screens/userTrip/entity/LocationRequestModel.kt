@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class LocationRequestModel(
     @SerializedName("name")
     val name: String?,
-    @SerializedName("display_name")
-    val displayName: String?,
+    @SerializedName("address")
+    val address: String?,
     @SerializedName("city")
     val city: String?,
     @SerializedName("state")
