@@ -34,6 +34,7 @@ import com.example.bbltripplanner.screens.user.auth.viewModels.OTPAuthViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.PasswordResetVieModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UseRegistrationViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserLoginAuthViewModel
+import com.example.bbltripplanner.screens.user.general.viewModels.HelpSupportViewModel
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountViewModel
 import com.example.bbltripplanner.screens.userTrip.clients.LocationSearchClient
 import com.example.bbltripplanner.screens.user.profile.clients.ProfileRelationClient
@@ -136,4 +137,7 @@ val appModule = module {
     viewModel {
         NotificationViewModel(get())
     }
+
+    // Account
+    viewModel { HelpSupportViewModel() }
 }
