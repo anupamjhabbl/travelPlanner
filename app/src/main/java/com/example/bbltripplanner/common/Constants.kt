@@ -75,6 +75,9 @@ object Constants {
 
         // destination_screen
         const val DESTINATION_SCREEN = "destination_screen"
+
+        // User Trips screen
+        const val USER_TRIPS_SCREEN = "user_trips_screen"
     }
 
     object NavigationArgs {
@@ -110,4 +113,5 @@ object Constants {
     }
 
     const val CONTACT_EMAIL = "anupamimpbbl@gmail.com"
+    const val TRIP_PLANNER_DEEPLINK = "https://www.tripplanner.com"
 }

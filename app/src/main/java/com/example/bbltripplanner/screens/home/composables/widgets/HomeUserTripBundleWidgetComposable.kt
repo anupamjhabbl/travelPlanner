@@ -1,7 +1,6 @@
 package com.example.bbltripplanner.screens.home.composables.widgets
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,27 +9,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bbltripplanner.common.composables.ComposeImageView
+import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.common.utils.shareDeepLinkOfTrip
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
-import com.example.bbltripplanner.screens.home.entities.UserTripWidgetItem
-import com.example.bbltripplanner.screens.vault.entity.VaultScreens
+import com.example.bbltripplanner.screens.vault.composables.TripListItem
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -43,6 +39,8 @@ fun HomeUserTripBundleWidgetComposable(
     widget: HomeCxeWidget.UserTripBundleWidget,
     user: User?
 ) {
+    val context = LocalContext.current
+    val shareMessage = stringResource(R.string.share_message)
     val widgetItemList = widget.data.widgetList
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
@@ -69,16 +67,12 @@ fun HomeUserTripBundleWidgetComposable(
                     .background(LocalCustomColors.current.secondaryBackground, RoundedCornerShape(8.dp))
                     .padding(12.dp, 4.dp)
                     .clickable {
-                        user?.let {
-                            scope.launch {
-                                CommonNavigationChannel.navigateTo(
-                                    NavigationAction.Navigate(
-                                        AppNavigationScreen.VaultScreen.createRoute(
-                                            VaultScreens.TRIPS.value, it.id
-                                        )
-                                    )
+                        scope.launch {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.Navigate(
+                                    AppNavigationScreen.UserTripsScreen.route
                                 )
-                            }
+                            )
                         }
                     }
             ) {
@@ -96,91 +90,38 @@ fun HomeUserTripBundleWidgetComposable(
             state = pagerState,
             count = widgetItemList.size
         ) { pageNo ->
-            UserTripWidgetItem(widgetItemList[pageNo]) { tripId ->
-                scope.launch {
-                    CommonNavigationChannel.navigateTo(
-                        NavigationAction.Navigate(
-                            AppNavigationScreen.UserTripDetailScreen.createRoute(tripId)
-                        )
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun UserTripWidgetItem(
-    userTripWidgetItem: UserTripWidgetItem,
-    onClick: (String) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp, 0.dp)
-            .border(1.dp, LocalCustomColors.current.defaultImageCardColor, RoundedCornerShape(12.dp))
-            .padding(8.dp)
-            .clickable {
-                onClick(userTripWidgetItem.userTripId)
-            },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        ComposeImageView.ImageViewWithUrl(
-            imageURI = userTripWidgetItem.tripImages.firstOrNull() ?: "",
-            modifier = Modifier
-                .size(70.dp)
-                .clip(RoundedCornerShape(16.dp))
-        )
-
-        Spacer(Modifier.width(8.dp))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ComposeTextView.TitleTextView(
-                    text = userTripWidgetItem.tripName,
-                    modifier = Modifier.weight(1f),
-                    fontSize = 14.sp
-                )
-
-                ComposeTextView.TextView(
-                    text = "Share Stories",
-                    fontSize = 14.sp,
-                    textColor = LocalCustomColors.current.secondaryBackground,
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable {
-                        onClick(userTripWidgetItem.userTripId)
+            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                TripListItem(
+                    trip = widgetItemList[pageNo],
+                    onCardClick = { ->
+                        scope.launch {
+                            widgetItemList[pageNo].tripId?.let {
+                                CommonNavigationChannel.navigateTo(
+                                    NavigationAction.Navigate(
+                                        AppNavigationScreen.UserTripDetailScreen.createRoute(it)
+                                    )
+                                )
+                            }
+                        }
+                    },
+                    onEditClick = {
+                        scope.launch {
+                            widgetItemList[pageNo].tripId?.let {
+                                CommonNavigationChannel.navigateTo(
+                                    NavigationAction.Navigate(
+                                        AppNavigationScreen.EditTripScreen.createRoute(it)
+                                    )
+                                )
+                            }
+                        }
+                    },
+                    onShareClick = {
+                        widgetItemList[pageNo].tripId?.let {
+                            context.shareDeepLinkOfTrip(shareMessage, it)
+                        }
                     }
                 )
             }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                userTripWidgetItem.tripProfile?.profileImage?.let {
-                    ComposeImageView.CircularImageView(
-                        imageURI = it,
-                        diameter = 15.dp
-                    )
-                }
-
-                Spacer(Modifier.width(6.dp))
-
-                ComposeTextView.TextView(
-                    text = userTripWidgetItem.tripProfile?.profileName ?: ""
-                )
-            }
-
-            ComposeTextView.TextView(
-                text = "${userTripWidgetItem.tripLocation?.address?.city} - ${userTripWidgetItem.date}"
-            )
         }
     }
 }

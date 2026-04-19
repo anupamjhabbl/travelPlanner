@@ -7,7 +7,6 @@ import com.example.bbltripplanner.screens.home.clients.HomeCxeClient
 import com.example.bbltripplanner.screens.home.entities.BundleWidgetItem
 import com.example.bbltripplanner.screens.home.entities.HomeCxeResponse
 import com.example.bbltripplanner.screens.home.entities.TravelThreadsWidgetItem
-import com.example.bbltripplanner.screens.home.entities.UserTripWidgetItem
 import com.example.bbltripplanner.screens.home.repositories.HomeCxeLayoutRepository
 import com.google.gson.JsonParseException
 
@@ -20,10 +19,6 @@ class HomeCxeLayoutNetwork(
 
     override suspend fun getTravelThreadBundleData(bundleUri: String): List<TravelThreadsWidgetItem> {
         return processResponse(homeCxeClient.getTravelThreadBundleData(bundleUri))
-    }
-
-    override suspend fun getUserTripBundleData(bundleUri: String): List<UserTripWidgetItem> {
-        return processResponse(homeCxeClient.getUserTripBundleData(bundleUri))
     }
 
     override suspend fun getBundleWidgetData(bundleUri: String): List<BundleWidgetItem> {

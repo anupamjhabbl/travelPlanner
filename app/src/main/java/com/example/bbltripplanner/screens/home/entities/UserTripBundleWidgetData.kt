@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.screens.home.entities
 
+import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.google.gson.annotations.SerializedName
 
 data class UserTripBundleWidgetData(
@@ -10,5 +11,5 @@ data class UserTripBundleWidgetData(
     @SerializedName(value = "action_header", alternate = ["actionHeader"])
     val actionHeader: HomeBundleWidgetActionHeader?,
     @SerializedName(value = "widget_list", alternate = ["widgetList"])
-    var widgetList: List<UserTripWidgetItem>? = null
+    var widgetList: List<TripData>? = null
 )

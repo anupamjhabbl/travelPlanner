@@ -58,6 +58,11 @@ import com.example.bbltripplanner.screens.userTrip.usecases.ItineraryUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCase
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryDetailViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
+import com.example.bbltripplanner.screens.vault.clients.VaultClient
+import com.example.bbltripplanner.screens.vault.repositories.VaultRepository
+import com.example.bbltripplanner.screens.vault.repositoryImpl.VaultNetwork
+import com.example.bbltripplanner.screens.vault.usecases.VaultUseCase
+import com.example.bbltripplanner.screens.vault.viewModels.UserTripsViewModel
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -84,7 +89,7 @@ val appModule = module {
     single<HomeCxeLayoutRepository> { HomeCxeLayoutNetwork(get()) }
     single<HomeCxeUseCase> { HomeCxeUseCase(get()) }
     single<HomeCxeClient> { Network.createWithAuth(HomeCxeClient::class.java, get(), get(), androidContext()) }
-    viewModel { HomeExperienceViewModel(get(), get()) }
+    viewModel { HomeExperienceViewModel(get(), get(),get()) }
 
     // Posting & Trips
     single<PostingClient> { Network.createWithAuth(PostingClient::class.java, get(), get(), androidContext()) }
@@ -139,5 +144,15 @@ val appModule = module {
     }
 
     // Account
-    viewModel { HelpSupportViewModel() }
+    viewModel {
+        HelpSupportViewModel()
+    }
+
+    // Vault
+    single<VaultUseCase> { VaultUseCase(get()) }
+    single<VaultRepository> { VaultNetwork(get()) }
+    single<VaultClient> { Network.createWithAuth(VaultClient::class.java, get(), get(), androidContext()) }
+    viewModel {
+        UserTripsViewModel(get())
+    }
 }

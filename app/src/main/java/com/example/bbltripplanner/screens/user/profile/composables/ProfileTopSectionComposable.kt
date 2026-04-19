@@ -33,7 +33,6 @@ import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileSocialScreens
-import com.example.bbltripplanner.screens.vault.entity.VaultScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
 
@@ -91,7 +90,7 @@ fun ProfileTpCommonSectionComposable(
         ) {
             ProfileStat(user.tripCount.toString(), stringResource(R.string.total_trips)) {
                 scope.launch {
-                    openUserTripPage(user)
+                    openUserTripPage()
                 }
             }
             ProfileStat(
@@ -154,13 +153,10 @@ private suspend fun openFollowersPage(user: User) {
     )
 }
 
-private suspend fun openUserTripPage(user: User) {
+private suspend fun openUserTripPage() {
     CommonNavigationChannel.navigateTo(
         NavigationAction.Navigate(
-            AppNavigationScreen.VaultScreen.createRoute(
-                VaultScreens.TRIPS.value,
-                user.id
-            )
+            AppNavigationScreen.UserTripsScreen.route
         )
     )
 }

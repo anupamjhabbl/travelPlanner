@@ -82,21 +82,15 @@ sealed class AppNavigationScreen(
     // General
     data object BuzzScreen: AppNavigationScreen(route = Constants.NavigationScreen.BUZZ_SCREEN, hasBottomBar = true)
     data object NotificationScreen: AppNavigationScreen(route = Constants.NavigationScreen.NOTIFICATION_SCREEN)
-    data object VaultScreen: AppNavigationScreen(
-        route = "${Constants.NavigationScreen.VAULT_SCREEN}?" +
-                "${Constants.NavigationArgs.PAGE_ID}={${Constants.NavigationArgs.PAGE_ID}}&" +
-                "${Constants.NavigationArgs.USER_ID}={${Constants.NavigationArgs.USER_ID}}&"
-    ) {
-        fun createRoute(pageId: String, userId: String) =
-            "${Constants.NavigationScreen.VAULT_SCREEN}?" +
-                    "${Constants.NavigationArgs.PAGE_ID}=$pageId&" +
-                    "${Constants.NavigationArgs.USER_ID}=$userId"
-    }
+    data object VaultScreen: AppNavigationScreen(route = Constants.NavigationScreen.VAULT_SCREEN, hasBottomBar = true)
 
     // destination
     data object DestinationScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.DESTINATION_SCREEN}/{${Constants.NavigationArgs.DESTINATION_ID}}") {
         fun createRoute(destinationId: String) = "${Constants.NavigationScreen.DESTINATION_SCREEN}/$destinationId"
     }
+
+    // Vault
+    data object UserTripsScreen: AppNavigationScreen(route = Constants.NavigationScreen.USER_TRIPS_SCREEN)
 }
 
 fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
@@ -138,6 +132,9 @@ fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
 
         // Destination screen
         route.startsWith(Constants.NavigationScreen.DESTINATION_SCREEN) -> AppNavigationScreen.DestinationScreen
+
+        // User Trips screen
+        route.startsWith(Constants.NavigationScreen.USER_TRIPS_SCREEN) -> AppNavigationScreen.UserTripsScreen
         else -> null
     }
 }

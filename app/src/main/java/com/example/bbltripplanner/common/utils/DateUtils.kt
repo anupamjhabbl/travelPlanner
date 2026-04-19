@@ -7,6 +7,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock.System.now
+import kotlin.time.Instant
 import kotlin.time.Instant.Companion.fromEpochMilliseconds
 
 object DateUtils {
@@ -19,6 +20,19 @@ object DateUtils {
             char('/'); monthNumber(); char('/'); year()
         }
         return formatter.format(date)
+    }
+
+    fun formatTripDateRange(start: Long?, end: Long?): String {
+        if (start == null || end == null) return "No dates set"
+
+        val timeZone = TimeZone.currentSystemDefault()
+        val startDate = fromEpochMilliseconds(start).toLocalDateTime(timeZone).date
+        val endDate = fromEpochMilliseconds(end).toLocalDateTime(timeZone).date
+
+        val startMonth = startDate.month.name.take(3).lowercase().replaceFirstChar { it.uppercase() }
+        val endMonth = endDate.month.name.take(3).lowercase().replaceFirstChar { it.uppercase() }
+
+        return "$startMonth ${startDate.day} - $endMonth ${endDate.day}"
     }
 
     @OptIn(ExperimentalMaterial3Api::class)

@@ -67,7 +67,6 @@ import com.example.bbltripplanner.screens.userTrip.entity.TripActionResourceMapp
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailViewModel
-import com.example.bbltripplanner.screens.vault.entity.VaultScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -288,9 +287,9 @@ fun shareDeepLink(context: Context, message: String, tripId: String?) {
 
 fun getDeeplinkUrl(tripId: String?): String {
     return if (tripId.isNullOrEmpty()) {
-        "https://www.tripplanner.com"
+        Constants.TRIP_PLANNER_DEEPLINK
     } else {
-        "https://www.tripplanner.com/trips/$tripId"
+        "${Constants.TRIP_PLANNER_DEEPLINK}/$tripId"
     }
 }
 
@@ -405,16 +404,11 @@ private fun UserTripDetailToolbar(userId: String?) {
             textDecoration = TextDecoration.Underline,
             modifier = Modifier.clickable {
                 scope.launch {
-                    userId?.let {
-                        CommonNavigationChannel.navigateTo(
-                            NavigationAction.Navigate(
-                                AppNavigationScreen.VaultScreen.createRoute(
-                                    VaultScreens.TRIPS.value,
-                                    it
-                                )
-                            )
+                    CommonNavigationChannel.navigateTo(
+                        NavigationAction.Navigate(
+                            AppNavigationScreen.UserTripsScreen.route
                         )
-                    }
+                    )
                 }
             }
         )

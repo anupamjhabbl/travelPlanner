@@ -50,6 +50,7 @@ import com.example.bbltripplanner.screens.userTrip.composables.PostingInitScreen
 import com.example.bbltripplanner.screens.userTrip.composables.TripExpensesScreen
 import com.example.bbltripplanner.screens.userTrip.composables.UserTripDetailScreen
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
+import com.example.bbltripplanner.screens.vault.composables.UserTripsScreen
 import com.example.bbltripplanner.screens.vault.composables.UserVaultScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import org.koin.compose.viewmodel.koinViewModel
@@ -201,10 +202,8 @@ fun HomeNavigationComposable(
             NotificationScreen()
         }
 
-        composable(route = AppNavigationScreen.VaultScreen.route) { navBackStackEntry ->
-            val pageId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.PAGE_ID)
-            val userId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.USER_ID)
-            UserVaultScreen(pageId, userId)
+        composable(route = AppNavigationScreen.VaultScreen.route) {
+            UserVaultScreen()
         }
 
         composable(route = AppNavigationScreen.AddScreen.route) {
@@ -271,6 +270,10 @@ fun HomeNavigationComposable(
         composable(route = AppNavigationScreen.DestinationScreen.route) { navBackStackEntry ->
             val destinationId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.DESTINATION_ID)
             DestinationScreen(destinationId)
+        }
+
+        composable(route = AppNavigationScreen.UserTripsScreen.route) {
+            UserTripsScreen()
         }
     }
 }

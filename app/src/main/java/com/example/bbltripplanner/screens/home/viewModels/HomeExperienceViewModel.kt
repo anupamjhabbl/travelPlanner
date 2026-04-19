@@ -10,6 +10,7 @@ import com.example.bbltripplanner.screens.home.entities.HomeCxeResponse
 import com.example.bbltripplanner.screens.home.entities.HomeCxeWidget
 import com.example.bbltripplanner.screens.home.usecases.HomeCxeUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
+import com.example.bbltripplanner.screens.vault.usecases.VaultUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,6 +21,7 @@ import java.io.IOException
 
 class HomeExperienceViewModel(
     private val homeCxeUseCase: HomeCxeUseCase,
+    private val vaultUseCase: VaultUseCase,
     private val authPreferencesUseCase: AuthPreferencesUseCase
 ): BaseMVIVViewModel<HomeExperienceIntent.ViewEvent>() {
 
@@ -129,10 +131,10 @@ class HomeExperienceViewModel(
         }
         viewModelScope.launch {
             val result = SafeIOUtil.safeCall {
-                homeCxeUseCase.getUserTripBundleData(bundleData)
+                vaultUseCase.getUserTrips()
             }
             result.onSuccess { newData ->
-                if (newData.isNotEmpty()) {
+                if (newData?.isNotEmpty() == true) {
                     _widgetsLiveData.update { currentList ->
                         currentList.toMutableList().apply {
                             val widget = this[index]

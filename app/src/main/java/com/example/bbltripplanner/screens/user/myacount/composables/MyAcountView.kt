@@ -61,7 +61,6 @@ import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionItem
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionResourceMapper
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountIntent
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountViewModel
-import com.example.bbltripplanner.screens.vault.entity.VaultScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -167,10 +166,7 @@ fun MyAccountView() {
                             scope.launch {
                                 CommonNavigationChannel.navigateTo(
                                     NavigationAction.Navigate(
-                                        destination = AppNavigationScreen.VaultScreen.createRoute(
-                                            VaultScreens.TRIPS.value,
-                                            user.id
-                                        )
+                                        destination = AppNavigationScreen.UserTripsScreen.route
                                     )
                                 )
                             }

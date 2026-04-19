@@ -190,4 +190,7 @@
     <string name="send_report">Send\nReport</string>
     <string name="ai_assistant">AI Assistant</string>
     <string name="earn_by_review">Earn by Review</string>
+    <string name="no_trips">No Trips Found</string>
+    <string name="unknown_location">Unknown Location</string>
+    <string name="personal_trip">Personal Trip</string>
 </resources>

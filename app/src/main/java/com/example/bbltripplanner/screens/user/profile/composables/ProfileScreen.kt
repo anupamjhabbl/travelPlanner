@@ -52,7 +52,6 @@ import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionItem
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileSocialScreens
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileIntent
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileViewModel
-import com.example.bbltripplanner.screens.vault.entity.VaultScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -274,34 +273,22 @@ private suspend fun takeAction(key: String, userId: String) {
     when (key) {
         Constants.TRIP_PAGE -> CommonNavigationChannel.navigateTo(
             NavigationAction.Navigate(
-                AppNavigationScreen.VaultScreen.createRoute(
-                    VaultScreens.TRIPS.value,
-                    userId
-                )
+                AppNavigationScreen.UserTripsScreen.route
             )
         )
         Constants.FAVOURITES -> CommonNavigationChannel.navigateTo(
             NavigationAction.Navigate(
-                AppNavigationScreen.VaultScreen.createRoute(
-                    VaultScreens.FAVOURITES.value,
-                    userId
-                )
+                AppNavigationScreen.VaultScreen.route
             )
         )
         Constants.REVIEW_PAGES -> CommonNavigationChannel.navigateTo(
             NavigationAction.Navigate(
-                AppNavigationScreen.VaultScreen.createRoute(
-                    VaultScreens.THREADS.value,
-                    userId
-                )
+                AppNavigationScreen.VaultScreen.route
             )
         )
         Constants.BUZZ_PAGE -> CommonNavigationChannel.navigateTo(
             NavigationAction.Navigate(
-                AppNavigationScreen.VaultScreen.createRoute(
-                    VaultScreens.BUZZ.value,
-                    userId
-                )
+                AppNavigationScreen.VaultScreen.route
             )
         )
         Constants.CONTACTS -> CommonNavigationChannel.navigateTo(
