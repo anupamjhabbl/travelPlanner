@@ -9,7 +9,7 @@ class DarkColor {
         val fadedBackground = Color(0xFF4A4376)
         val titleTextColor = Color(0xFFDADAF5)
         val textColor = Color(0xFFDADAF5)
-        val hintTextColor  = Color(0xFF4D4D4D)
+        val hintTextColor  = Color(0xFF919090)
         val primaryButtonBg = Color(0xFF2b2d42)
         val primaryButtonText = Color(0xFFFFFFFF)
         val secondaryButtonText = Color(0xFF64FFDA)

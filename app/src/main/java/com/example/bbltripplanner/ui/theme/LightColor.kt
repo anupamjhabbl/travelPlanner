@@ -9,7 +9,7 @@ class LightColor {
         val fadedBackground = Color(0xFFB6ACE0)
         val titleTextColor = Color(0xFF070821)
         val textColor = Color(0xFF1A1C34)
-        val hintTextColor  = Color(0xFFB3B3B3)
+        val hintTextColor  = Color(0xFF7A7A7A)
         val primaryButtonBg = Color(0xFF1E1E1E)
         val primaryButtonText = Color(0xFFfffffF)
         val secondaryButtonText = Color(0xFF00BFA6)

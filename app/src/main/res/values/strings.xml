@@ -193,4 +193,27 @@
     <string name="no_trips">No Trips Found</string>
     <string name="unknown_location">Unknown Location</string>
     <string name="personal_trip">Personal Trip</string>
+    <string name="settings_description">Manage your account and preferences</string>
+    <string name="update_name_bio_photo">Update your name, bio and photo</string>
+    <string name="password_security"><![CDATA[Password & Security]]></string>
+    <string name="change_password_description">Change password and manage security</string>
+    <string name="block_description">View and manage blocked accounts</string>
+    <string name="blocked_users">Blocked Users</string>
+    <string name="manage_followers_description">Manage your followings and followers</string>
+    <string name="manage_followers_title"><![CDATA[Followers & Following]]></string>
+    <string name="privacy_visbility_title"><![CDATA[Privacy & Visibility]]></string>
+    <string name="privacy_visibility_description">Control who can see your trips and profile</string>
+    <string name="privacy_social_header"><![CDATA[PRIVACY & SOCIAL]]></string>
+    <string name="account">ACCOUNT</string>
+    <string name="trip_app_preferences_header">TRIP &amp; APP PREFERENCES</string>
+    <string name="appearance_title">Appearance</string>
+    <string name="appearance_subtitle">Dark mode, app theme</string>
+    <string name="language_region_title">Language &amp; Region</string>
+    <string name="language_region_subtitle">English (India)</string>
+    <string name="danger_zone_header">DANGER ZONE</string>
+    <string name="delete_account_title">Delete Account</string>
+    <string name="delete_account_subtitle">Permanently delete your account and data</string>
+    <string name="help_support_description">FAQ, contact support, terms &amp; privacy</string>
+    <string name="system_default">System Default</string>
+    <string name="logout_description">Sign out from your account</string>
 </resources>

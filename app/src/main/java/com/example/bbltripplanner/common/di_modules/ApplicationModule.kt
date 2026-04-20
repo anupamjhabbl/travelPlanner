@@ -14,16 +14,6 @@ import com.example.bbltripplanner.screens.notification.repositories.Notification
 import com.example.bbltripplanner.screens.notification.repositoryImpl.NotificationNetwork
 import com.example.bbltripplanner.screens.notification.usecases.NotificationUseCase
 import com.example.bbltripplanner.screens.notification.viewModels.NotificationViewModel
-import com.example.bbltripplanner.screens.userTrip.clients.PostingClient
-import com.example.bbltripplanner.screens.userTrip.clients.UserTripDetailClient
-import com.example.bbltripplanner.screens.userTrip.repositories.PostingRepository
-import com.example.bbltripplanner.screens.userTrip.repositories.UserTripDetailRepository
-import com.example.bbltripplanner.screens.userTrip.repositoryImpl.PostingNetwork
-import com.example.bbltripplanner.screens.userTrip.repositoryImpl.UseTripDetailNetwork
-import com.example.bbltripplanner.screens.userTrip.usecases.PostingUseCase
-import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
-import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitViewModel
-import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailViewModel
 import com.example.bbltripplanner.screens.user.auth.clients.UserAuthClient
 import com.example.bbltripplanner.screens.user.auth.repositories.UserAuthRepository
 import com.example.bbltripplanner.screens.user.auth.repositoryImpl.UserAuthNetwork
@@ -35,8 +25,8 @@ import com.example.bbltripplanner.screens.user.auth.viewModels.PasswordResetVieM
 import com.example.bbltripplanner.screens.user.auth.viewModels.UseRegistrationViewModel
 import com.example.bbltripplanner.screens.user.auth.viewModels.UserLoginAuthViewModel
 import com.example.bbltripplanner.screens.user.general.viewModels.HelpSupportViewModel
+import com.example.bbltripplanner.screens.user.general.viewModels.UserSettingsViewModel
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountViewModel
-import com.example.bbltripplanner.screens.userTrip.clients.LocationSearchClient
 import com.example.bbltripplanner.screens.user.profile.clients.ProfileRelationClient
 import com.example.bbltripplanner.screens.user.profile.clients.UserClient
 import com.example.bbltripplanner.screens.user.profile.repositories.GetProfileRepository
@@ -50,14 +40,25 @@ import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowe
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowingViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileViewModel
 import com.example.bbltripplanner.screens.userTrip.clients.ItineraryClient
+import com.example.bbltripplanner.screens.userTrip.clients.LocationSearchClient
+import com.example.bbltripplanner.screens.userTrip.clients.PostingClient
+import com.example.bbltripplanner.screens.userTrip.clients.UserTripDetailClient
 import com.example.bbltripplanner.screens.userTrip.repositories.ItineraryRepository
 import com.example.bbltripplanner.screens.userTrip.repositories.LocationSearchRepository
+import com.example.bbltripplanner.screens.userTrip.repositories.PostingRepository
+import com.example.bbltripplanner.screens.userTrip.repositories.UserTripDetailRepository
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.ItineraryNetwork
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.LocationSearchNetwork
+import com.example.bbltripplanner.screens.userTrip.repositoryImpl.PostingNetwork
+import com.example.bbltripplanner.screens.userTrip.repositoryImpl.UseTripDetailNetwork
 import com.example.bbltripplanner.screens.userTrip.usecases.ItineraryUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCase
+import com.example.bbltripplanner.screens.userTrip.usecases.PostingUseCase
+import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryDetailViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
+import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitViewModel
+import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailViewModel
 import com.example.bbltripplanner.screens.vault.clients.VaultClient
 import com.example.bbltripplanner.screens.vault.repositories.VaultRepository
 import com.example.bbltripplanner.screens.vault.repositoryImpl.VaultNetwork
@@ -144,9 +145,8 @@ val appModule = module {
     }
 
     // Account
-    viewModel {
-        HelpSupportViewModel()
-    }
+    viewModel { HelpSupportViewModel() }
+    viewModel { UserSettingsViewModel(get(), get()) }
 
     // Vault
     single<VaultUseCase> { VaultUseCase(get()) }
