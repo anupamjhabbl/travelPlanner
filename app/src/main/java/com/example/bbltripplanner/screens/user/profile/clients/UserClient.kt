@@ -15,13 +15,13 @@ import retrofit2.http.Query
 
 
 interface UserClient {
-    @GET("/user/{userId}")
+    @GET("user/{userId}")
     suspend fun getUser(@Path("userId") userId: String): Response<BaseResponse<User>>
 
-    @GET("/user/follow")
+    @GET("user/follow")
     suspend fun followUser(@Query("userId") userId: String): Response<BaseResponse<String>>
 
-    @GET("/user/block")
+    @GET("user/block")
     suspend fun blockUser(@Query("userId") userId: String): Response<BaseResponse<String>>
 
     @GET("user/me")

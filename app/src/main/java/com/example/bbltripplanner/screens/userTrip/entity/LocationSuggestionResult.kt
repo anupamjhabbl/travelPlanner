@@ -12,6 +12,14 @@ data class Location(
     val address: Address?
 )
 
+data class LocationSuggestionModel(
+    val lat: String?,
+    val lon: String?,
+    @SerializedName("display_name")
+    val displayName: String?,
+    val address: Address?
+)
+
 data class Address(
     val name: String?,
     val road: String?,

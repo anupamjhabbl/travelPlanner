@@ -11,7 +11,8 @@ object InfraProvider :  KoinComponent {
     private val getBaseUrl by lazy {
 //        "https://tripplanner-zgqj.onrender.com/api/"
 //        "http://192.168.1.9:3000/api/"
-        "http://10.0.2.2:3000/api/"
+//        "http://10.0.2.2:3000/api/"
+        "https://tripplanner-staging.onrender.com/api/"
     }
 
     private val getLocationSearchBaseUrl by lazy {

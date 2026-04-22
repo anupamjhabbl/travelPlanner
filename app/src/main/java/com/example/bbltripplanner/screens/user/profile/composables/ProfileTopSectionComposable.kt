@@ -44,6 +44,8 @@ fun ProfileTpCommonSectionComposable(
 ) {
     val storyCircleColor = if (user.userStory.isNullOrEmpty()) Color.Transparent else LocalCustomColors.current.secondaryBackground
     val scope = rememberCoroutineScope()
+    val customColors = LocalCustomColors.current
+    
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -71,18 +73,23 @@ fun ProfileTpCommonSectionComposable(
             )
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
 
         ComposeTextView.TitleTextView(
             text = user.name,
+            fontSize = 24.sp
         )
 
-        ComposeTextView.TextView(
-            text = user.bio ?: "",
-            fontSize = 14.sp,
-        )
+        if (!user.bio.isNullOrEmpty()) {
+            ComposeTextView.TextView(
+                text = user.bio,
+                fontSize = 14.sp,
+                textColor = customColors.hintTextColor,
+                modifier = Modifier.padding(horizontal = 32.dp)
+            )
+        }
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(24.dp))
 
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -108,22 +115,24 @@ fun ProfileTpCommonSectionComposable(
             }
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(24.dp))
 
-        if  (!isOwnProfile) {
+        if (!isOwnProfile) {
             Button(
                 onClick = onFollowClick,
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = LocalCustomColors.current.primaryBackground,
-                    containerColor = LocalCustomColors.current.secondaryBackground
+                    contentColor = customColors.primaryButtonText,
+                    containerColor = customColors.secondaryBackground
                 ),
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth(0.5f),
-                contentPadding = PaddingValues(16.dp, 6.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                contentPadding = PaddingValues(vertical = 12.dp)
             ) {
                 ComposeTextView.TitleTextView(
                     text = stringResource(R.string.follow),
-                    textColor = LocalCustomColors.current.primaryBackground,
+                    textColor = customColors.primaryButtonText,
                     fontSize = 16.sp
                 )
             }
@@ -180,7 +189,7 @@ private fun ProfileStat(
             }
             .padding(8.dp)
     ) {
-        ComposeTextView.TitleTextView(value, fontSize = 22.sp)
-        ComposeTextView.TextView(label)
+        ComposeTextView.TitleTextView(value, fontSize = 20.sp)
+        ComposeTextView.TextView(label, fontSize = 12.sp, textColor = LocalCustomColors.current.hintTextColor)
     }
 }

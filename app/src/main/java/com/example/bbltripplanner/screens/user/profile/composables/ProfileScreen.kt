@@ -91,7 +91,7 @@ fun ProfileScreen (
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(LocalCustomColors.current.primaryBackground, LocalCustomColors.current.deepPurpleGlow)
+                    listOf(LocalCustomColors.current.primaryBackground, LocalCustomColors.current.primaryBackground)
                 )
             )
             .padding(16.dp, 8.dp)
@@ -107,27 +107,33 @@ fun ProfileScreen (
                 RequestStatus.Loading -> ComposeViewUtils.FullScreenLoading()
 
                 is RequestStatus.Success -> {
-                    val user = userData as RequestStatus.Success
-                    val profileActionList = profileViewModel.getProfileActionList()
+                    val user = (userData as RequestStatus.Success).data
+                    val isMyProfile = profileViewModel.isMyProfile()
                     val profileMenuItems = profileViewModel.getProfileMenuItem()
 
-                    ProfileViewToolbar(profileMenuItems, user.data.id) {
+                    ProfileViewToolbar(profileMenuItems, user.id) {
                         profileViewModel.processEvent(ProfileIntent.ViewEvent.BlockUser)
                     }
 
                     ProfileTpCommonSectionComposable(
-                        user.data,
-                        profileViewModel.isMyProfile()
+                        user,
+                        isMyProfile
                     ) {
                         profileViewModel.processEvent(ProfileIntent.ViewEvent.FollowUser)
                     }
 
-                    Spacer(Modifier.height(38.dp))
+                    if (isMyProfile) {
+                        val profileActionList = profileViewModel.getProfileActionList()
+                        Spacer(Modifier.height(38.dp))
 
-                    ProfileActionComposable(
-                        profileActionList,
-                        user.data.id
-                    )
+                        ProfileActionComposable(
+                            profileActionList,
+                            user.id
+                        )
+                    } else {
+                        // For other users, we show nothing in the section as requested
+                        Spacer(Modifier.height(38.dp))
+                    }
                 }
 
                 is RequestStatus.Error -> {
@@ -199,6 +205,7 @@ fun ProfileViewToolbar(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val customColors = LocalCustomColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -208,7 +215,8 @@ fun ProfileViewToolbar(
         Box(
             modifier = Modifier
                 .size(36.dp)
-                .background(color = LocalCustomColors.current.secondaryBackground, CircleShape)
+                .background(color = customColors.secondaryBackground.copy(alpha = 0.1f), CircleShape),
+            contentAlignment = Alignment.Center
         ) {
             IconButton(
                 onClick = {
@@ -220,7 +228,8 @@ fun ProfileViewToolbar(
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = LocalCustomColors.current.primaryBackground
+                    tint = customColors.secondaryBackground,
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
@@ -335,4 +344,3 @@ private fun ProfileActionItem(
 
     }
 }
-
