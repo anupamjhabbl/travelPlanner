@@ -24,12 +24,14 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -65,7 +67,6 @@ import com.example.bbltripplanner.screens.user.myacount.composables.ConfirmButto
 import com.example.bbltripplanner.screens.user.myacount.composables.DismissButton
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileSocialScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
-import com.google.android.gms.common.internal.service.Common
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -309,6 +310,30 @@ fun UserSettingsScreen() {
                         CommonNavigationChannel.navigateTo(NavigationAction.Navigate(AppNavigationScreen.HelpSupportScreen.route))
                     }
                 }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SettingsSectionHeader(title = stringResource(R.string.legal_about_header))
+
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(customColors.fadedBackground.copy(alpha = 0.2f))
+        ) {
+            SettingsItem(
+                icon = Icons.Default.Description,
+                title = stringResource(R.string.terms_of_use_title),
+                subtitle = stringResource(R.string.terms_of_use_subtitle),
+                onClick = { /* Handle Click */ }
+            )
+            SettingsItem(
+                icon = Icons.Default.Security,
+                title = stringResource(R.string.privacy_policy_title),
+                subtitle = stringResource(R.string.privacy_policy_subtitle),
+                onClick = { /* Handle Click */ }
             )
         }
 

@@ -220,4 +220,9 @@
     <string name="unblock">Unblock</string>
     <string name="no_blocked_users_title">Clear Skies</string>
     <string name="no_blocked_users_subtitle">You haven’t blocked anyone yet. Your journey is drama-free!</string>
+    <string name="legal_about_header">LEGAL &amp; ABOUT</string>
+    <string name="terms_of_use_title">Terms of Use</string>
+    <string name="terms_of_use_subtitle">Read our terms and conditions</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="privacy_policy_subtitle">Our privacy practices and policies</string>
 </resources>
