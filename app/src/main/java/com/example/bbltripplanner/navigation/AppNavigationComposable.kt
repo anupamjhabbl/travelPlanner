@@ -37,6 +37,7 @@ import com.example.bbltripplanner.screens.user.auth.composables.PasswordResetScr
 import com.example.bbltripplanner.screens.user.general.composables.HelpSupportScreen
 import com.example.bbltripplanner.screens.user.general.composables.UserSettingsScreen
 import com.example.bbltripplanner.screens.user.myacount.composables.MyAccountView
+import com.example.bbltripplanner.screens.user.profile.composables.BlockedUsersScreen
 import com.example.bbltripplanner.screens.user.profile.composables.EditProfileScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileSocialScreen
@@ -274,6 +275,10 @@ fun HomeNavigationComposable(
 
         composable(route = AppNavigationScreen.UserTripsScreen.route) {
             UserTripsScreen()
+        }
+
+        composable(route = AppNavigationScreen.BlockedUsersScreen.route) {
+            BlockedUsersScreen()
         }
     }
 }

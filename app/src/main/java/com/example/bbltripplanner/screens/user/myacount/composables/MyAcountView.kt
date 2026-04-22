@@ -166,7 +166,7 @@ fun MyAccountView() {
                             scope.launch {
                                 CommonNavigationChannel.navigateTo(
                                     NavigationAction.Navigate(
-                                        destination = AppNavigationScreen.UserTripsScreen.route
+                                        destination = AppNavigationScreen.VaultScreen.route
                                     )
                                 )
                             }

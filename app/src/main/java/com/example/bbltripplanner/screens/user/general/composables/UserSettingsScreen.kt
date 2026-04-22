@@ -65,6 +65,7 @@ import com.example.bbltripplanner.screens.user.myacount.composables.ConfirmButto
 import com.example.bbltripplanner.screens.user.myacount.composables.DismissButton
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileSocialScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import com.google.android.gms.common.internal.service.Common
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -251,7 +252,15 @@ fun UserSettingsScreen() {
                 icon = Icons.Default.Block,
                 title = stringResource(R.string.blocked_users),
                 subtitle = stringResource(R.string.block_description),
-                onClick = { /* Handle Click */ }
+                onClick = {
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.Navigate(
+                                AppNavigationScreen.BlockedUsersScreen.route
+                            )
+                        )
+                    }
+                }
             )
         }
 

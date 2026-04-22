@@ -35,6 +35,7 @@ import com.example.bbltripplanner.screens.user.profile.repositoryImpl.GetProfile
 import com.example.bbltripplanner.screens.user.profile.repositoryImpl.ProfileRelationNetwork
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileRelationUsecase
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
+import com.example.bbltripplanner.screens.user.profile.viewModels.BlockedUsersViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.EditProfileViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowersViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowingViewModel
@@ -82,9 +83,10 @@ val appModule = module {
     single<UserClient> { Network.createWithAuth(UserClient::class.java, get(), get(), androidContext()) }
     single<GetProfileRepository> { GetProfileNetwork(get()) }
     single<ProfileUseCase> { ProfileUseCase(get()) }
-    viewModel { ProfileViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get(), get(), get()) }
     viewModel { MyAccountViewModel(get(), get()) }
     viewModel { EditProfileViewModel(get(), get()) }
+    viewModel { BlockedUsersViewModel(get()) }
 
     // Home & Listing
     single<HomeCxeLayoutRepository> { HomeCxeLayoutNetwork(get()) }
@@ -125,10 +127,10 @@ val appModule = module {
     single<ProfileRelationUsecase> { ProfileRelationUsecase(get()) }
     single<ProfileRelationClient> { Network.createWithAuth(ProfileRelationClient::class.java, get(), get(), androidContext()) }
     viewModel { (userId: String?) ->
-        ProfileFollowersViewModel(get(), userId)
+        ProfileFollowersViewModel(get(), get(), userId)
     }
     viewModel { (userId: String?) ->
-        ProfileFollowingViewModel(get(), userId)
+        ProfileFollowingViewModel(get(), get(), userId)
     }
 
     // Places Search

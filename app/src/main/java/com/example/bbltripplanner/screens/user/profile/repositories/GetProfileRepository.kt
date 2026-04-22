@@ -8,7 +8,6 @@ import retrofit2.Response
 
 interface GetProfileRepository {
     suspend fun getUser(userId: String): Response<BaseResponse<User>>
-    suspend fun followUser(userId: String): Response<BaseResponse<String>>
     suspend fun blockUser(userId: String): Response<BaseResponse<String>>
     suspend fun getLocalUser(): Response<BaseResponse<User>>
     suspend fun updateUser(profilePic: MultipartBody.Part?, name: RequestBody?, bio: RequestBody?, phone: RequestBody?): Response<BaseResponse<User>>

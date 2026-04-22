@@ -11,6 +11,8 @@ import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionItem
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionResourceMapper
+import com.example.bbltripplanner.screens.user.profile.entity.ProfileFollow
+import com.example.bbltripplanner.screens.user.profile.usecases.ProfileRelationUsecase
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +24,8 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     private val authPreferencesUseCase: AuthPreferencesUseCase,
-    private val profileUseCase: ProfileUseCase
+    private val profileUseCase: ProfileUseCase,
+    private val profileRelationUseCase: ProfileRelationUsecase
 ): BaseMVIVViewModel<ProfileIntent.ViewEvent>() {
     private val _userData: MutableStateFlow<RequestStatus<User>> = MutableStateFlow(RequestStatus.Idle)
     val userData: StateFlow<RequestStatus<User>> = _userData.asStateFlow()
@@ -45,7 +48,7 @@ class ProfileViewModel(
         if (userDataValue is RequestStatus.Success) {
             viewModelScope.launch {
                 val followRequest = SafeIOUtil.safeCall {
-                    profileUseCase.followUser(userDataValue.data.id)
+                    profileRelationUseCase.followUser(ProfileFollow(userDataValue.data.id))
                 }
 
                 followRequest.onSuccess {

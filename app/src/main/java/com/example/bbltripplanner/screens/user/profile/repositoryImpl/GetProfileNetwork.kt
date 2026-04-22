@@ -15,10 +15,6 @@ class GetProfileNetwork(
         return userClient.getUser(userId)
     }
 
-    override suspend fun followUser(userId: String): Response<BaseResponse<String>> {
-        return userClient.followUser(userId)
-    }
-
     override suspend fun blockUser(userId: String): Response<BaseResponse<String>> {
         return userClient.blockUser(userId)
     }

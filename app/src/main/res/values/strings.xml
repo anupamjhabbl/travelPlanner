@@ -216,4 +216,8 @@
     <string name="help_support_description">FAQ, contact support, terms &amp; privacy</string>
     <string name="system_default">System Default</string>
     <string name="logout_description">Sign out from your account</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="unblock">Unblock</string>
+    <string name="no_blocked_users_title">Clear Skies</string>
+    <string name="no_blocked_users_subtitle">You haven’t blocked anyone yet. Your journey is drama-free!</string>
 </resources>

@@ -18,11 +18,14 @@ interface UserClient {
     @GET("user/{userId}")
     suspend fun getUser(@Path("userId") userId: String): Response<BaseResponse<User>>
 
-    @GET("user/follow")
-    suspend fun followUser(@Query("userId") userId: String): Response<BaseResponse<String>>
+    @GET("user/block/{userId}")
+    suspend fun blockUser(@Path("userId") userId: String): Response<BaseResponse<String>>
 
-    @GET("user/block")
-    suspend fun blockUser(@Query("userId") userId: String): Response<BaseResponse<String>>
+    @GET("user/unblock/{userId}")
+    suspend fun unblockUser(@Path("userId") userId: String): Response<BaseResponse<String>>
+
+    @GET("user/blocked-users")
+    suspend fun getBlockedUsers(): Response<BaseResponse<List<User>>>
 
     @GET("user/me")
     suspend fun getLocalUser(): Response<BaseResponse<User>>

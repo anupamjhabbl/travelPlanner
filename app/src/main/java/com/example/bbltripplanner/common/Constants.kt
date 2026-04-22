@@ -65,6 +65,7 @@ object Constants {
         const val USER_SETTING_SCREEN = "user_setting_screen"
         const val HELP_SUPPORT_SCREEN = "help_support_screen"
         const val PROFILE_SOCIAL_SCREEN = "contacts_screen"
+        const val BLOCKED_USERS_SCREEN = "blocked_users_screen"
 
         // Authentication
         const val AUTHENTICATION_FORM_SCREEN = "authentication_form_screen"

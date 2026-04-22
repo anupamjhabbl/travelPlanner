@@ -15,10 +15,6 @@ class ProfileUseCase(
         return BaseResponse.processResponse { getProfileRepository.getUser(userId) }
     }
 
-    suspend fun followUser(userId: String): String? {
-        return BaseResponse.processResponse { getProfileRepository.followUser(userId) }
-    }
-
     suspend fun blockUser(userId: String): String? {
         return BaseResponse.processResponse { getProfileRepository.blockUser(userId) }
     }

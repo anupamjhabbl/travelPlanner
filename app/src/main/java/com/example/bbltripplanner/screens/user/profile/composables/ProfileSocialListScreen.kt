@@ -1,7 +1,6 @@
 package com.example.bbltripplanner.screens.user.profile.composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -24,7 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.bbltripplanner.R
@@ -52,6 +55,7 @@ fun ProfileFollowersPage(
 
     val viewModel: ProfileFollowersViewModel = koinViewModel(parameters = { parametersOf(userId) })
     val uiState by viewModel.userList.collectAsStateWithLifecycle()
+    val isSelf = viewModel.isSelfProfile()
 
     if (uiState.isLoading) {
         ComposeViewUtils.FullScreenLoading()
@@ -75,6 +79,10 @@ fun ProfileFollowersPage(
                 ) { user ->
                     SocialProfileItem(
                         user = user,
+                        actionLabel = if (isSelf) stringResource(R.string.follow) else null,
+                        onActionClick = {
+                            viewModel.followUser(user.id)
+                        },
                         onUserClick = {
                             scope.launch {
                                 CommonNavigationChannel.navigateTo(
@@ -102,6 +110,7 @@ fun ProfileFollowingPage(
     val emptyContent = stringResource(R.string.following_empty_content)
     val viewModel: ProfileFollowingViewModel = koinViewModel(parameters = { parametersOf(userId) })
     val uiState by viewModel.userList.collectAsStateWithLifecycle()
+    val isSelf = viewModel.isSelfProfile()
 
     if (uiState.isLoading) {
         ComposeViewUtils.FullScreenLoading()
@@ -125,6 +134,10 @@ fun ProfileFollowingPage(
                 ) { user ->
                     SocialProfileItem(
                         user = user,
+                        actionLabel = if (isSelf) stringResource(R.string.unfollow) else null,
+                        onActionClick = {
+                            viewModel.unfollowUser(user.id)
+                        },
                         onUserClick = {
                             scope.launch {
                                 CommonNavigationChannel.navigateTo(
@@ -146,15 +159,17 @@ fun ProfileFollowingPage(
 @Composable
 fun SocialProfileItem(
     user: User,
+    actionLabel: String? = null,
+    onActionClick: () -> Unit = {},
     onUserClick: (String) -> Unit
 ) {
+    val customColors = LocalCustomColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(16.dp))
-            .border(1.dp, LocalCustomColors.current.secondaryBackground, RoundedCornerShape(16.dp))
-            .background(LocalCustomColors.current.primaryBackground)
+            .background(customColors.defaultImageCardColor)
             .clickable { onUserClick(user.id) }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -164,21 +179,53 @@ fun SocialProfileItem(
             model = user.profilePicture ?: "",
             contentDescription = null,
             modifier = Modifier
-                .size(48.dp)
+                .size(52.dp)
                 .clip(CircleShape)
-                .background(LocalCustomColors.current.secondaryBackground),
+                .background(customColors.secondaryBackground.copy(alpha = 0.1f)),
             contentScale = ContentScale.Crop
         )
 
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(16.dp))
 
         Column(
             modifier = Modifier.weight(1f)
         ) {
             ComposeTextView.TitleTextView(
                 text = user.name,
-                textColor = LocalCustomColors.current.titleTextColor
+                fontSize = 16.sp,
+                textColor = customColors.titleTextColor
             )
+            if (!user.bio.isNullOrEmpty()) {
+                ComposeTextView.TextView(
+                    text = user.bio,
+                    fontSize = 12.sp,
+                    textColor = customColors.hintTextColor,
+                    maxLines = 1
+                )
+            }
+        }
+
+        if (actionLabel != null) {
+            Button(
+                onClick = onActionClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (actionLabel == stringResource(R.string.unfollow)) 
+                        customColors.fadedBackground else customColors.secondaryBackground,
+                    contentColor = if (actionLabel == stringResource(R.string.unfollow)) 
+                        customColors.titleTextColor else customColors.primaryButtonText
+                ),
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                ComposeTextView.TextView(
+                    text = actionLabel,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    textColor = if (actionLabel == stringResource(R.string.unfollow)) 
+                        customColors.titleTextColor else customColors.primaryButtonText
+                )
+            }
         }
     }
 }
