@@ -83,7 +83,7 @@ val appModule = module {
     single<UserClient> { Network.createWithAuth(UserClient::class.java, get(), get(), androidContext()) }
     single<GetProfileRepository> { GetProfileNetwork(get()) }
     single<ProfileUseCase> { ProfileUseCase(get()) }
-    viewModel { ProfileViewModel(get(), get(), get()) }
+    viewModel { (userId: String?) -> ProfileViewModel(userId, get(), get(), get()) }
     viewModel { MyAccountViewModel(get(), get()) }
     viewModel { EditProfileViewModel(get(), get()) }
     viewModel { BlockedUsersViewModel(get()) }

@@ -60,7 +60,6 @@ class ProfileFollowingViewModel(
             SafeIOUtil.safeCall {
                 profileRelationUsecase.unfollowUser(ProfileFollow(targetUserId))
             }
-            // Optionally refresh the list or update local state
             val currentList = _userList.value.data?.toMutableList()
             currentList?.removeAll { it.id == targetUserId }
             _userList.value = _userList.value.copy(data = currentList)

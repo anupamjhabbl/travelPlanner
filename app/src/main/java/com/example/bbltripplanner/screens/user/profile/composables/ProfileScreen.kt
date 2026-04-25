@@ -56,24 +56,19 @@ import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ProfileScreen (
     userId: String?
 ) {
-    val profileViewModel: ProfileViewModel = koinViewModel()
+    val profileViewModel: ProfileViewModel = koinViewModel(parameters = { parametersOf(userId) })
     val userData by profileViewModel.userData.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val blockFailureMessage = stringResource(R.string.block_failure)
     val blockSuccessMessage = stringResource(R.string.block_success)
     val followSuccessMessage = stringResource(R.string.follow_success)
     val followFailureMessage = stringResource(R.string.follow_failure)
-
-    LaunchedEffect(Unit) {
-        userId?.let {
-            profileViewModel.processEvent(ProfileIntent.ViewEvent.SetUp(userId))
-        }
-    }
 
     LaunchedEffect(Unit) {
         profileViewModel.viewState.collectLatest { viewState ->

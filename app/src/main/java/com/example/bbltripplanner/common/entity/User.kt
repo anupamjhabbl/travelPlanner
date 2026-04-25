@@ -10,7 +10,8 @@ data class User(
     val followersCount: Long = 0,
     val tripCount: Long = 0,
     val profilePicture: String?,
-    val userStory: String?
+    val userStory: String?,
+    val isFollowing: Boolean? = null
 )
 
 data class UpdateUserData(

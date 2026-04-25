@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
+    private val userId: String?,
     private val authPreferencesUseCase: AuthPreferencesUseCase,
     private val profileUseCase: ProfileUseCase,
     private val profileRelationUseCase: ProfileRelationUsecase
@@ -34,6 +35,12 @@ class ProfileViewModel(
     val viewState: SharedFlow<ProfileIntent.ViewState> = _viewState.asSharedFlow()
 
     private lateinit var currentUser: User
+
+    init {
+        userId?.let {
+            processEvent(ProfileIntent.ViewEvent.SetUp(userId))
+        }
+    }
 
     override fun processEvent(viewEvent: ProfileIntent.ViewEvent) {
         when (viewEvent) {
@@ -90,9 +97,24 @@ class ProfileViewModel(
         if (isMyProfile(userId) && authPreferencesUseCase.isUserLogged()) {
             currentUser = authPreferencesUseCase.getLoggedUser()!!
             _userData.value =  RequestStatus.Success(currentUser)
+            fetchMeDetails()
         } else {
             _userData.value = RequestStatus.Loading
             fetchUserData(userId)
+        }
+    }
+
+    private fun fetchMeDetails() {
+        viewModelScope.launch {
+            val userDataRequest = SafeIOUtil.safeCall {
+                profileUseCase.getLocalUser()
+            }
+            userDataRequest.onSuccess { user ->
+                if (user != null) {
+                    currentUser = user
+                    _userData.value = RequestStatus.Success(user)
+                }
+            }
         }
     }
 

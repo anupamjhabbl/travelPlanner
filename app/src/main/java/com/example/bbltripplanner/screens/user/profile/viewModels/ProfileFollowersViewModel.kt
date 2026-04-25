@@ -60,6 +60,8 @@ class ProfileFollowersViewModel(
             SafeIOUtil.safeCall {
                 profileRelationUsecase.followUser(ProfileFollow(targetUserId))
             }
+            val currentList = _userList.value.data?.toMutableList()?.filter { it.id == targetUserId }?.map { it.copy(isFollowing = true) }
+            _userList.value = _userList.value.copy(data = currentList)
         }
     }
 }

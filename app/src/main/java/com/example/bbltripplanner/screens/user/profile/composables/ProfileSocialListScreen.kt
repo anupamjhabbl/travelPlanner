@@ -79,7 +79,7 @@ fun ProfileFollowersPage(
                 ) { user ->
                     SocialProfileItem(
                         user = user,
-                        actionLabel = if (isSelf) stringResource(R.string.follow) else null,
+                        actionLabel = if (isSelf && user.isFollowing == false) stringResource(R.string.follow) else null,
                         onActionClick = {
                             viewModel.followUser(user.id)
                         },
