@@ -31,7 +31,6 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,13 +69,14 @@ import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailView
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun UserTripDetailScreen(
     tripId: String?
 ) {
     val tripActionList = TripActionResourceMapper.getTripActions()
-    val viewModel: UserTripDetailViewModel = koinViewModel()
+    val viewModel: UserTripDetailViewModel = koinViewModel(parameters = { parametersOf(tripId) })
     val tripDataStatus = viewModel.userTripDetailFetchStatus.collectAsState()
     val scope = rememberCoroutineScope()
     var acceptButtonVisibility by remember {
@@ -84,12 +84,6 @@ fun UserTripDetailScreen(
     }
     val successMessage = stringResource(R.string.trip_accept_success)
     val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        tripId?.let {
-            viewModel.processEvent(UserTripDetailIntent.ViewEvent.FetchTripDetail(tripId))
-        }
-    }
 
     CommonLifecycleAwareLaunchedEffect(viewModel.viewEffect) { viewEffect ->
         when (viewEffect) {

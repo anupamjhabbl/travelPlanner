@@ -80,11 +80,30 @@ import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PostingInitScreen() {
-    val viewModel: PostingInitViewModel = koinViewModel()
+    var isLoading by remember {
+        mutableStateOf(false)
+    }
+    var isFollowersLoading by remember {
+        mutableStateOf(false)
+    }
+    var isLocationLoading by remember {
+        mutableStateOf(false)
+    }
+    var showFullScreenError by remember {
+        mutableStateOf<String?>(null)
+    }
+    var showSuccessPopup by remember {
+        mutableStateOf(false)
+    }
+    var tripIdToNavigate by remember {
+        mutableStateOf<String?>(null)
+    }
+    val viewModel: PostingInitViewModel = koinViewModel(parameters = { parametersOf(null) })
     val postingFormData by viewModel.tripFormData.collectAsStateWithLifecycle()
     val queryString by viewModel.searchQuery.collectAsStateWithLifecycle()
     var locationList by remember {
@@ -116,19 +135,14 @@ fun PostingInitScreen() {
     )
     val scrollState = rememberScrollState()
     val bottomHeight = 80f
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) { 
         viewModel.viewEffect.collectLatest { viewEffect ->
             when (viewEffect) {
-                is PostingInitIntent.ViewEffect.GoNext -> moveToNextPage(
-                    viewEffect.tripData.tripId,
-                    {
-                        viewEffect.tripData.message?.let {
-                            ComposeViewUtils.showToast(context, it)
-                        }
-                    }
-                ) {
-                    ComposeViewUtils.showToast(context, genericMessage)
+                is PostingInitIntent.ViewEffect.GoNext -> {
+                    tripIdToNavigate = viewEffect.tripData.tripId
+                    showSuccessPopup = true
                 }
 
                 PostingInitIntent.ViewEffect.ShowError -> ComposeViewUtils.showToast(context, genericMessage)
@@ -137,10 +151,42 @@ fun PostingInitScreen() {
                     locationList = viewEffect.suggestions
                 }
 
-                is PostingInitIntent.ViewEffect.ShowFullScreenError -> {}
+                is PostingInitIntent.ViewEffect.ShowFullScreenError -> {
+                    showFullScreenError = viewEffect.message
+                }
+
                 PostingInitIntent.ViewEffect.ShowSuccess -> {}
+
+                PostingInitIntent.ViewEffect.HideFollowersLoading -> { isFollowersLoading = false }
+
+                PostingInitIntent.ViewEffect.HideLoading -> { isLoading = false }
+
+                PostingInitIntent.ViewEffect.HideLocationLoading -> { isLocationLoading = false }
+
+                PostingInitIntent.ViewEffect.ShowFollowersLoading -> { isFollowersLoading = true }
+
+                PostingInitIntent.ViewEffect.ShowLoading -> { isLoading = true }
+
+                PostingInitIntent.ViewEffect.ShowLocationLoading -> { isLocationLoading = true }
             }
         }
+    }
+
+    if (showSuccessPopup) {
+        ComposeViewUtils.SuccessPopup(
+            message = stringResource(R.string.trip_created_success),
+            onConfirm = {
+                showSuccessPopup = false
+                scope.launch {
+                    moveToNextPage(
+                        false,
+                        tripIdToNavigate,
+                        {},
+                        { ComposeViewUtils.showToast(context, genericMessage) }
+                    )
+                }
+            }
+        )
     }
 
     when (showDatePicker) {
@@ -169,6 +215,16 @@ fun PostingInitScreen() {
         null -> {}
     }
 
+    if (isLoading) {
+        ComposeViewUtils.FullScreenLoading()
+        return
+    }
+
+    if (showFullScreenError != null) {
+        ComposeViewUtils.FullScreenErrorComposable(Pair(stringResource(R.string.generic_error), showFullScreenError!!))
+        return
+    }
+
     when (showBottomSheet) {
         BottomSheetType.USER_SELECTION -> {
             ModalBottomSheet(
@@ -180,7 +236,8 @@ fun PostingInitScreen() {
                 containerColor = LocalCustomColors.current.primaryBackground
             ) {
                 InviteBottomSheet(
-                    userList.value?.followers ?: emptyList()
+                    userList.value?.followers ?: emptyList(),
+                    isFollowersLoading
                 ) { user ->
                     showBottomSheet = null
                     viewModel.processEvent(PostingInitIntent.ViewEvent.AddTripMates(user))
@@ -199,6 +256,7 @@ fun PostingInitScreen() {
                 LocationBottomSheet(
                     locationList,
                     queryString,
+                    isLocationLoading,
                     {
                         viewModel.processEvent(PostingInitIntent.ViewEvent.OnQueryChanged(it))
                     }
@@ -613,19 +671,21 @@ enum class DatePickerType {
     END_DATE
 }
 
-suspend fun moveToNextPage(tripId: String?, showSuccess: () -> Unit, showError: () -> Unit) {
+suspend fun moveToNextPage(isEdit: Boolean, tripId: String?, showSuccess: () -> Unit, showError: () -> Unit) {
     if (tripId == null) {
         showError()
         return
     }
     showSuccess()
+    val popUpTo = if (isEdit) AppNavigationScreen.EditTripScreen.route else AppNavigationScreen.AddScreen.route
     CommonNavigationChannel.navigateTo(
         NavigationAction.Navigate(
             AppNavigationScreen.UserTripDetailScreen.createRoute(tripId)
         ) {
-            popUpTo(AppNavigationScreen.AddScreen.route) {
+            popUpTo(popUpTo) {
                 inclusive = true
             }
+            launchSingleTop = true
         }
     )
 }

@@ -76,6 +76,9 @@ fun AddExpensesScreen(
     val scope = rememberCoroutineScope()
     val paidByString = stringResource(R.string.paid_by)
     val scrollState = rememberScrollState()
+    var isFollowersLoading by remember {
+        mutableStateOf(false)
+    }
 
     var paidBy by remember { mutableStateOf(paidByString) }
     var type by remember { mutableStateOf<ExpenseType?>(null) }
@@ -162,7 +165,8 @@ fun AddExpensesScreen(
                 }
                 ExpenseBottomSheetType.USER_SELECTION -> {
                     InviteBottomSheet(
-                        invitedMembers
+                        invitedMembers,
+                        isFollowersLoading
                     ) { user ->
                         showBottomSheet = null
                     }

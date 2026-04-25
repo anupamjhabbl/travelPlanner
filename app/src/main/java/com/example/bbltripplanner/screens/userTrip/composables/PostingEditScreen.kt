@@ -33,10 +33,10 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +58,9 @@ import com.example.bbltripplanner.screens.userTrip.entity.Location
 import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
@@ -66,11 +68,23 @@ import org.koin.androidx.compose.koinViewModel
 fun PostingEditScreen(
     tripId: String?
 ) {
-    val viewModel: PostingInitViewModel = koinViewModel()
+    val viewModel: PostingInitViewModel = koinViewModel(parameters = { parametersOf(tripId) })
     var isLoading by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
+    }
+    var isFollowersLoading by remember {
+        mutableStateOf(false)
+    }
+    var isLocationLoading by remember {
+        mutableStateOf(false)
     }
     var showFullScreenError by remember {
+        mutableStateOf<String?>(null)
+    }
+    var showSuccessPopup by remember {
+        mutableStateOf(false)
+    }
+    var tripIdToNavigate by remember {
         mutableStateOf<String?>(null)
     }
     val postingFormData by viewModel.tripFormData.collectAsStateWithLifecycle()
@@ -104,19 +118,14 @@ fun PostingEditScreen(
     )
     val scrollState = rememberScrollState()
     val bottomHeight = 80f
+    val scope = rememberCoroutineScope()
 
 
     CommonLifecycleAwareLaunchedEffect(viewModel.viewEffect) { viewEffect ->
         when (viewEffect) {
-            is PostingInitIntent.ViewEffect.GoNext -> moveToNextPage(
-                viewEffect.tripData.tripId,
-                {
-                    viewEffect.tripData.message?.let {
-                        ComposeViewUtils.showToast(context, it)
-                    }
-                }
-            ) {
-                ComposeViewUtils.showToast(context, genericMessage)
+            is PostingInitIntent.ViewEffect.GoNext -> {
+                tripIdToNavigate = viewEffect.tripData.tripId
+                showSuccessPopup = true
             }
 
             PostingInitIntent.ViewEffect.ShowError -> ComposeViewUtils.showToast(context, genericMessage)
@@ -126,23 +135,34 @@ fun PostingEditScreen(
             }
 
             is PostingInitIntent.ViewEffect.ShowFullScreenError -> {
-                isLoading = false
                 showFullScreenError = viewEffect.message
             }
 
-            PostingInitIntent.ViewEffect.ShowSuccess -> {
-                isLoading = false
-            }
+            PostingInitIntent.ViewEffect.ShowSuccess -> {}
+            PostingInitIntent.ViewEffect.HideFollowersLoading -> { isFollowersLoading = false }
+            PostingInitIntent.ViewEffect.HideLoading -> { isLoading = false }
+            PostingInitIntent.ViewEffect.HideLocationLoading -> { isLocationLoading = false }
+            PostingInitIntent.ViewEffect.ShowFollowersLoading -> { isFollowersLoading = true }
+            PostingInitIntent.ViewEffect.ShowLoading -> { isLoading = true }
+            PostingInitIntent.ViewEffect.ShowLocationLoading -> { isLocationLoading = true }
         }
     }
 
-    LaunchedEffect(Unit) {
-        if (tripId != null) {
-            viewModel.processEvent(PostingInitIntent.ViewEvent.GetTripDetails(tripId))
-        } else {
-            isLoading = false
-            showFullScreenError = ""
-        }
+    if (showSuccessPopup) {
+        ComposeViewUtils.SuccessPopup(
+            message = stringResource(R.string.trip_updated_success),
+            onConfirm = {
+                showSuccessPopup = false
+                scope.launch {
+                    moveToNextPage(
+                        true,
+                        tripIdToNavigate,
+                        {},
+                        { ComposeViewUtils.showToast(context, genericMessage) }
+                    )
+                }
+            }
+        )
     }
 
     if (isLoading) {
@@ -192,7 +212,8 @@ fun PostingEditScreen(
                 containerColor = LocalCustomColors.current.primaryBackground
             ) {
                 InviteBottomSheet(
-                    userList.value?.followers ?: emptyList()
+                    userList.value?.followers ?: emptyList(),
+                    isFollowersLoading
                 ) { user ->
                     showBottomSheet = null
                     viewModel.processEvent(PostingInitIntent.ViewEvent.AddTripMates(user))
@@ -211,6 +232,7 @@ fun PostingEditScreen(
                 LocationBottomSheet(
                     locationList,
                     queryString,
+                    isLocationLoading,
                     {
                         viewModel.processEvent(PostingInitIntent.ViewEvent.OnQueryChanged(it))
                     }

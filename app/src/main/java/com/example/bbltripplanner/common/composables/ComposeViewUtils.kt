@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.PopupProperties
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.navigation.AppNavigationScreen
@@ -313,5 +315,49 @@ object ComposeViewUtils {
                 }
             }
         }
+    }
+
+    @Composable
+    fun SuccessPopup(
+        title: String = stringResource(R.string.success),
+        message: String,
+        buttonText: String = stringResource(R.string.see_your_trip),
+        onConfirm: () -> Unit
+    ) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    ComposeTextView.TitleTextView(text = title, fontSize = 24.sp)
+                }
+            },
+            text = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    ComposeTextView.TextView(
+                        text = message,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            },
+            confirmButton = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Button(
+                        onClick = onConfirm,
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(LocalCustomColors.current.secondaryBackground)
+                    ) {
+                        ComposeTextView.TitleTextView(
+                            text = buttonText,
+                            textColor = LocalCustomColors.current.primaryBackground,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            },
+            containerColor = LocalCustomColors.current.primaryBackground,
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+        )
     }
 }

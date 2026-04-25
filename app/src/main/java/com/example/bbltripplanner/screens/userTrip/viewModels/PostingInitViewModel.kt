@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(FlowPreview::class)
 class PostingInitViewModel(
+    private val tripId: String?,
     private val postingUseCase: PostingUseCase,
     private val locationSearchUseCase: LocationSearchUseCase,
     private val profileRelationUseCase: ProfileRelationUsecase,
@@ -56,6 +57,9 @@ class PostingInitViewModel(
                 .collect {
                     getLocationSuggestions(it)
                 }
+        }
+        if (tripId != null) {
+            processEvent(PostingInitIntent.ViewEvent.GetTripDetails(tripId))
         }
     }
 
@@ -115,13 +119,16 @@ class PostingInitViewModel(
         val tripId = _tripFormData.value.tripId
         if (tripId != null) {
             viewModelScope.launch {
+                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowLoading)
                 val postTripResult = SafeIOUtil.safeCall {
                     postingUseCase.updateTrip(tripId, _tripFormData.value)
                 }
                 postTripResult.onSuccess {
+                    _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
                     _viewEffects.emit(PostingInitIntent.ViewEffect.GoNext(TripCreationResponse(tripId)))
                 }
                 postTripResult.onFailure {
+                    _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
                     _viewEffects.emit(PostingInitIntent.ViewEffect.ShowError)
                 }
             }
@@ -130,14 +137,17 @@ class PostingInitViewModel(
 
     private fun getTripDetails(tripId: String) {
         viewModelScope.launch {
+            _viewEffects.emit(PostingInitIntent.ViewEffect.ShowLoading)
             val tripDetailResult = SafeIOUtil.safeCall {
                 userTripDetailUseCase.getUserTripDetail(tripId)
             }
             tripDetailResult.onSuccess { tripData ->
+                _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
                 _tripFormData.value = tripData
                 _viewEffects.emit(PostingInitIntent.ViewEffect.ShowSuccess)
             }
             tripDetailResult.onFailure {
+                _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
                 _viewEffects.emit(PostingInitIntent.ViewEffect.ShowFullScreenError(it.message ?: ""))
             }
         }
@@ -158,12 +168,15 @@ class PostingInitViewModel(
     private fun getLocationSuggestions(query: String) {
         viewModelScope.launch {
             val locationSuggestionsResult = SafeIOUtil.safeCall {
+                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowLocationLoading)
                 locationSearchUseCase.getLocationSuggestions(BuildConfig.LOCATION_API_KEY, query)
             }
             locationSuggestionsResult.onSuccess {
+                _viewEffects.emit(PostingInitIntent.ViewEffect.HideLocationLoading)
                 _viewEffects.emit(PostingInitIntent.ViewEffect.ShowSuggestions(it))
             }
             locationSuggestionsResult.onFailure {
+                _viewEffects.emit(PostingInitIntent.ViewEffect.HideLocationLoading)
                 _viewEffects.emit(PostingInitIntent.ViewEffect.ShowSuggestions(emptyList()))
             }
         }
@@ -175,13 +188,16 @@ class PostingInitViewModel(
         }
         authPreferencesUseCase.getUserIdLogged()?.let { userId ->
             viewModelScope.launch {
+                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowFollowersLoading)
                 val followersList = SafeIOUtil.safeCall {
                     profileRelationUseCase.getFollowers(userId)
                 }
                 followersList.onSuccess { followers ->
+                    _viewEffects.emit(PostingInitIntent.ViewEffect.HideFollowersLoading)
                     _inviteList.value = followers
                 }
                 followersList.onFailure {
+                    _viewEffects.emit(PostingInitIntent.ViewEffect.HideFollowersLoading)
                     _inviteList.value = ProfileFollowersData(emptyList())
                 }
             }
@@ -190,13 +206,16 @@ class PostingInitViewModel(
 
     private fun saveTheTripDataAndContinue() {
         viewModelScope.launch {
+            _viewEffects.emit(PostingInitIntent.ViewEffect.ShowLoading)
             val postTripResult = SafeIOUtil.safeCall {
                 postingUseCase.postTrip(_tripFormData.value)
             }
             postTripResult.onSuccess {
+                _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
                 _viewEffects.emit(PostingInitIntent.ViewEffect.GoNext(it))
             }
             postTripResult.onFailure {
+                _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
                 _viewEffects.emit(PostingInitIntent.ViewEffect.ShowError)
             }
         }

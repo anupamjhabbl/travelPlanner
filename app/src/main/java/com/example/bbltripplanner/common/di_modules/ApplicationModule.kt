@@ -101,8 +101,8 @@ val appModule = module {
     single<UserTripDetailUseCase> { UserTripDetailUseCase(get()) }
     single<UserTripDetailRepository> { UseTripDetailNetwork(get()) }
     single<UserTripDetailClient> { Network.createWithAuth(UserTripDetailClient::class.java, get(), get(), androidContext()) }
-    viewModel { PostingInitViewModel(get(), get(), get(), get(), get()) }
-    viewModel { UserTripDetailViewModel(get(), get()) }
+    viewModel { (tripId: String?) -> PostingInitViewModel(tripId, get(), get(), get(), get(), get()) }
+    viewModel { (tripId: String?) -> UserTripDetailViewModel(tripId, get(), get()) }
 
     // Itinerary
     single<ItineraryClient> { Network.createWithAuth(ItineraryClient::class.java, get(), get(), androidContext()) }

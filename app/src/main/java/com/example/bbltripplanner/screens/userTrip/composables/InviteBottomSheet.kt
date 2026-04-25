@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,6 +32,7 @@ import com.example.bbltripplanner.ui.theme.LocalCustomColors
 @Composable
 fun InviteBottomSheet(
     userList: List<User>,
+    isFollowersLoading: Boolean,
     addUser: (user: User) -> Unit
 ) {
     var name by remember {
@@ -63,32 +66,47 @@ fun InviteBottomSheet(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyColumn {
-            itemsIndexed(mainList) { index, user ->
-                val shape = when (index) {
-                    0 -> RoundedCornerShape(12.dp, 12.dp, 2.dp, 2.dp)
-                    userList.size - 1 -> RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
-                    else -> RoundedCornerShape(2.dp, 2.dp, 2.dp, 2.dp)
-                }
-
+        Box {
+            if (isFollowersLoading) {
                 Box(
-                    modifier = Modifier
-                        .background(LocalCustomColors.current.defaultImageCardColor, shape)
-                        .height(50.dp)
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp, horizontal = 16.dp)
-                        .clickable {
-                            addUser(user)
-                        }
+                    modifier = Modifier.height(150.dp).fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    ComposeTextView.TitleTextView(
-                        text = user.name,
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.CenterStart)
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(40.dp),
+                        color = LocalCustomColors.current.fadedBackground,
+                        strokeWidth = 3.dp
                     )
                 }
+            } else {
+                LazyColumn {
+                    itemsIndexed(mainList) { index, user ->
+                        val shape = when (index) {
+                            0 -> RoundedCornerShape(12.dp, 12.dp, 2.dp, 2.dp)
+                            userList.size - 1 -> RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
+                            else -> RoundedCornerShape(2.dp, 2.dp, 2.dp, 2.dp)
+                        }
 
-                Spacer(Modifier.height(1.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(LocalCustomColors.current.defaultImageCardColor, shape)
+                                .height(50.dp)
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp, horizontal = 16.dp)
+                                .clickable {
+                                    addUser(user)
+                                }
+                        ) {
+                            ComposeTextView.TitleTextView(
+                                text = user.name,
+                                fontSize = 14.sp,
+                                modifier = Modifier.align(Alignment.CenterStart)
+                            )
+                        }
+
+                        Spacer(Modifier.height(1.dp))
+                    }
+                }
             }
         }
     }

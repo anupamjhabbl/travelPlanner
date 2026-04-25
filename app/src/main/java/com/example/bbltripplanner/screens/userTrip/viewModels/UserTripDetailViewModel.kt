@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class UserTripDetailViewModel(
+    val tripId: String?,
     private val userTripDetailUseCase: UserTripDetailUseCase,
     private val authPreferencesUseCase: AuthPreferencesUseCase
 ): BaseMVIVViewModel<UserTripDetailIntent.ViewEvent>() {
@@ -23,6 +24,12 @@ class UserTripDetailViewModel(
 
     private val _viewEffect: Channel<UserTripDetailIntent.ViewEffect> = Channel()
     val viewEffect = _viewEffect.receiveAsFlow()
+
+    init {
+        tripId?.let {
+            processEvent(UserTripDetailIntent.ViewEvent.FetchTripDetail(tripId))
+        }
+    }
 
     override fun processEvent(viewEvent: UserTripDetailIntent.ViewEvent) {
         when (viewEvent) {

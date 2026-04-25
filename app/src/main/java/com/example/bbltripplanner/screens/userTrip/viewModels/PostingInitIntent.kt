@@ -27,5 +27,11 @@ class PostingInitIntent {
         data class ShowSuggestions(val suggestions: List<Location>): ViewEffect
         data class ShowFullScreenError(val message: String): ViewEffect
         data object ShowSuccess: ViewEffect
+        data object ShowLoading: ViewEffect
+        data object HideLoading: ViewEffect
+        data object ShowFollowersLoading: ViewEffect
+        data object HideFollowersLoading: ViewEffect
+        data object ShowLocationLoading: ViewEffect
+        data object HideLocationLoading: ViewEffect
     }
 }

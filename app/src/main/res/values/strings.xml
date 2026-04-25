@@ -225,4 +225,8 @@
     <string name="terms_of_use_subtitle">Read our terms and conditions</string>
     <string name="privacy_policy_title">Privacy Policy</string>
     <string name="privacy_policy_subtitle">Our privacy practices and policies</string>
+    <string name="trip_created_success">Your trip is created successfully.</string>
+    <string name="trip_updated_success">Your trip is updated successfully.</string>
+    <string name="success">Success</string>
+    <string name="see_your_trip">See your trip</string>
 </resources>
