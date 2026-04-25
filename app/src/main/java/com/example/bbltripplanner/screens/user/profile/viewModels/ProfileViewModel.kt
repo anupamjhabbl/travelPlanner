@@ -59,7 +59,7 @@ class ProfileViewModel(
                 }
 
                 followRequest.onSuccess {
-                    _userData.value = RequestStatus.Success(userDataValue.data.copy(followersCount = userDataValue.data.followersCount + 1))
+                    _userData.value = RequestStatus.Success(userDataValue.data.copy(followersCount = userDataValue.data.followersCount + 1, isFollowing = true))
                     _viewState.emit(ProfileIntent.ViewState.FollowSuccess)
                 }
 

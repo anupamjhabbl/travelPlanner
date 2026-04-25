@@ -117,7 +117,7 @@ fun ProfileTpCommonSectionComposable(
 
         Spacer(Modifier.height(24.dp))
 
-        if (!isOwnProfile) {
+        if (!isOwnProfile && user.isFollowing == false) {
             Button(
                 onClick = onFollowClick,
                 colors = ButtonDefaults.buttonColors(

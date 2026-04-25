@@ -4,11 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -90,18 +93,29 @@ fun InviteBottomSheet(
                         Box(
                             modifier = Modifier
                                 .background(LocalCustomColors.current.defaultImageCardColor, shape)
-                                .height(50.dp)
+                                .height(56.dp)
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp, horizontal = 16.dp)
                                 .clickable {
                                     addUser(user)
                                 }
+                                .padding(horizontal = 16.dp),
+                            contentAlignment = Alignment.CenterStart
                         ) {
-                            ComposeTextView.TitleTextView(
-                                text = user.name,
-                                fontSize = 14.sp,
-                                modifier = Modifier.align(Alignment.CenterStart)
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                ComposeImageView.CircularImageView(
+                                    diameter = 32.dp,
+                                    imageURI = user.profilePicture ?: ""
+                                )
+
+                                Spacer(modifier = Modifier.width(12.dp))
+
+                                ComposeTextView.TitleTextView(
+                                    text = user.name,
+                                    fontSize = 14.sp
+                                )
+                            }
                         }
 
                         Spacer(Modifier.height(1.dp))
