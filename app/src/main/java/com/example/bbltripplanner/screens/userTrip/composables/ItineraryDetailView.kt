@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
@@ -124,28 +125,47 @@ fun ItineraryDetailView(
                         }
                     }
 
-                    ComposeButtonView.PrimaryButtonView(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(dimensionResource(id = R.dimen.module_16)),
-                        backgroundColor = customColors.secondaryBackground,
-                        contentColor = customColors.primaryBackground,
-                        text = stringResource(R.string.add_new_activity),
-                        fontSize = 16.sp,
-                        onClick = {
-                            scope.launch {
-                                placeId?.let {
-                                    CommonNavigationChannel.navigateTo(
-                                        NavigationAction.Navigate(
-                                            AppNavigationScreen.AddActivityScreen.createRoute(
-                                                it
-                                            )
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp)
+                                .align(Alignment.TopCenter)
+                                .background(
+                                    Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color.Black.copy(alpha = 0.15f),
+                                            Color.Transparent
                                         )
                                     )
+                                )
+                        )
+
+                        ComposeButtonView.PrimaryButtonView(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(dimensionResource(id = R.dimen.module_16)),
+                            backgroundColor = customColors.secondaryBackground,
+                            contentColor = customColors.primaryBackground,
+                            text = stringResource(R.string.add_new_activity),
+                            fontSize = 16.sp,
+                            onClick = {
+                                scope.launch {
+                                    placeId?.let {
+                                        CommonNavigationChannel.navigateTo(
+                                            NavigationAction.Navigate(
+                                                AppNavigationScreen.AddActivityScreen.createRoute(
+                                                    it
+                                                )
+                                            )
+                                        )
+                                    }
                                 }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }

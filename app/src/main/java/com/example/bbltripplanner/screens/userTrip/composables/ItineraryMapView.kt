@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,8 +18,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -85,6 +82,7 @@ import retrofit2.Response
 @Composable
 fun ItineraryMapView(
     viewModel: ItineraryViewModel,
+    tripId: String? = null,
     tripSelectedDate: String? = null
 ) {
     val itineraryStatus by viewModel.itineraryStatus.collectAsState()
@@ -234,30 +232,16 @@ fun ItineraryMapView(
                 NewSpotButton {
                     addSpotsDialogVisibility = false
                     scope.launch {
-                        CommonNavigationChannel.navigateTo(
-                            NavigationAction.Navigate(AppNavigationScreen.SearchScreen.route)
-                        )
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                if (places.isEmpty()) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_right_arrow),
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(32.dp)
-                                .offset(y = (-8).dp, x = (-8).dp)
-                        )
-                        ComposeTextView.TextView(
-                            text = stringResource(id = R.string.tap_to_add_new_spot),
-                            fontSize = 14.sp,
-                            textColor = Color.White,
-                            fontWeight = FontWeight.W500
-                        )
+                        if (tripId != null && tripSelectedDate != null) {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.Navigate(
+                                    AppNavigationScreen.AddSpotsScreen.createRoute(
+                                        tripId,
+                                        tripSelectedDate
+                                    )
+                                )
+                            )
+                        }
                     }
                 }
             }

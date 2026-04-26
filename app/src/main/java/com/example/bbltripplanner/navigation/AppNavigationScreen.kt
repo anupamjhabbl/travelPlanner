@@ -70,8 +70,8 @@ sealed class AppNavigationScreen(
         fun createRoute(tripId: String) = "${Constants.NavigationScreen.EXPENSE_SETTLEMENT_SCREEN}/$tripId"
     }
     data object ItineraryNavEntry: AppNavigationScreen(route = Constants.NavigationScreen.ITINERARY_NAV_ENTRY)
-    data object ItineraryMapViewScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN}/{${Constants.NavigationArgs.TRIP_SELECTED_DATE}}", isFullScreen = true) {
-        fun createRoute(tripSelectedDate: String) = "${Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN}/$tripSelectedDate"
+    data object ItineraryMapViewScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}/{${Constants.NavigationArgs.TRIP_SELECTED_DATE}}", isFullScreen = true) {
+        fun createRoute(tripId: String, tripSelectedDate: String) = "${Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN}/$tripId/$tripSelectedDate"
     }
     data object ItineraryListView: AppNavigationScreen(route = "${Constants.NavigationScreen.ITINERARY_LIST_VIEW}/{${Constants.NavigationArgs.TRIP_ID}}", isFullScreen = true) {
         fun createRoute(tripId: String) = "${Constants.NavigationScreen.ITINERARY_LIST_VIEW}/$tripId"
@@ -81,6 +81,9 @@ sealed class AppNavigationScreen(
     }
     data object AddActivityScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.ADD_ACTIVITY_SCREEN}/{${Constants.NavigationArgs.ITINERARY_PLACE_ID}}") {
         fun createRoute(placeId: String) = "${Constants.NavigationScreen.ADD_ACTIVITY_SCREEN}/$placeId"
+    }
+    data object AddSpotsScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.ADD_SPOTS_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}/{${Constants.NavigationArgs.TRIP_SELECTED_DATE}}") {
+        fun createRoute(tripId: String, selectedDate: String) = "${Constants.NavigationScreen.ADD_SPOTS_SCREEN}/$tripId/$selectedDate"
     }
 
     // General
@@ -128,6 +131,7 @@ fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
         route.startsWith(Constants.NavigationScreen.EXPENSE_SETTLEMENT_SCREEN) -> AppNavigationScreen.ExpenseSettlementScreen
         route.startsWith(Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN) -> AppNavigationScreen.ItineraryMapViewScreen
         route.startsWith(Constants.NavigationScreen.ADD_ACTIVITY_SCREEN) -> AppNavigationScreen.AddActivityScreen
+        route.startsWith(Constants.NavigationScreen.ADD_SPOTS_SCREEN) -> AppNavigationScreen.AddSpotsScreen
 
         // Authentication
         route.startsWith(Constants.NavigationScreen.AUTH_GRAPH) -> AppNavigationScreen.AuthGraph

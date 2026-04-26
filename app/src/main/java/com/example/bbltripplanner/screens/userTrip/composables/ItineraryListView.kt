@@ -52,12 +52,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun ItineraryListView(
     viewModel: ItineraryViewModel,
-    tripId: String?
+    tripId: String?,
 ) {
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
     val itineraryStatus by viewModel.itineraryStatus.collectAsState()
     val errorMessage = stringResource(R.string.generic_error)
+    var tripSelectedDate by remember {
+        mutableStateOf<String?>(null)
+    }
     var addSpotsDialogVisibility by remember { mutableStateOf(false) }
 
     LaunchedEffect(tripId) {
@@ -74,13 +77,26 @@ fun ItineraryListView(
             dismissButtonText = stringResource(R.string.cancel),
             onConfirm = {
                 addSpotsDialogVisibility = false
+                tripSelectedDate = null
                 scope.launch {
-                    CommonNavigationChannel.navigateTo(
-                        NavigationAction.Navigate(AppNavigationScreen.SearchScreen.route)
-                    )
+                    if (tripId != null) {
+                        tripSelectedDate?.let {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.Navigate(
+                                    AppNavigationScreen.AddSpotsScreen.createRoute(
+                                        tripId,
+                                        it
+                                    )
+                                )
+                            )
+                        }
+                    }
                 }
             },
-            onDismiss = { addSpotsDialogVisibility = false }
+            onDismiss = {
+                addSpotsDialogVisibility = false
+                tripSelectedDate = null
+            }
         )
     }
 
@@ -163,13 +179,19 @@ fun ItineraryListView(
                         onClick = {
                             if (day.spotCount == 0) {
                                 addSpotsDialogVisibility = true
+                                tripSelectedDate = day.date.toString()
                             } else {
                                 scope.launch {
-                                    CommonNavigationChannel.navigateTo(
-                                        NavigationAction.Navigate(
-                                            AppNavigationScreen.ItineraryMapViewScreen.createRoute(day.date.toString())
+                                    tripId?.let {
+                                        CommonNavigationChannel.navigateTo(
+                                            NavigationAction.Navigate(
+                                                AppNavigationScreen.ItineraryMapViewScreen.createRoute(
+                                                    it,
+                                                    day.date.toString()
+                                                )
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                         }
