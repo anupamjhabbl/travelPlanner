@@ -41,7 +41,9 @@ import com.example.bbltripplanner.screens.user.profile.composables.BlockedUsersS
 import com.example.bbltripplanner.screens.user.profile.composables.EditProfileScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileSocialScreen
+import com.example.bbltripplanner.screens.userTrip.composables.AddActivityScreen
 import com.example.bbltripplanner.screens.userTrip.composables.AddExpensesScreen
+import com.example.bbltripplanner.screens.userTrip.composables.AddSpotsScreen
 import com.example.bbltripplanner.screens.userTrip.composables.ExpenseSettlementScreen
 import com.example.bbltripplanner.screens.userTrip.composables.ItineraryDetailView
 import com.example.bbltripplanner.screens.userTrip.composables.ItineraryListView
@@ -250,7 +252,8 @@ fun HomeNavigationComposable(
                 }
                 val viewModel: ItineraryViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
                 val tripSelectedDate = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_SELECTED_DATE)
-                ItineraryMapView(viewModel, tripSelectedDate)
+                val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+                ItineraryMapView(viewModel, tripId, tripSelectedDate)
             }
 
             composable(route = AppNavigationScreen.ItineraryListView.route) { navBackStackEntry ->
@@ -279,6 +282,17 @@ fun HomeNavigationComposable(
 
         composable(route = AppNavigationScreen.BlockedUsersScreen.route) {
             BlockedUsersScreen()
+        }
+
+        composable(route = AppNavigationScreen.AddActivityScreen.route) { navBackStackEntry ->
+            val placeId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.ITINERARY_PLACE_ID)
+            AddActivityScreen(placeId)
+        }
+
+        composable(route = AppNavigationScreen.AddSpotsScreen.route) { navBackStackEntry ->
+            val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+            val date = navBackStackEntry.arguments?.getLong(Constants.NavigationArgs.TRIP_SELECTED_DATE)
+            AddSpotsScreen(tripId, date)
         }
     }
 }

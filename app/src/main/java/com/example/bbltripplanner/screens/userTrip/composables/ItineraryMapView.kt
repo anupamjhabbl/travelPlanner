@@ -23,8 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.common.composables.ComposeViewUtils.NewSpotButton
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -78,12 +82,14 @@ import retrofit2.Response
 @Composable
 fun ItineraryMapView(
     viewModel: ItineraryViewModel,
+    tripId: String? = null,
     tripSelectedDate: String? = null
 ) {
     val itineraryStatus by viewModel.itineraryStatus.collectAsState()
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
     val accessToken = stringResource(id = R.string.mapbox_access_token)
+    var addSpotsDialogVisibility by remember { mutableStateOf(false) }
 
     val places = remember(itineraryStatus.data, tripSelectedDate) {
         val selectedDateLong = tripSelectedDate?.toLongOrNull()
@@ -92,6 +98,29 @@ fun ItineraryMapView(
         } else {
             emptyList()
         }
+    }
+
+    LaunchedEffect(places) {
+        if (places.isEmpty() && itineraryStatus.data != null) {
+            addSpotsDialogVisibility = true
+        }
+    }
+
+    if (addSpotsDialogVisibility) {
+        ComposeViewUtils.ConfirmationDialog(
+            title = stringResource(R.string.add_spots_title),
+            message = stringResource(R.string.add_spots_message),
+            confirmButtonText = stringResource(R.string.add),
+            onConfirm = {
+                addSpotsDialogVisibility = false
+                scope.launch {
+                    CommonNavigationChannel.navigateTo(
+                        NavigationAction.Navigate(AppNavigationScreen.SearchScreen.route)
+                    )
+                }
+            },
+            onDismiss = { addSpotsDialogVisibility = false }
+        )
     }
 
     val points = remember(places) {
@@ -187,6 +216,30 @@ fun ItineraryMapView(
                                     center(point)
                                     zoom(15.0)
                                 }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 60.dp, end = 24.dp)
+        ) {
+            Column(horizontalAlignment = Alignment.End) {
+                NewSpotButton {
+                    addSpotsDialogVisibility = false
+                    scope.launch {
+                        if (tripId != null && tripSelectedDate != null) {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.Navigate(
+                                    AppNavigationScreen.AddSpotsScreen.createRoute(
+                                        tripId,
+                                        tripSelectedDate
+                                    )
+                                )
                             )
                         }
                     }

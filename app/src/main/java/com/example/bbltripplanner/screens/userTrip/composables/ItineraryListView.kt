@@ -22,7 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,17 +52,52 @@ import kotlinx.coroutines.launch
 @Composable
 fun ItineraryListView(
     viewModel: ItineraryViewModel,
-    tripId: String?
+    tripId: String?,
 ) {
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
     val itineraryStatus by viewModel.itineraryStatus.collectAsState()
     val errorMessage = stringResource(R.string.generic_error)
+    var tripSelectedDate by remember {
+        mutableStateOf<String?>(null)
+    }
+    var addSpotsDialogVisibility by remember { mutableStateOf(false) }
 
     LaunchedEffect(tripId) {
         tripId?.let {
             viewModel.processEvent(ItineraryIntent.ViewEvent.FetchItinerary(it))
         }
+    }
+
+    if (addSpotsDialogVisibility) {
+        ComposeViewUtils.ConfirmationDialog(
+            title = stringResource(R.string.add_spots_title),
+            message = stringResource(R.string.add_spots_message),
+            confirmButtonText = stringResource(R.string.add),
+            dismissButtonText = stringResource(R.string.cancel),
+            onConfirm = {
+                addSpotsDialogVisibility = false
+                tripSelectedDate = null
+                scope.launch {
+                    if (tripId != null) {
+                        tripSelectedDate?.let {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.Navigate(
+                                    AppNavigationScreen.AddSpotsScreen.createRoute(
+                                        tripId,
+                                        it
+                                    )
+                                )
+                            )
+                        }
+                    }
+                }
+            },
+            onDismiss = {
+                addSpotsDialogVisibility = false
+                tripSelectedDate = null
+            }
+        )
     }
 
     Column(
@@ -139,12 +177,22 @@ fun ItineraryListView(
                         day = day,
                         dayNumber = index + 1,
                         onClick = {
-                            scope.launch {
-                                CommonNavigationChannel.navigateTo(
-                                    NavigationAction.Navigate(
-                                        AppNavigationScreen.ItineraryMapViewScreen.createRoute(day.date.toString())
-                                    )
-                                )
+                            if (day.spotCount == 0) {
+                                addSpotsDialogVisibility = true
+                                tripSelectedDate = day.date.toString()
+                            } else {
+                                scope.launch {
+                                    tripId?.let {
+                                        CommonNavigationChannel.navigateTo(
+                                            NavigationAction.Navigate(
+                                                AppNavigationScreen.ItineraryMapViewScreen.createRoute(
+                                                    it,
+                                                    day.date.toString()
+                                                )
+                                            )
+                                        )
+                                    }
+                                }
                             }
                         }
                     )

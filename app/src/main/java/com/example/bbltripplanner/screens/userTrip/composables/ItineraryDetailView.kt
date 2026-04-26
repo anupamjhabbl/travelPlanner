@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
@@ -36,9 +37,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryActivity
@@ -56,6 +59,7 @@ fun ItineraryDetailView(
     val customColors = LocalCustomColors.current
     val placeDetailStatus by viewModel.placeDetailStatus.collectAsState()
     val errorMessage = stringResource(R.string.generic_error)
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(placeId) {
         placeId?.let {
@@ -63,7 +67,7 @@ fun ItineraryDetailView(
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(customColors.primaryBackground)
@@ -81,40 +85,86 @@ fun ItineraryDetailView(
         } else {
             val place = placeDetailStatus.data
             place?.let {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    item {
-                        PlaceHeader(place.imageUrl, place.placeName, place.address)
-                    }
+                Column (modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        item {
+                            PlaceHeader(place.imageUrl, place.placeName, place.address)
+                        }
 
-                    item {
-                        Column(
-                            modifier = Modifier.padding(dimensionResource(id = R.dimen.module_16))
-                        ) {
-                            ComposeTextView.TitleTextView(
-                                text = stringResource(R.string.about),
-                                fontSize = 18.sp,
-                                textColor = customColors.secondaryBackground
-                            )
+                        item {
+                            Column(
+                                modifier = Modifier.padding(dimensionResource(id = R.dimen.module_16))
+                            ) {
+                                ComposeTextView.TitleTextView(
+                                    text = stringResource(R.string.about),
+                                    fontSize = 18.sp,
+                                    textColor = customColors.secondaryBackground
+                                )
 
-                            ComposeTextView.TextView(
-                                text = place.description,
-                                fontSize = 14.sp
-                            )
+                                ComposeTextView.TextView(
+                                    text = place.description,
+                                    fontSize = 14.sp
+                                )
 
-                            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.module_24)))
+                                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.module_24)))
 
-                            ComposeTextView.TitleTextView(
-                                text = stringResource(R.string.activities),
-                                fontSize = 18.sp,
-                                textColor = customColors.secondaryBackground
-                            )
+                                ComposeTextView.TitleTextView(
+                                    text = stringResource(R.string.activities),
+                                    fontSize = 18.sp,
+                                    textColor = customColors.secondaryBackground
+                                )
+                            }
+                        }
+
+                        items(place.activityList) { activity ->
+                            ActivityItem(activity)
+
+                            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.module_16)))
                         }
                     }
 
-                    items(place.activityList) { activity ->
-                        ActivityItem(activity)
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp)
+                                .align(Alignment.TopCenter)
+                                .background(
+                                    Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color.Black.copy(alpha = 0.15f),
+                                            Color.Transparent
+                                        )
+                                    )
+                                )
+                        )
 
-                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.module_16)))
+                        ComposeButtonView.PrimaryButtonView(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(dimensionResource(id = R.dimen.module_16)),
+                            backgroundColor = customColors.secondaryBackground,
+                            contentColor = customColors.primaryBackground,
+                            text = stringResource(R.string.add_new_activity),
+                            fontSize = 16.sp,
+                            onClick = {
+                                scope.launch {
+                                    placeId?.let {
+                                        CommonNavigationChannel.navigateTo(
+                                            NavigationAction.Navigate(
+                                                AppNavigationScreen.AddActivityScreen.createRoute(
+                                                    it
+                                                )
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        )
                     }
                 }
             }
