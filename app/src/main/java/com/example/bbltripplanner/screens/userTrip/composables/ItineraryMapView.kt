@@ -45,6 +45,7 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.common.composables.ComposeViewUtils.NewSpotButton
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -404,43 +405,6 @@ fun ViewAnnotationContent(
             text = (placeIndex + 1).toString(),
             fontSize = 16.sp,
             textColor = Color.White
-        )
-    }
-}
-
-
-@Composable
-private fun NewSpotButton(onClick: () -> Unit) {
-    val customColors = LocalCustomColors.current
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(24.dp))
-            .background(customColors.defaultImageCardColor)
-            .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(24.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.Transparent)
-                .padding(2.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = customColors.secondaryBackground
-            )
-        }
-        Spacer(modifier = Modifier.width(4.dp))
-        ComposeTextView.TextView(
-            text = stringResource(id = R.string.new_spot),
-            fontSize = 16.sp,
-            textColor = customColors.secondaryBackground,
-            fontWeight = FontWeight.W600
         )
     }
 }

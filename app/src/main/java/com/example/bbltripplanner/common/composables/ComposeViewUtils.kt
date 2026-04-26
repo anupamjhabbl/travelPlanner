@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
@@ -41,8 +43,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -458,5 +462,42 @@ object ComposeViewUtils {
             shape = RoundedCornerShape(12.dp),
             containerColor = LocalCustomColors.current.defaultImageCardColor
         )
+    }
+
+
+    @Composable
+    fun NewSpotButton(onClick: () -> Unit) {
+        val customColors = LocalCustomColors.current
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(24.dp))
+                .background(customColors.defaultImageCardColor)
+                .clickable { onClick() }
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.Transparent)
+                    .padding(2.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = customColors.secondaryBackground
+                )
+            }
+            Spacer(modifier = Modifier.width(4.dp))
+            ComposeTextView.TextView(
+                text = stringResource(id = R.string.new_spot),
+                fontSize = 16.sp,
+                textColor = customColors.secondaryBackground,
+                fontWeight = FontWeight.W600
+            )
+        }
     }
 }
