@@ -2,10 +2,12 @@ package com.example.bbltripplanner.common.composables
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +32,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -358,6 +361,102 @@ object ComposeViewUtils {
             },
             containerColor = LocalCustomColors.current.primaryBackground,
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+        )
+    }
+
+    @Composable
+    fun ConfirmationDialog(
+        title: String,
+        message: String,
+        confirmButtonText: String,
+        dismissButtonText: String = stringResource(R.string.cancel),
+        isConfirmPositive: Boolean = true,
+        onConfirm: () -> Unit,
+        onDismiss: () -> Unit
+    ) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                Box(modifier = Modifier.padding(4.dp)) {
+                    if (isConfirmPositive) {
+                        Button(
+                            onClick = onConfirm,
+                            colors = ButtonDefaults.buttonColors().copy(
+                                containerColor = LocalCustomColors.current.secondaryBackground,
+                                contentColor = LocalCustomColors.current.primaryBackground
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(16.dp, 8.dp)
+                        ) {
+                            ComposeTextView.TextView(
+                                text = confirmButtonText,
+                                textColor = LocalCustomColors.current.primaryBackground,
+                                fontSize = 16.sp
+                            )
+                        }
+                    } else {
+                        OutlinedButton(
+                            onClick = onConfirm,
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(16.dp, 8.dp),
+                            border = BorderStroke(2.dp, LocalCustomColors.current.secondaryBackground)
+                        ) {
+                            ComposeTextView.TextView(
+                                text = confirmButtonText,
+                                textColor = LocalCustomColors.current.secondaryBackground,
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+                }
+            },
+            dismissButton = {
+                Box(modifier = Modifier.padding(4.dp)) {
+                    if (isConfirmPositive) {
+                        OutlinedButton(
+                            onClick = onDismiss,
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(16.dp, 8.dp),
+                            border = BorderStroke(2.dp, LocalCustomColors.current.secondaryBackground)
+                        ) {
+                            ComposeTextView.TextView(
+                                text = dismissButtonText,
+                                textColor = LocalCustomColors.current.secondaryBackground,
+                                fontSize = 16.sp
+                            )
+                        }
+                    } else {
+                        Button(
+                            onClick = onDismiss,
+                            colors = ButtonDefaults.buttonColors().copy(
+                                containerColor = LocalCustomColors.current.secondaryBackground,
+                                contentColor = LocalCustomColors.current.primaryBackground
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(16.dp, 8.dp)
+                        ) {
+                            ComposeTextView.TextView(
+                                text = dismissButtonText,
+                                textColor = LocalCustomColors.current.primaryBackground,
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+                }
+            },
+            text = {
+                ComposeTextView.TextView(
+                    message,
+                    fontSize = 14.sp
+                )
+            },
+            title = {
+                ComposeTextView.TitleTextView(
+                    title
+                )
+            },
+            shape = RoundedCornerShape(12.dp),
+            containerColor = LocalCustomColors.current.defaultImageCardColor
         )
     }
 }

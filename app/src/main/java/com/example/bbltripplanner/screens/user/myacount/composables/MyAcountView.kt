@@ -1,14 +1,12 @@
 package com.example.bbltripplanner.screens.user.myacount.composables
 
 import android.content.Context
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -26,12 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -97,32 +91,16 @@ fun MyAccountView() {
     }
 
     if (logOutConfirmDialogVisibility) {
-        AlertDialog(
-            onDismissRequest = { logOutConfirmDialogVisibility = false },
-            confirmButton = {
-                ConfirmButton {
-                    logOutConfirmDialogVisibility = false
-                    viewModel.processEvent(MyAccountIntent.ViewEvent.LogoutUser)
-                }
+        ComposeViewUtils.ConfirmationDialog(
+            title = stringResource(R.string.logout_alert_title),
+            message = stringResource(R.string.logout_alert_message),
+            confirmButtonText = stringResource(R.string.logout),
+            isConfirmPositive = false,
+            onConfirm = {
+                logOutConfirmDialogVisibility = false
+                viewModel.processEvent(MyAccountIntent.ViewEvent.LogoutUser)
             },
-            dismissButton = {
-                DismissButton {
-                    logOutConfirmDialogVisibility = false
-                }
-            },
-            text = {
-                ComposeTextView.TextView(
-                    stringResource(R.string.logout_alert_message),
-                    fontSize = 14.sp
-                )
-            },
-            title = {
-                ComposeTextView.TitleTextView(
-                    stringResource(R.string.logout_alert_title)
-                )
-            },
-            shape = RoundedCornerShape(12.dp),
-            containerColor = LocalCustomColors.current.defaultImageCardColor
+            onDismiss = { logOutConfirmDialogVisibility = false }
         )
     }
 
@@ -229,49 +207,6 @@ private fun AccountToolbar() {
             fontSize = 22.sp,
             textColor = LocalCustomColors.current.secondaryBackground
         )
-    }
-}
-
-@Composable
-fun ConfirmButton(
-    onClick: () -> Unit
-) {
-    Box(modifier = Modifier.padding(4.dp)) {
-        OutlinedButton(
-            onClick = onClick,
-            shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(16.dp, 8.dp),
-            border = BorderStroke(2.dp, LocalCustomColors.current.secondaryBackground)
-        ) {
-            ComposeTextView.TextView(
-                text = stringResource(R.string.logout),
-                textColor = LocalCustomColors.current.secondaryBackground,
-                fontSize = 16.sp
-            )
-        }
-    }
-}
-
-@Composable
-fun DismissButton(
-    onClick: () -> Unit
-) {
-    Box(modifier = Modifier.padding(4.dp)) {
-        Button(
-            onClick = onClick,
-            colors = ButtonDefaults.buttonColors().copy(
-                containerColor = LocalCustomColors.current.secondaryBackground,
-                contentColor = LocalCustomColors.current.primaryBackground
-            ),
-            shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(16.dp, 8.dp)
-        ) {
-            ComposeTextView.TextView(
-                text = stringResource(R.string.cancel),
-                textColor = LocalCustomColors.current.primaryBackground,
-                fontSize = 16.sp
-            )
-        }
     }
 }
 

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,13 +19,17 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -84,6 +90,7 @@ fun ItineraryMapView(
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
     val accessToken = stringResource(id = R.string.mapbox_access_token)
+    var addSpotsDialogVisibility by remember { mutableStateOf(false) }
 
     val places = remember(itineraryStatus.data, tripSelectedDate) {
         val selectedDateLong = tripSelectedDate?.toLongOrNull()
@@ -92,6 +99,29 @@ fun ItineraryMapView(
         } else {
             emptyList()
         }
+    }
+
+    LaunchedEffect(places) {
+        if (places.isEmpty() && itineraryStatus.data != null) {
+            addSpotsDialogVisibility = true
+        }
+    }
+
+    if (addSpotsDialogVisibility) {
+        ComposeViewUtils.ConfirmationDialog(
+            title = stringResource(R.string.add_spots_title),
+            message = stringResource(R.string.add_spots_message),
+            confirmButtonText = stringResource(R.string.add),
+            onConfirm = {
+                addSpotsDialogVisibility = false
+                scope.launch {
+                    CommonNavigationChannel.navigateTo(
+                        NavigationAction.Navigate(AppNavigationScreen.SearchScreen.route)
+                    )
+                }
+            },
+            onDismiss = { addSpotsDialogVisibility = false }
+        )
     }
 
     val points = remember(places) {
@@ -189,6 +219,44 @@ fun ItineraryMapView(
                                 }
                             )
                         }
+                    }
+                }
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 60.dp, end = 24.dp)
+        ) {
+            Column(horizontalAlignment = Alignment.End) {
+                NewSpotButton {
+                    addSpotsDialogVisibility = false
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.Navigate(AppNavigationScreen.SearchScreen.route)
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                if (places.isEmpty()) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_right_arrow),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(32.dp)
+                                .offset(y = (-8).dp, x = (-8).dp)
+                        )
+                        ComposeTextView.TextView(
+                            text = stringResource(id = R.string.tap_to_add_new_spot),
+                            fontSize = 14.sp,
+                            textColor = Color.White,
+                            fontWeight = FontWeight.W500
+                        )
                     }
                 }
             }
@@ -336,6 +404,43 @@ fun ViewAnnotationContent(
             text = (placeIndex + 1).toString(),
             fontSize = 16.sp,
             textColor = Color.White
+        )
+    }
+}
+
+
+@Composable
+private fun NewSpotButton(onClick: () -> Unit) {
+    val customColors = LocalCustomColors.current
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(24.dp))
+            .background(customColors.defaultImageCardColor)
+            .clickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.Transparent)
+                .padding(2.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = customColors.secondaryBackground
+            )
+        }
+        Spacer(modifier = Modifier.width(4.dp))
+        ComposeTextView.TextView(
+            text = stringResource(id = R.string.new_spot),
+            fontSize = 16.sp,
+            textColor = customColors.secondaryBackground,
+            fontWeight = FontWeight.W600
         )
     }
 }

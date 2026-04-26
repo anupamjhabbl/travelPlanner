@@ -32,7 +32,6 @@ import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Security
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -63,8 +62,6 @@ import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.general.viewModels.LogOutState
 import com.example.bbltripplanner.screens.user.general.viewModels.UserSettingsIntent
 import com.example.bbltripplanner.screens.user.general.viewModels.UserSettingsViewModel
-import com.example.bbltripplanner.screens.user.myacount.composables.ConfirmButton
-import com.example.bbltripplanner.screens.user.myacount.composables.DismissButton
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileSocialScreens
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
@@ -104,32 +101,16 @@ fun UserSettingsScreen() {
     }
 
     if (logOutConfirmDialogVisibility) {
-        AlertDialog(
-            onDismissRequest = { logOutConfirmDialogVisibility = false },
-            confirmButton = {
-                ConfirmButton {
-                    logOutConfirmDialogVisibility = false
-                    viewModel.processEvent(UserSettingsIntent.ViewEvent.LogoutUser)
-                }
+        ComposeViewUtils.ConfirmationDialog(
+            title = stringResource(R.string.logout_alert_title),
+            message = stringResource(R.string.logout_alert_message),
+            confirmButtonText = stringResource(R.string.logout),
+            onConfirm = {
+                logOutConfirmDialogVisibility = false
+                viewModel.processEvent(UserSettingsIntent.ViewEvent.LogoutUser)
             },
-            dismissButton = {
-                DismissButton {
-                    logOutConfirmDialogVisibility = false
-                }
-            },
-            text = {
-                ComposeTextView.TextView(
-                    stringResource(R.string.logout_alert_message),
-                    fontSize = 14.sp
-                )
-            },
-            title = {
-                ComposeTextView.TitleTextView(
-                    stringResource(R.string.logout_alert_title)
-                )
-            },
-            shape = RoundedCornerShape(12.dp),
-            containerColor = LocalCustomColors.current.defaultImageCardColor
+            onDismiss = { logOutConfirmDialogVisibility = false },
+            isConfirmPositive = false
         )
     }
 
