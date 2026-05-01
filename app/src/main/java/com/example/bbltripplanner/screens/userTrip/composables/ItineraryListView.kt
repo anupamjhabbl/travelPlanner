@@ -44,16 +44,17 @@ import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryDay
-import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ItineraryListView(
-    viewModel: ItineraryViewModel,
     tripId: String?,
 ) {
+    val viewModel: ItineraryViewModel = koinViewModel(parameters = { parametersOf(tripId) })
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
     val itineraryStatus by viewModel.itineraryStatus.collectAsState()
@@ -61,22 +62,22 @@ fun ItineraryListView(
     var tripSelectedDate by remember {
         mutableStateOf<String?>(null)
     }
-    var addSpotsDialogVisibility by remember { mutableStateOf(false) }
+    var addItineraryDialogVisibility by remember { mutableStateOf(false) }
 
-    LaunchedEffect(tripId) {
-        tripId?.let {
-            viewModel.processEvent(ItineraryIntent.ViewEvent.FetchItinerary(it))
+    LaunchedEffect(itineraryStatus) {
+        if (!itineraryStatus.isLoading && (itineraryStatus.data == null || itineraryStatus.data!!.itineraryList.isEmpty()) && itineraryStatus.error == null) {
+            addItineraryDialogVisibility = true
         }
     }
 
-    if (addSpotsDialogVisibility) {
+    if (addItineraryDialogVisibility) {
         ComposeViewUtils.ConfirmationDialog(
             title = stringResource(R.string.add_spots_title),
             message = stringResource(R.string.add_spots_message),
             confirmButtonText = stringResource(R.string.add),
             dismissButtonText = stringResource(R.string.cancel),
             onConfirm = {
-                addSpotsDialogVisibility = false
+                addItineraryDialogVisibility = false
                 tripSelectedDate = null
                 scope.launch {
                     if (tripId != null) {
@@ -94,7 +95,7 @@ fun ItineraryListView(
                 }
             },
             onDismiss = {
-                addSpotsDialogVisibility = false
+                addItineraryDialogVisibility = false
                 tripSelectedDate = null
             }
         )
@@ -147,7 +148,7 @@ fun ItineraryListView(
             ComposeViewUtils.FullScreenErrorComposable(Pair(errorMessage, itineraryStatus.error ?: ""))
         } else {
             val itinerary = itineraryStatus.data
-            val itineraryDays = itinerary?.itineraryDayList ?: emptyList()
+            val itineraryDays = itinerary?.itineraryList ?: emptyList()
 
             LazyColumn(
                 modifier = Modifier
@@ -177,21 +178,15 @@ fun ItineraryListView(
                         day = day,
                         dayNumber = index + 1,
                         onClick = {
-                            if (day.spotCount == 0) {
-                                addSpotsDialogVisibility = true
-                                tripSelectedDate = day.date.toString()
-                            } else {
-                                scope.launch {
-                                    tripId?.let {
-                                        CommonNavigationChannel.navigateTo(
-                                            NavigationAction.Navigate(
-                                                AppNavigationScreen.ItineraryMapViewScreen.createRoute(
-                                                    it,
-                                                    day.date.toString()
-                                                )
+                            scope.launch {
+                                day.itineraryId.let {
+                                    CommonNavigationChannel.navigateTo(
+                                        NavigationAction.Navigate(
+                                            AppNavigationScreen.ItineraryMapViewScreen.createRoute(
+                                                it,
                                             )
                                         )
-                                    }
+                                    )
                                 }
                             }
                         }
@@ -221,7 +216,7 @@ fun DayItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         ComposeImageView.ImageViewWithUrl(
-            imageURI = day.imageUrl,
+            imageURI = day.imageUrl ?: "",
             modifier = Modifier
                 .size(dimensionResource(id = R.dimen.module_90))
                 .clip(RoundedCornerShape(dimensionResource(id = R.dimen.module_12))),
@@ -236,13 +231,6 @@ fun DayItem(
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 textColor = customColors.titleTextColor
-            )
-
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.module_6)))
-
-            ComposeTextView.TextView(
-                text = stringResource(id = R.string.curated_place_count, day.spotCount),
-                fontSize = 16.sp
             )
         }
     }

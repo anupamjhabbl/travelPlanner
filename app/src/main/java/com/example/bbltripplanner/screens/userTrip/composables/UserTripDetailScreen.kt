@@ -124,7 +124,7 @@ fun UserTripDetailScreen(
                             item
                         ) { key ->
                             scope.launch {
-                                takeAction(key)
+                                takeAction(key, tripId)
                             }
                         }
 
@@ -458,28 +458,30 @@ private fun ActionTile (
     }
 }
 
-private suspend fun takeAction(key: String) {
-    when (key) {
-        Constants.TripDetailScreen.GENERAL -> {}
+private suspend fun takeAction(key: String, tripId: String?) {
+    if (tripId != null) {
+        when (key) {
+            Constants.TripDetailScreen.GENERAL -> {}
 
-        Constants.TripDetailScreen.ATTACHMENTS-> {}
+            Constants.TripDetailScreen.ATTACHMENTS -> {}
 
-        Constants.TripDetailScreen.GROUP -> {}
+            Constants.TripDetailScreen.GROUP -> {}
 
-        Constants.TripDetailScreen.ITINERARY-> {
-            CommonNavigationChannel.navigateTo(
-                NavigationAction.Navigate(
-                    AppNavigationScreen.ItineraryListView.createRoute("1234")
+            Constants.TripDetailScreen.ITINERARY -> {
+                CommonNavigationChannel.navigateTo(
+                    NavigationAction.Navigate(
+                        AppNavigationScreen.ItineraryListView.createRoute(tripId)
+                    )
                 )
-            )
-        }
+            }
 
-        Constants.TripDetailScreen.EXPENSES -> {
-            CommonNavigationChannel.navigateTo(
-                NavigationAction.Navigate(
-                    AppNavigationScreen.ExpenseScreen.createRoute("1234")
+            Constants.TripDetailScreen.EXPENSES -> {
+                CommonNavigationChannel.navigateTo(
+                    NavigationAction.Navigate(
+                        AppNavigationScreen.ExpenseScreen.createRoute(tripId)
+                    )
                 )
-            )
+            }
         }
     }
 }

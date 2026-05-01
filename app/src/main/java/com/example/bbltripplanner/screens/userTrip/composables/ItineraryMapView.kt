@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,9 +18,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,13 +42,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
+import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
@@ -46,8 +60,12 @@ import com.example.bbltripplanner.common.composables.ComposeViewUtils.NewSpotBut
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
+import com.example.bbltripplanner.screens.userTrip.entity.AddSpotRequest
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryPlace
-import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
+import com.example.bbltripplanner.screens.userTrip.entity.Location
+import com.example.bbltripplanner.screens.userTrip.entity.toModel
+import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryMapIntent
+import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryMapViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.MapboxDirections
@@ -74,54 +92,178 @@ import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJson
 import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-@OptIn(MapboxDelicateApi::class)
+@OptIn(MapboxDelicateApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ItineraryMapView(
-    viewModel: ItineraryViewModel,
-    tripId: String? = null,
-    tripSelectedDate: String? = null
+    itineraryId: String? = null,
 ) {
-    val itineraryStatus by viewModel.itineraryStatus.collectAsState()
+    val context = LocalContext.current
+    val itineraryMapViewModel: ItineraryMapViewModel = koinViewModel(parameters = { parametersOf(itineraryId) })
+    val spotsStatus by itineraryMapViewModel.spotsStatus.collectAsState()
+    val actionStatus by itineraryMapViewModel.actionStatus.collectAsState()
+    var showLocationBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    var locationSuggestions by remember { mutableStateOf(emptyList<Location>()) }
+    var isLocationLoading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
+    val searchQuery by itineraryMapViewModel.searchQuery.collectAsState()
     val accessToken = stringResource(id = R.string.mapbox_access_token)
+    
     var addSpotsDialogVisibility by remember { mutableStateOf(false) }
+    var showAddSpotForm by remember { mutableStateOf(false) }
+    
+    var placeName by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var selectedLocation: Location? by remember { mutableStateOf(null) }
 
-    val places = remember(itineraryStatus.data, tripSelectedDate) {
-        val selectedDateLong = tripSelectedDate?.toLongOrNull()
-        if (selectedDateLong != null) {
-            itineraryStatus.data?.itineraryDayList?.find { it.date == selectedDateLong }?.itineraryPlaceList ?: emptyList()
-        } else {
-            emptyList()
-        }
-    }
-
-    LaunchedEffect(places) {
-        if (places.isEmpty() && itineraryStatus.data != null) {
+    LaunchedEffect(spotsStatus) {
+        if (!spotsStatus.isLoading && spotsStatus.data.isNullOrEmpty() && spotsStatus.error == null) {
             addSpotsDialogVisibility = true
         }
     }
 
+    CommonLifecycleAwareLaunchedEffect(itineraryMapViewModel.viewEffect) { viewEffect ->
+        when (viewEffect) {
+            is ItineraryMapIntent.ViewEffect.ErrorInSpotCreation -> {
+                ComposeViewUtils.showToast(context, viewEffect.message)
+            }
+            ItineraryMapIntent.ViewEffect.HideLocationLoading -> {
+                isLocationLoading = false
+            }
+            ItineraryMapIntent.ViewEffect.ShowLocationLoading -> {
+                isLocationLoading = true
+            }
+            is ItineraryMapIntent.ViewEffect.ShowSuggestions -> {
+                locationSuggestions = viewEffect.suggestions
+            }
+        }
+    }
+
     if (addSpotsDialogVisibility) {
-        ComposeViewUtils.ConfirmationDialog(
-            title = stringResource(R.string.add_spots_title),
-            message = stringResource(R.string.add_spots_message),
-            confirmButtonText = stringResource(R.string.add),
-            onConfirm = {
-                addSpotsDialogVisibility = false
-                scope.launch {
-                    CommonNavigationChannel.navigateTo(
-                        NavigationAction.Navigate(AppNavigationScreen.SearchScreen.route)
+        AlertDialog(
+            onDismissRequest = { },
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
+            title = { ComposeTextView.TitleTextView(text = stringResource(R.string.add_spots_title)) },
+            text = { ComposeTextView.TextView(text = stringResource(R.string.add_spots_message)) },
+            confirmButton = {
+                ComposeButtonView.PrimaryButtonView(
+                    text = stringResource(R.string.ok),
+                    onClick = {
+                        addSpotsDialogVisibility = false
+                        showAddSpotForm = true
+                    }
+                )
+            },
+            dismissButton = {
+                ComposeButtonView.SecondaryButtonView(
+                    text = stringResource(R.string.cancel),
+                    onClick = { addSpotsDialogVisibility = false }
+                )
+            },
+            containerColor = customColors.primaryBackground
+        )
+    }
+
+    if (showAddSpotForm) {
+        AlertDialog(
+            onDismissRequest = { },
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
+            title = { ComposeTextView.TitleTextView(text = stringResource(R.string.add_new_spot)) },
+            text = {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    OutlinedTextField(
+                        value = placeName,
+                        onValueChange = { placeName = it },
+                        label = { ComposeTextView.TextView(text = stringResource(R.string.place_name)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = customColors.secondaryBackground),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    ClickableFieldBox(
+                        text = selectedLocation?.displayName ?: "",
+                        placeholder = stringResource(R.string.where_to)
+                    ) {
+                        showLocationBottomSheet = true
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    OutlinedTextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { ComposeTextView.TextView(text = stringResource(R.string.description)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = customColors.secondaryBackground),
+                        shape = RoundedCornerShape(12.dp)
                     )
                 }
             },
-            onDismiss = { addSpotsDialogVisibility = false }
+            confirmButton = {
+                ComposeButtonView.PrimaryButtonView(
+                    text = stringResource(R.string.submit),
+                    onClick = {
+                        if (itineraryId != null) {
+                            selectedLocation?.let {
+                                itineraryMapViewModel.processEvent(
+                                    ItineraryMapIntent.ViewEvent.AddSpot(
+                                        itineraryId,
+                                        AddSpotRequest(
+                                            placeName = placeName,
+                                            description = description,
+                                            location = it.toModel()
+                                        )
+                                    )
+                                )
+                            }
+                            showAddSpotForm = false
+                            placeName = ""
+                            description = ""
+                            selectedLocation = null
+                        }
+                    }
+                )
+            },
+            dismissButton = {
+                ComposeButtonView.SecondaryButtonView(
+                    text = stringResource(R.string.cancel),
+                    onClick = { showAddSpotForm = false }
+                )
+            },
+            containerColor = customColors.primaryBackground
         )
     }
+
+    if (showLocationBottomSheet) {
+        ModalBottomSheet(
+            modifier = Modifier.fillMaxHeight(),
+            onDismissRequest = { showLocationBottomSheet = false },
+            sheetState = sheetState,
+            containerColor = customColors.primaryBackground
+        ) {
+            LocationBottomSheet(
+                locationList = locationSuggestions,
+                searchQuery = searchQuery,
+                isLocationLoading = isLocationLoading,
+                onQueryChanged = { itineraryMapViewModel.processEvent(ItineraryMapIntent.ViewEvent.OnQueryChanged(it)) },
+                updateLocation = {
+                    selectedLocation = it
+                    showLocationBottomSheet = false
+                }
+            )
+        }
+    }
+
+    val places = spotsStatus.data ?: emptyList()
 
     val points = remember(places) {
         places.filter { it.location.lat != null && it.location.lon != null }
@@ -230,19 +372,7 @@ fun ItineraryMapView(
         ) {
             Column(horizontalAlignment = Alignment.End) {
                 NewSpotButton {
-                    addSpotsDialogVisibility = false
-                    scope.launch {
-                        if (tripId != null && tripSelectedDate != null) {
-                            CommonNavigationChannel.navigateTo(
-                                NavigationAction.Navigate(
-                                    AppNavigationScreen.AddSpotsScreen.createRoute(
-                                        tripId,
-                                        tripSelectedDate
-                                    )
-                                )
-                            )
-                        }
-                    }
+                    showAddSpotForm = true
                 }
             }
         }
@@ -279,6 +409,10 @@ fun ItineraryMapView(
                 }
             }
         }
+        
+        if (spotsStatus.isLoading || actionStatus.isLoading) {
+            ComposeViewUtils.FullScreenLoading()
+        }
     }
 }
 
@@ -301,7 +435,7 @@ fun PlaceCard(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ComposeImageView.ImageViewWithUrl(
-                imageURI = place.imageUrl,
+                imageURI = place.imageUrl ?: "",
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(dimensionResource(id = R.dimen.module_12))),
@@ -321,7 +455,7 @@ fun PlaceCard(
 
 
                 ComposeTextView.TextView(
-                    text = place.description,
+                    text = place.description ?: "",
                     fontSize = 12.sp,
                     maxLines = 2
                 )
@@ -337,7 +471,7 @@ fun PlaceCard(
             contentAlignment = Alignment.Center
         ) {
             ComposeTextView.TextView(
-                text = place.activityCount.toString(),
+                text = (place.activityCount ?: 0).toString(),
                 fontSize = 10.sp,
                 textColor = Color.White,
                 fontWeight = FontWeight.Bold

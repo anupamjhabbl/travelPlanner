@@ -57,6 +57,7 @@ import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCas
 import com.example.bbltripplanner.screens.userTrip.usecases.PostingUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryDetailViewModel
+import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryMapViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailViewModel
@@ -108,8 +109,13 @@ val appModule = module {
     single<ItineraryClient> { Network.createWithAuth(ItineraryClient::class.java, get(), get(), androidContext()) }
     single<ItineraryRepository> { ItineraryNetwork(get()) }
     single<ItineraryUseCase> { ItineraryUseCase(get()) }
-    viewModel { ItineraryViewModel(get()) }
+    viewModel { (tripId: String?) ->
+        ItineraryViewModel(tripId, get())
+    }
     viewModel { ItineraryDetailViewModel(get()) }
+    viewModel { (itineraryId: String?) ->
+        ItineraryMapViewModel(itineraryId, get(), get())
+    }
 
     // User Auth
     single<UserAuthRepository> { UserAuthNetwork(get()) }

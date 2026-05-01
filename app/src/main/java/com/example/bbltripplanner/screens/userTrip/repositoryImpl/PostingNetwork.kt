@@ -3,12 +3,11 @@ package com.example.bbltripplanner.screens.userTrip.repositoryImpl
 import com.example.bbltripplanner.common.entity.ApiFailureException
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.common.utils.JsonResponseUtils
-import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.clients.PostingClient
-import com.example.bbltripplanner.screens.userTrip.entity.Location
-import com.example.bbltripplanner.screens.userTrip.entity.LocationRequestModel
 import com.example.bbltripplanner.screens.userTrip.entity.TripCreationResponse
+import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.entity.TripDataRequestModel
+import com.example.bbltripplanner.screens.userTrip.entity.toModel
 import com.example.bbltripplanner.screens.userTrip.repositories.PostingRepository
 import com.google.gson.JsonParseException
 
@@ -45,17 +44,5 @@ private fun TripData.toModel(): TripDataRequestModel {
         endDate,
         invitedMembers.map { it.id },
         visibility
-    )
-}
-
-private fun Location.toModel(): LocationRequestModel {
-    return LocationRequestModel(
-        name = address?.name,
-        address = displayName,
-        city = address?.city,
-        state = address?.state,
-        country = address?.country,
-        latitude = lat,
-        longitude = lon
     )
 }

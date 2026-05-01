@@ -18,3 +18,15 @@ data class LocationRequestModel(
     @SerializedName("longitude")
     val longitude: String?
 )
+
+fun Location.toModel(): LocationRequestModel {
+    return LocationRequestModel(
+        name = address?.name,
+        address = displayName,
+        city = address?.city,
+        state = address?.state,
+        country = address?.country,
+        latitude = lat,
+        longitude = lon
+    )
+}

@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.common.composables
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
@@ -9,8 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,11 +54,43 @@ object ComposeButtonView {
     ) {
         Button(
             onClick = onClick,
-            colors = ButtonColors(
+            colors = ButtonDefaults.buttonColors(
                 containerColor = backgroundColor,
-                contentColor = contentColor,
-                disabledContentColor = backgroundColor,
-                disabledContainerColor = contentColor
+                contentColor = contentColor
+            ),
+            modifier = modifier
+                .defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)
+                .height(IntrinsicSize.Min),
+            shape = shape,
+            contentPadding = paddingValues
+        ) {
+            ComposeTextView.TextView(
+                modifier = Modifier.wrapContentWidth().padding(0.dp),
+                text = text,
+                textColor = contentColor,
+                fontSize = fontSize,
+                fontWeight = fontWeight
+            )
+        }
+    }
+
+    @Composable
+    fun SecondaryButtonView (
+        modifier: Modifier = Modifier,
+        borderColor: Color = LocalCustomColors.current.secondaryBackground,
+        contentColor: Color = LocalCustomColors.current.secondaryBackground,
+        text: String,
+        shape: Shape = RoundedCornerShape(8.dp),
+        paddingValues: PaddingValues = PaddingValues(16.dp, 8.dp),
+        fontSize: TextUnit = 12.sp,
+        fontWeight: FontWeight = FontWeight.SemiBold,
+        onClick: () -> Unit
+    ) {
+        OutlinedButton(
+            onClick = onClick,
+            border = BorderStroke(1.dp, borderColor),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = contentColor
             ),
             modifier = modifier
                 .defaultMinSize(minWidth = 0.dp, minHeight = 0.dp)

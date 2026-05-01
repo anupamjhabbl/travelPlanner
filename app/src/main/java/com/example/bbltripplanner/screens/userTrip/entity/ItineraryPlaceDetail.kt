@@ -1,18 +1,30 @@
 package com.example.bbltripplanner.screens.userTrip.entity
 
-data class ItineraryPlaceDetail(
-    val placeId: String,
-    val placeName: String,
-    val imageUrl: String,
-    val description: String,
-    val activityList: List<ItineraryActivity> = emptyList(),
-    val rating: Double? = 4.8,
-    val address: String? = null
+data class ItineraryActivity(
+    val activityId: String? = null,
+    val activityName: String,
+    val description: String? = null,
+    val startTime: Long,
+    val endTime: Long
 )
 
-data class ItineraryActivity(
+data class AddSpotRequest(
+    val placeName: String,
+    val location: LocationRequestModel,
+    val description: String
+)
+
+data class AddActivityRequest(
     val activityName: String,
     val description: String,
-    val startTime: String,
-    val endTime: String
+    val startTime: Long,
+    val endTime: Long
+)
+
+data class ItineraryActivityResponse(
+    val placeName: String,
+    val location: Location? = null,
+    val description: String? = null,
+    val date: Long,
+    val itineraryActivities: List<ItineraryActivity> = emptyList()
 )
