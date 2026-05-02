@@ -41,9 +41,7 @@ import com.example.bbltripplanner.screens.user.profile.composables.BlockedUsersS
 import com.example.bbltripplanner.screens.user.profile.composables.EditProfileScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileSocialScreen
-import com.example.bbltripplanner.screens.userTrip.composables.AddActivityScreen
 import com.example.bbltripplanner.screens.userTrip.composables.AddExpensesScreen
-import com.example.bbltripplanner.screens.userTrip.composables.AddSpotsScreen
 import com.example.bbltripplanner.screens.userTrip.composables.ExpenseSettlementScreen
 import com.example.bbltripplanner.screens.userTrip.composables.ItineraryDetailView
 import com.example.bbltripplanner.screens.userTrip.composables.ItineraryListView

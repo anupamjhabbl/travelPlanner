@@ -43,7 +43,6 @@ import com.example.bbltripplanner.common.utils.DateTimeUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
-import com.example.bbltripplanner.screens.userTrip.entity.Itinerary
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryDay
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
@@ -61,9 +60,6 @@ fun ItineraryListView(
     val customColors = LocalCustomColors.current
     val itineraryStatus by viewModel.itineraryStatus.collectAsState()
     val errorMessage = stringResource(R.string.generic_error)
-    var tripSelectedDate by remember {
-        mutableStateOf<String?>(null)
-    }
     var addItineraryDialogVisibility by remember { mutableStateOf(false) }
 
     LaunchedEffect(itineraryStatus) {
