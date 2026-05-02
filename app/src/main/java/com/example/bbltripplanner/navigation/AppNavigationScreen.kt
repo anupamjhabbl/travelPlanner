@@ -79,12 +79,6 @@ sealed class AppNavigationScreen(
     data object ItineraryDetailView: AppNavigationScreen(route = "${Constants.NavigationScreen.ITINERARY_DETAIL_VIEW}/{${Constants.NavigationArgs.ITINERARY_PLACE_ID}}", isFullScreen = true) {
         fun createRoute(placeId: String) = "${Constants.NavigationScreen.ITINERARY_DETAIL_VIEW}/$placeId"
     }
-    data object AddActivityScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.ADD_ACTIVITY_SCREEN}/{${Constants.NavigationArgs.ITINERARY_PLACE_ID}}") {
-        fun createRoute(placeId: String) = "${Constants.NavigationScreen.ADD_ACTIVITY_SCREEN}/$placeId"
-    }
-    data object AddSpotsScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.ADD_SPOTS_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}/{${Constants.NavigationArgs.TRIP_SELECTED_DATE}}") {
-        fun createRoute(tripId: String, selectedDate: String) = "${Constants.NavigationScreen.ADD_SPOTS_SCREEN}/$tripId/$selectedDate"
-    }
 
     // General
     data object BuzzScreen: AppNavigationScreen(route = Constants.NavigationScreen.BUZZ_SCREEN, hasBottomBar = true)
@@ -130,8 +124,6 @@ fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
         route.startsWith(Constants.NavigationScreen.ADD_EXPENSE_SCREEN) -> AppNavigationScreen.AddExpenseScreen
         route.startsWith(Constants.NavigationScreen.EXPENSE_SETTLEMENT_SCREEN) -> AppNavigationScreen.ExpenseSettlementScreen
         route.startsWith(Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN) -> AppNavigationScreen.ItineraryMapViewScreen
-        route.startsWith(Constants.NavigationScreen.ADD_ACTIVITY_SCREEN) -> AppNavigationScreen.AddActivityScreen
-        route.startsWith(Constants.NavigationScreen.ADD_SPOTS_SCREEN) -> AppNavigationScreen.AddSpotsScreen
 
         // Authentication
         route.startsWith(Constants.NavigationScreen.AUTH_GRAPH) -> AppNavigationScreen.AuthGraph

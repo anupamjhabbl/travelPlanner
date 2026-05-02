@@ -43,7 +43,9 @@ import com.example.bbltripplanner.common.utils.DateTimeUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
+import com.example.bbltripplanner.screens.userTrip.entity.Itinerary
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryDay
+import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
@@ -78,25 +80,12 @@ fun ItineraryListView(
             dismissButtonText = stringResource(R.string.cancel),
             onConfirm = {
                 addItineraryDialogVisibility = false
-                tripSelectedDate = null
-                scope.launch {
-                    if (tripId != null) {
-                        tripSelectedDate?.let {
-                            CommonNavigationChannel.navigateTo(
-                                NavigationAction.Navigate(
-                                    AppNavigationScreen.AddSpotsScreen.createRoute(
-                                        tripId,
-                                        it
-                                    )
-                                )
-                            )
-                        }
-                    }
+                tripId?.let {
+                    viewModel.processEvent(ItineraryIntent.ViewEvent.FetchItinerary(tripId))
                 }
             },
             onDismiss = {
                 addItineraryDialogVisibility = false
-                tripSelectedDate = null
             }
         )
     }

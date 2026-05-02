@@ -272,17 +272,6 @@ fun HomeNavigationComposable(
         composable(route = AppNavigationScreen.BlockedUsersScreen.route) {
             BlockedUsersScreen()
         }
-
-        composable(route = AppNavigationScreen.AddActivityScreen.route) { navBackStackEntry ->
-            val placeId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.ITINERARY_PLACE_ID)
-            AddActivityScreen(placeId)
-        }
-
-        composable(route = AppNavigationScreen.AddSpotsScreen.route) { navBackStackEntry ->
-            val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
-            val date = navBackStackEntry.arguments?.getLong(Constants.NavigationArgs.TRIP_SELECTED_DATE)
-            AddSpotsScreen(tripId, date)
-        }
     }
 }
 
