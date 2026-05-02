@@ -7,7 +7,6 @@ import com.example.bbltripplanner.screens.userTrip.entity.Itinerary
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryActivity
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryActivityResponse
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryPlace
-import com.example.bbltripplanner.screens.userTrip.entity.ItineraryPlaceResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -27,7 +26,7 @@ interface ItineraryClient {
     suspend fun addSpot(
         @Path("itineraryId") itineraryId: String,
         @Body request: AddSpotRequest
-    ): Response<BaseResponse<ItineraryPlaceResponse>>
+    ): Response<BaseResponse<ItineraryPlace>>
 
     @GET("itineraries/{itineraryId}/spots")
     suspend fun getSpots(@Path("itineraryId") itineraryId: String): Response<BaseResponse<List<ItineraryPlace>>>
@@ -41,12 +40,12 @@ interface ItineraryClient {
     @GET("spots/{spotId}/activities")
     suspend fun getActivities(@Path("spotId") spotId: String): Response<BaseResponse<ItineraryActivityResponse>>
 
-    @PUT("activities/{activityId}")
+    @PUT("spots/activities/{activityId}")
     suspend fun updateActivity(
         @Path("activityId") activityId: String,
         @Body request: AddActivityRequest
     ): Response<BaseResponse<ItineraryActivity>>
 
-    @DELETE("activities/{activityId}")
+    @DELETE("spots/activities/{activityId}")
     suspend fun deleteActivity(@Path("activityId") activityId: String): Response<BaseResponse<Unit>>
 }

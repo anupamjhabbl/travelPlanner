@@ -19,7 +19,7 @@ class ItineraryNetwork(
 
     override suspend fun addSpot(itineraryId: String, request: AddSpotRequest): ItineraryPlace? {
         val response = BaseResponse.processResponse { itineraryClient.addSpot(itineraryId, request) }
-        return response?.itineraryPlace
+        return response
     }
 
     override suspend fun getSpots(itineraryId: String): List<ItineraryPlace> {
