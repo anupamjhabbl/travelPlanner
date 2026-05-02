@@ -70,14 +70,14 @@ fun ItineraryListView(
 
     if (addItineraryDialogVisibility) {
         ComposeViewUtils.ConfirmationDialog(
-            title = stringResource(R.string.add_spots_title),
-            message = stringResource(R.string.add_spots_message),
+            title = stringResource(R.string.add_itinerary_title),
+            message = stringResource(R.string.add_itinerary_message),
             confirmButtonText = stringResource(R.string.add),
             dismissButtonText = stringResource(R.string.cancel),
             onConfirm = {
                 addItineraryDialogVisibility = false
                 tripId?.let {
-                    viewModel.processEvent(ItineraryIntent.ViewEvent.FetchItinerary(tripId))
+                    viewModel.processEvent(ItineraryIntent.ViewEvent.GenerateItinerary(tripId))
                 }
             },
             onDismiss = {

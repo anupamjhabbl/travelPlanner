@@ -17,6 +17,6 @@ class LightColor {
         val warning = Color(0xFFFFCA28)
         val success = Color(0xFF66BB6A)
         val defaultImageCardColor = Color(0xFFE3DFEF)
-        val lightPurpleGlow = Color(0xFFF8F5FF)
+        val lightPurpleGlow = Color(0xFFCCC7EC)
     }
 }

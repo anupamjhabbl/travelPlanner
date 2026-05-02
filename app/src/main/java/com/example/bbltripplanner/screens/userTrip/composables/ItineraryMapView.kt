@@ -151,9 +151,10 @@ fun ItineraryMapView(
             onDismissRequest = { },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
             title = { ComposeTextView.TitleTextView(text = stringResource(R.string.add_spots_title)) },
-            text = { ComposeTextView.TextView(text = stringResource(R.string.add_spots_message)) },
+            text = { ComposeTextView.TextView(text = stringResource(R.string.add_spots_message), fontSize = 16.sp) },
             confirmButton = {
                 ComposeButtonView.PrimaryButtonView(
+                    modifier = Modifier.width(60.dp),
                     text = stringResource(R.string.ok),
                     onClick = {
                         addSpotsDialogVisibility = false
@@ -172,6 +173,7 @@ fun ItineraryMapView(
     }
 
     if (showAddSpotForm) {
+        val selectLocationMessage = stringResource(R.string.select_location)
         AlertDialog(
             onDismissRequest = { },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
@@ -224,8 +226,10 @@ fun ItineraryMapView(
                                         )
                                     )
                                 )
+                                showAddSpotForm = false
+                            } ?: run {
+                                ComposeViewUtils.showToast(context, selectLocationMessage)
                             }
-                            showAddSpotForm = false
                             placeName = ""
                             description = ""
                             selectedLocation = null
@@ -482,7 +486,7 @@ fun PlaceCard(
 
 @Composable
 fun DottedArrowSeparator() {
-    val color = LocalCustomColors.current.primaryBackground
+    val color = Color.White
     Row(
         modifier = Modifier.padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically

@@ -266,7 +266,13 @@ object ComposeViewUtils {
     fun ExposedDropDownMenu(
         itemList: List<String>,
         selected: String,
-        onChange: (String) -> Unit
+        modifier: Modifier = Modifier
+            .background(color = LocalCustomColors.current.secondaryBackground, RoundedCornerShape(50))
+            .height(38.dp)
+            .padding(horizontal = 16.dp)
+            .wrapContentWidth(),
+        textColor: Color = LocalCustomColors.current.primaryBackground,
+        onChange: (String) -> Unit,
     ) {
         var expanded by remember {
             mutableStateOf(false)
@@ -279,11 +285,7 @@ object ComposeViewUtils {
         ) {
             Box(
                 modifier = Modifier
-                    .menuAnchor()
-                    .background(color = LocalCustomColors.current.secondaryBackground, RoundedCornerShape(50))
-                    .height(38.dp)
-                    .padding(horizontal = 16.dp)
-                    .wrapContentWidth(),
+                    .menuAnchor(),
                 contentAlignment = Alignment.Center
             ) {
                 Row(
@@ -292,7 +294,7 @@ object ComposeViewUtils {
                     ComposeTextView.TitleTextView(
                         selected,
                         fontSize = 14.sp,
-                        textColor = LocalCustomColors.current.primaryBackground
+                        textColor = textColor
                     )
 
                     Spacer(Modifier.width(2.dp))

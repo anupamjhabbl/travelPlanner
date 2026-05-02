@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -76,8 +78,8 @@ fun ItineraryDetailView(
     val context = LocalContext.current
     val activitiesStatus by viewModel.activitiesStatus.collectAsState()
     val actionStatus by viewModel.actionStatus.collectAsState()
+    val fillTheFieldsMessage = stringResource(R.string.fill_the_fields)
     val errorMessage = stringResource(R.string.generic_error)
-    rememberCoroutineScope()
 
     var showActivityDialog by remember { mutableStateOf(false) }
     var selectedActivity by remember { mutableStateOf<ItineraryActivity?>(null) }
@@ -215,15 +217,34 @@ fun ItineraryDetailView(
                         endTime = baseDate + (endH.toLong() * 3600 * 1000)
                     )
                     if (selectedActivity == null) {
-                        placeId?.let {
-                            viewModel.processEvent(ItineraryDetailIntent.ViewEvent.AddActivity(it, request))
+                        if (name.isEmpty() || desc.isEmpty()) {
+                            ComposeViewUtils.showToast(context, fillTheFieldsMessage)
+                        } else {
+                            showActivityDialog = false
+                            placeId?.let {
+                                viewModel.processEvent(
+                                    ItineraryDetailIntent.ViewEvent.AddActivity(
+                                        it,
+                                        request
+                                    )
+                                )
+                            }
                         }
                     } else {
-                        selectedActivity?.activityId?.let {
-                            viewModel.processEvent(ItineraryDetailIntent.ViewEvent.UpdateActivity(it, request))
+                        if (name.isEmpty() || desc.isEmpty()) {
+                            ComposeViewUtils.showToast(context, fillTheFieldsMessage)
+                        } else {
+                            showActivityDialog = false
+                            selectedActivity?.activityId?.let {
+                                viewModel.processEvent(
+                                    ItineraryDetailIntent.ViewEvent.UpdateActivity(
+                                        it,
+                                        request
+                                    )
+                                )
+                            }
                         }
                     }
-                    showActivityDialog = false
                 }
             )
         }
@@ -293,21 +314,44 @@ fun AddEditActivityDialog(
                     )
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Column(modifier = Modifier.weight(1f)) {
                         ComposeTextView.TextView("Start Time (H)")
+
+                        Spacer(modifier = Modifier.width(6.dp))
+
                         ComposeViewUtils.ExposedDropDownMenu(
                             itemList = hoursList,
                             selected = startHour.toString(),
+                            modifier = Modifier
+                                .background(color = LocalCustomColors.current.primaryBackground, RoundedCornerShape(12.dp))
+                                .height(38.dp)
+                                .padding(horizontal = 16.dp)
+                                .border(2.dp, LocalCustomColors.current.secondaryBackground, RoundedCornerShape(12.dp))
+                                .wrapContentWidth(),
+                            textColor = LocalCustomColors.current.secondaryBackground,
                             onChange = { startHour = it.toInt() }
                         )
                     }
+
                     Spacer(modifier = Modifier.width(16.dp))
+
                     Column(modifier = Modifier.weight(1f)) {
                         ComposeTextView.TextView("End Time (H)")
+
+                        Spacer(modifier = Modifier.width(6.dp))
+
                         ComposeViewUtils.ExposedDropDownMenu(
                             itemList = hoursList,
                             selected = endHour.toString(),
+                            modifier = Modifier
+                                .background(color = LocalCustomColors.current.primaryBackground, RoundedCornerShape(12.dp))
+                                .height(38.dp)
+                                .padding(horizontal = 16.dp)
+                                .border(2.dp, LocalCustomColors.current.secondaryBackground, RoundedCornerShape(12.dp))
+                                .wrapContentWidth(),
+                            textColor = LocalCustomColors.current.secondaryBackground,
                             onChange = { endHour = it.toInt() }
                         )
                     }
@@ -395,25 +439,6 @@ fun PlaceHeader(
                             fontSize = 12.sp
                         )
                     }
-                }
-
-                Row(
-                    modifier = Modifier.padding(top = 3.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_attachment),
-                        contentDescription = null,
-                        tint = customColors.secondaryBackground,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    ComposeTextView.TextView(
-                        text = stringResource(R.string.attachments),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        textColor = customColors.secondaryBackground
-                    )
                 }
             }
         }
