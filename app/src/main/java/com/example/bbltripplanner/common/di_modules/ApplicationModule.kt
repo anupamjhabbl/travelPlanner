@@ -40,22 +40,27 @@ import com.example.bbltripplanner.screens.user.profile.viewModels.EditProfileVie
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowersViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowingViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileViewModel
+import com.example.bbltripplanner.screens.userTrip.clients.ExpenseClient
 import com.example.bbltripplanner.screens.userTrip.clients.ItineraryClient
 import com.example.bbltripplanner.screens.userTrip.clients.LocationSearchClient
 import com.example.bbltripplanner.screens.userTrip.clients.PostingClient
 import com.example.bbltripplanner.screens.userTrip.clients.UserTripDetailClient
+import com.example.bbltripplanner.screens.userTrip.repositories.ExpenseRepository
 import com.example.bbltripplanner.screens.userTrip.repositories.ItineraryRepository
 import com.example.bbltripplanner.screens.userTrip.repositories.LocationSearchRepository
 import com.example.bbltripplanner.screens.userTrip.repositories.PostingRepository
 import com.example.bbltripplanner.screens.userTrip.repositories.UserTripDetailRepository
+import com.example.bbltripplanner.screens.userTrip.repositoryImpl.ExpenseNetwork
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.ItineraryNetwork
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.LocationSearchNetwork
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.PostingNetwork
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.UseTripDetailNetwork
+import com.example.bbltripplanner.screens.userTrip.usecases.ExpenseUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.ItineraryUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.PostingUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
+import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryDetailViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryMapViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
@@ -116,6 +121,12 @@ val appModule = module {
     viewModel { (itineraryId: String?) ->
         ItineraryMapViewModel(itineraryId, get(), get())
     }
+
+    // Expense
+    single<ExpenseClient> { Network.createWithAuth(ExpenseClient::class.java, get(), get(), androidContext()) }
+    single<ExpenseRepository> { ExpenseNetwork(get()) }
+    single<ExpenseUseCase> { ExpenseUseCase(get()) }
+    viewModel { (tripId: String?) -> ExpenseViewModel(tripId, get(), get()) }
 
     // User Auth
     single<UserAuthRepository> { UserAuthNetwork(get()) }

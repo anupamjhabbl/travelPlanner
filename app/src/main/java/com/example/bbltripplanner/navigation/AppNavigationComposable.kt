@@ -50,9 +50,12 @@ import com.example.bbltripplanner.screens.userTrip.composables.PostingEditScreen
 import com.example.bbltripplanner.screens.userTrip.composables.PostingInitScreen
 import com.example.bbltripplanner.screens.userTrip.composables.TripExpensesScreen
 import com.example.bbltripplanner.screens.userTrip.composables.UserTripDetailScreen
+import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseViewModel
 import com.example.bbltripplanner.screens.vault.composables.UserTripsScreen
 import com.example.bbltripplanner.screens.vault.composables.UserVaultScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun AppNavigationComposable(
@@ -223,19 +226,45 @@ fun HomeNavigationComposable(
             PostingEditScreen(tripId)
         }
 
-        composable(route = AppNavigationScreen.ExpenseScreen.route) { navBackStackEntry ->
-            val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
-            TripExpensesScreen(tripId)
-        }
+        navigation(
+            startDestination = AppNavigationScreen.ExpenseScreen.route,
+            route = AppNavigationScreen.ExpenseNavEntry.route
+        ) {
+            composable(route = AppNavigationScreen.ExpenseScreen.route) { navBackStackEntry ->
+                val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+                val parentEntry = remember(navBackStackEntry) {
+                    homeNavController.getBackStackEntry(AppNavigationScreen.ExpenseNavEntry.route)
+                }
+                val viewModel: ExpenseViewModel = koinViewModel(
+                    viewModelStoreOwner = parentEntry,
+                    parameters = { parametersOf(tripId) }
+                )
+                TripExpensesScreen(tripId, viewModel)
+            }
 
-        composable(route = AppNavigationScreen.ExpenseSettlementScreen.route) { navBackStackEntry ->
-            val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
-            ExpenseSettlementScreen(tripId)
-        }
+            composable(route = AppNavigationScreen.ExpenseSettlementScreen.route) { navBackStackEntry ->
+                val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+                val parentEntry = remember(navBackStackEntry) {
+                    homeNavController.getBackStackEntry(AppNavigationScreen.ExpenseNavEntry.route)
+                }
+                val viewModel: ExpenseViewModel = koinViewModel(
+                    viewModelStoreOwner = parentEntry,
+                    parameters = { parametersOf(tripId) }
+                )
+                ExpenseSettlementScreen(viewModel)
+            }
 
-        composable(route = AppNavigationScreen.AddExpenseScreen.route) { navBackStackEntry ->
-            val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
-            AddExpensesScreen(tripId)
+            composable(route = AppNavigationScreen.AddExpenseScreen.route) { navBackStackEntry ->
+                val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+                val parentEntry = remember(navBackStackEntry) {
+                    homeNavController.getBackStackEntry(AppNavigationScreen.ExpenseNavEntry.route)
+                }
+                val viewModel: ExpenseViewModel = koinViewModel(
+                    viewModelStoreOwner = parentEntry,
+                    parameters = { parametersOf(tripId) }
+                )
+                AddExpensesScreen(tripId, viewModel)
+            }
         }
 
         navigation(

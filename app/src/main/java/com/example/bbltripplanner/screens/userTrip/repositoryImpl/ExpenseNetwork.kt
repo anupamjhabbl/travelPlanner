@@ -1,0 +1,35 @@
+package com.example.bbltripplanner.screens.userTrip.repositoryImpl
+
+import com.example.bbltripplanner.common.entity.BaseResponse
+import com.example.bbltripplanner.screens.userTrip.clients.ExpenseClient
+import com.example.bbltripplanner.screens.userTrip.entity.AddExpenseRequest
+import com.example.bbltripplanner.screens.userTrip.entity.ExpenseItem
+import com.example.bbltripplanner.screens.userTrip.entity.ExpenseSummary
+import com.example.bbltripplanner.screens.userTrip.entity.InitiateExpenseRequest
+import com.example.bbltripplanner.screens.userTrip.entity.SettlementResponse
+import com.example.bbltripplanner.screens.userTrip.repositories.ExpenseRepository
+
+class ExpenseNetwork(
+    private val expenseClient: ExpenseClient
+) : ExpenseRepository {
+
+    override suspend fun getExpenses(tripId: String): ExpenseSummary? {
+        return BaseResponse.processResponse { expenseClient.getExpenses(tripId) }
+    }
+
+    override suspend fun initiateExpense(tripId: String, budget: Double): ExpenseSummary? {
+        return BaseResponse.processResponse { expenseClient.initiateExpense(tripId, InitiateExpenseRequest(budget)) }
+    }
+
+    override suspend fun addExpense(
+        tripId: String,
+        request: AddExpenseRequest
+    ): ExpenseItem? {
+        return BaseResponse.processResponse { expenseClient.addExpense(tripId, request) }
+    }
+
+
+    override suspend fun getSettlements(tripId: String): SettlementResponse? {
+        return BaseResponse.processResponse { expenseClient.getSettlements(tripId) }!!
+    }
+}

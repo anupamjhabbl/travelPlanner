@@ -70,6 +70,7 @@ sealed class AppNavigationScreen(
         fun createRoute(tripId: String) = "${Constants.NavigationScreen.EXPENSE_SETTLEMENT_SCREEN}/$tripId"
     }
     data object ItineraryNavEntry: AppNavigationScreen(route = Constants.NavigationScreen.ITINERARY_NAV_ENTRY)
+    data object ExpenseNavEntry: AppNavigationScreen(route = Constants.NavigationScreen.EXPENSE_NAV_ENTRY)
     data object ItineraryMapViewScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN}/{${Constants.NavigationArgs.ITINERARY_ID}}", isFullScreen = true) {
         fun createRoute(itineraryId: String) = "${Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN}/$itineraryId"
     }

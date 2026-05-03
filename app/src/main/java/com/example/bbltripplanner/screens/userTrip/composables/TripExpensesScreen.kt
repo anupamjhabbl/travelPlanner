@@ -18,133 +18,253 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Payment
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.common.utils.DateUtils.toFormattedDateString
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
+import com.example.bbltripplanner.screens.userTrip.entity.ExpenseItem
+import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseIntent
+import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
 
 @Composable
 fun TripExpensesScreen(
-    tripId: String?
+    tripId: String?,
+    viewModel: ExpenseViewModel
 ) {
     val scope = rememberCoroutineScope()
-    val list = listOf("sjjd", "djjd", "djjdjd", "djjdj", "djjd", "jdhd", "djjdj", "jdjdj", "hdhdh")
+    val context = LocalContext.current
+    val message = stringResource(R.string.min_budget_message)
+    val tripExpenses by viewModel.expenseStatus.collectAsStateWithLifecycle()
+    val errorMessage = stringResource(R.string.generic_error)
+    var tripInitializationPopup by remember {
+        mutableStateOf(false)
+    }
+    var budgetInput by remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp, 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+    LaunchedEffect(tripExpenses) {
+        if (!tripExpenses.isLoading && tripExpenses.error == null && tripExpenses.data == null) {
+            tripInitializationPopup = true
+        }
+    }
+
+    if (tripInitializationPopup) {
+        AlertDialog(
+            onDismissRequest = { tripInitializationPopup = false },
+            title = {
+                ComposeTextView.TitleTextView(
+                    text = stringResource(R.string.initiate_expense_title),
+                    fontSize = 20.sp
+                )
+            },
+            text = {
+                Column {
+                    ComposeTextView.TextView(
+                        text = stringResource(R.string.initiate_expense_message),
+                        fontSize = 14.sp
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = budgetInput,
+                        onValueChange = {
+                            if (it.isEmpty() || it.toDoubleOrNull() != null || (it.count { char -> char == '.' } <= 1 && it.all { char -> char.isDigit() || char == '.' })) {
+                                budgetInput = it
+                            }
+                        },
+                        label = { ComposeTextView.TextView(text = stringResource(R.string.enter_budget)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = LocalCustomColors.current.secondaryBackground,
+                            unfocusedBorderColor = LocalCustomColors.current.textColor.copy(alpha = 0.5f),
+                            cursorColor = LocalCustomColors.current.secondaryBackground,
+                            focusedLabelColor = LocalCustomColors.current.secondaryBackground
+                        )
+                    )
+                }
+            },
+            confirmButton = {
+                ComposeButtonView.PrimaryButtonView(
+                    text = stringResource(R.string.add),
+                    fontSize = 16.sp,
+                    onClick = {
+                        val budget = budgetInput.toDoubleOrNull() ?: 0.0
+                        if (budget != 0.0) {
+                            tripInitializationPopup = false
+                            tripId?.let {
+                                viewModel.processEvent(
+                                    ExpenseIntent.ViewEvent.InitiateBudget(
+                                        it,
+                                        budget
+                                    )
+                                )
+                            }
+                        } else {
+                            ComposeViewUtils.showToast(context, message)
+                        }
+                    }
+                )
+            },
+            dismissButton = {
+                ComposeButtonView.SecondaryButtonView(
+                    text = stringResource(R.string.cancel),
+                    fontSize = 16.sp,
+                    onClick = { tripInitializationPopup = false }
+                )
+            },
+            containerColor = LocalCustomColors.current.primaryBackground,
+            shape = RoundedCornerShape(12.dp)
+        )
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (tripExpenses.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier.size(32.dp)
+                ComposeViewUtils.FullScreenLoading()
+            }
+        } else if (tripExpenses.data == null || tripExpenses.error != null) {
+            ComposeViewUtils.FullScreenErrorComposable(
+                Pair(
+                    errorMessage,
+                    tripExpenses.error ?: ""
+                )
+            )
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp, 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                CommonNavigationChannel.navigateTo(
-                                    NavigationAction.NavigateUp
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        CommonNavigationChannel.navigateTo(
+                                            NavigationAction.NavigateUp
+                                        )
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = LocalCustomColors.current.secondaryBackground,
+                                    modifier = Modifier.size(32.dp)
                                 )
                             }
                         }
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = LocalCustomColors.current.secondaryBackground,
-                            modifier = Modifier.size(32.dp)
+
+                        Spacer(Modifier.width(8.dp))
+
+                        ComposeTextView.TextView(
+                            text = stringResource(R.string.expenses),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.W600,
+                            textColor = LocalCustomColors.current.secondaryBackground
                         )
                     }
-                }
 
-                Spacer(Modifier.width(8.dp))
-
-                ComposeTextView.TextView(
-                    text = stringResource(R.string.expenses),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W600,
-                    textColor = LocalCustomColors.current.secondaryBackground
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .size(32.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            CommonNavigationChannel.navigateTo(
-                                NavigationAction.Navigate(
-                                    AppNavigationScreen.NotificationScreen.route
-                                )
+                    Row(
+                        modifier = Modifier
+                            .size(32.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    CommonNavigationChannel.navigateTo(
+                                        NavigationAction.Navigate(
+                                            AppNavigationScreen.NotificationScreen.route
+                                        )
+                                    )
+                                }
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Notifications,
+                                contentDescription = "Notification",
+                                tint = LocalCustomColors.current.secondaryBackground,
+                                modifier = Modifier.size(32.dp)
                             )
                         }
                     }
-                ) {
-                    Icon(
-                        Icons.Default.Notifications,
-                        contentDescription = "Notification",
-                        tint = LocalCustomColors.current.secondaryBackground,
-                        modifier = Modifier.size(32.dp)
-                    )
                 }
-            }
-        }
 
-        Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(12.dp))
 
-        ExpenseBanner(
-            modifier = Modifier.fillMaxWidth(),
-            25000f,
-            12000f,
-            13000f
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        ToolBoxRowView(tripId)
-
-        Spacer(Modifier.height(16.dp))
-
-        LazyColumn {
-            items(list) {
-                ExpenseItem()
+                ExpenseBanner(
+                    modifier = Modifier.fillMaxWidth(),
+                    tripExpenses.data!!.budget,
+                    tripExpenses.data!!.expense,
+                    tripExpenses.data!!.left
+                )
 
                 Spacer(Modifier.height(16.dp))
+
+                ToolBoxRowView(tripId)
+
+                Spacer(Modifier.height(16.dp))
+
+                LazyColumn {
+                    items(tripExpenses.data!!.expenses) {
+                        ExpenseItem(it)
+
+                        Spacer(Modifier.height(16.dp))
+                    }
+                }
             }
         }
     }
@@ -237,9 +357,9 @@ fun ColumnScope.ToolBoxRowView(
 @Composable
 private fun ExpenseBanner(
     modifier: Modifier,
-    budget: Float,
-    expense: Float,
-    left: Float
+    budget: Double,
+    expense: Double,
+    left: Double
 ) {
     Box(
         modifier = modifier
@@ -302,7 +422,7 @@ private fun ExpenseBanner(
 }
 
 @Composable
-private fun ExpenseItem() {
+private fun ExpenseItem(item: ExpenseItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -323,9 +443,13 @@ private fun ExpenseItem() {
                     .background(Color(0xFFFDF2ED), shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                ComposeTextView.TextView(
-                    text = "🍔",
-                    fontSize = 28.sp
+                Icon(
+                    imageVector = item.type.icon,
+                    contentDescription = item.type.value,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clip(CircleShape),
+                    tint = LocalCustomColors.current.secondaryBackground
                 )
             }
 
@@ -333,13 +457,13 @@ private fun ExpenseItem() {
 
             Column(modifier = Modifier.weight(1f)) {
                 ComposeTextView.TextView(
-                    text = "Dinner at Cafe",
+                    text = item.description,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     textColor = LocalCustomColors.current.textColor
                 )
                 ComposeTextView.TextView(
-                    text = "Paid by Jeevesh",
+                    text = stringResource(R.string.paid_by_name, item.paidBy.name),
                     fontSize = 14.sp,
                     textColor = LocalCustomColors.current.textColor
                 )
@@ -350,10 +474,9 @@ private fun ExpenseItem() {
                 )
             }
 
-            // Amount and Date
             Column(horizontalAlignment = Alignment.End) {
                 ComposeTextView.TextView(
-                    text = "₹ 420",
+                    text = stringResource(R.string.rupee_formatting, item.amount.toString()),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     textColor = LocalCustomColors.current.textColor
@@ -362,7 +485,7 @@ private fun ExpenseItem() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 ComposeTextView.TextView(
-                    text = "12 Oct 2025",
+                    text = item.date.toFormattedDateString(),
                     fontSize = 14.sp,
                     textColor = LocalCustomColors.current.textColor
                 )
