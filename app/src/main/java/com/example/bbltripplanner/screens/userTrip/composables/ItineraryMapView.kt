@@ -270,8 +270,15 @@ fun ItineraryMapView(
     val places = spotsStatus.data ?: emptyList()
 
     val points = remember(places) {
-        places.filter { it.location.lat != null && it.location.lon != null }
-            .map { Point.fromLngLat(it.location.lon?.toDouble() ?: 0.0, it.location.lat?.toDouble() ?: 0.0) }
+        places.mapNotNull { place ->
+            val lat = place.location.lat?.toDoubleOrNull()
+            val lon = place.location.lon?.toDoubleOrNull()
+            if (lat != null && lon != null) {
+                Point.fromLngLat(lon, lat)
+            } else {
+                null
+            }
+        }
     }
 
     val firstLocation = points.firstOrNull()
@@ -285,6 +292,17 @@ fun ItineraryMapView(
             center(initialPoint)
             pitch(0.0)
             bearing(0.0)
+        }
+    }
+
+    LaunchedEffect(initialPoint) {
+        if (initialPoint.latitude() != 0.0 || initialPoint.longitude() != 0.0) {
+            mapViewportState.flyTo(
+                cameraOptions {
+                    center(initialPoint)
+                    zoom(12.0)
+                }
+            )
         }
     }
 
@@ -349,11 +367,14 @@ fun ItineraryMapView(
             }
 
             places.forEachIndexed { index, place ->
-                if (place.location.lat != null && place.location.lon != null) {
-                    val point = Point.fromLngLat(place.location.lon.toDouble(), place.location.lat.toDouble())
+                val lat = place.location.lat?.toDoubleOrNull()
+                val lon = place.location.lon?.toDoubleOrNull()
+                if (lat != null && lon != null) {
+                    val point = Point.fromLngLat(lon, lat)
                     ViewAnnotation(
                         options = viewAnnotationOptions {
                             geometry(point)
+                            allowOverlap(true)
                         }
                     ) {
                         ViewAnnotationContent(index) {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -281,7 +282,8 @@ object ComposeViewUtils {
             expanded = expanded,
             onExpandedChange = {
                 expanded = !expanded
-            }
+            },
+            modifier = modifier
         ) {
             Box(
                 modifier = Modifier
@@ -289,7 +291,9 @@ object ComposeViewUtils {
                 contentAlignment = Alignment.Center
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     ComposeTextView.TitleTextView(
                         selected,
@@ -297,13 +301,11 @@ object ComposeViewUtils {
                         textColor = textColor
                     )
 
-                    Spacer(Modifier.width(2.dp))
-
                     Icon(
                         Icons.Default.ArrowDropDown,
                         modifier = Modifier.size(24.dp),
                         contentDescription = "DropDown",
-                        tint = LocalCustomColors.current.primaryBackground
+                        tint = textColor
                     )
                 }
             }

@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -65,7 +65,6 @@ import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -80,6 +79,7 @@ fun ItineraryDetailView(
     val actionStatus by viewModel.actionStatus.collectAsState()
     val fillTheFieldsMessage = stringResource(R.string.fill_the_fields)
     val errorMessage = stringResource(R.string.generic_error)
+    val endTimeErrorMessage = stringResource(R.string.end_time_must_be_after_start_time)
 
     var showActivityDialog by remember { mutableStateOf(false) }
     var selectedActivity by remember { mutableStateOf<ItineraryActivity?>(null) }
@@ -104,7 +104,12 @@ fun ItineraryDetailView(
             .background(customColors.primaryBackground)
     ) {
         if (activitiesStatus.isLoading) {
-            CircularProgressIndicator(color = customColors.secondaryBackground)
+            Box(
+                Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = customColors.secondaryBackground)
+            }
         } else if (activitiesStatus.error != null) {
             ComposeViewUtils.FullScreenErrorComposable(
                 Pair(
@@ -205,11 +210,17 @@ fun ItineraryDetailView(
         }
 
         if (showActivityDialog) {
+            val baseDate = activitiesStatus.data?.date ?: 0L
             AddEditActivityDialog(
                 activity = selectedActivity,
+                baseDate = baseDate,
                 onDismiss = { showActivityDialog = false },
                 onConfirm = { name, desc, startH, endH ->
-                    val baseDate = activitiesStatus.data?.date ?: 0L
+                    if (endH <= startH) {
+                        ComposeViewUtils.showToast(context, endTimeErrorMessage)
+                        return@AddEditActivityDialog
+                    }
+
                     val request = AddActivityRequest(
                         activityName = name,
                         description = desc,
@@ -251,9 +262,11 @@ fun ItineraryDetailView(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun AddEditActivityDialog(
     activity: ItineraryActivity? = null,
+    baseDate: Long,
     onDismiss: () -> Unit,
     onConfirm: (String, String, Int, Int) -> Unit
 ) {
@@ -262,22 +275,21 @@ fun AddEditActivityDialog(
     var description by remember { mutableStateOf(activity?.description ?: "") }
     
 
-    val initialStartHour = if (activity != null) {
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = activity.startTime
-        calendar.get(Calendar.HOUR_OF_DAY).let { if (it == 0) 24 else it }
+    val initialStartHour = if (activity != null && baseDate != 0L) {
+        val diff = activity.startTime - baseDate
+        (diff / (3600 * 1000)).toInt().coerceIn(0, 23)
     } else 9
 
-    val initialEndHour = if (activity != null) {
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = activity.endTime
-        calendar.get(Calendar.HOUR_OF_DAY).let { if (it == 0) 24 else it }
+    val initialEndHour = if (activity != null && baseDate != 0L) {
+        val diff = activity.endTime - baseDate
+        (diff / (3600 * 1000)).toInt().coerceIn(1, 24)
     } else 10
 
     var startHour by remember { mutableIntStateOf(initialStartHour) }
     var endHour by remember { mutableIntStateOf(initialEndHour) }
-
-    val hoursList = (1..24).map { it.toString() }
+    
+    val startTimeList = (0..23).map { String.format("%02d:00", it) }
+    val displayEndTimeList = (1..24).map { if (it == 24) "24:00" else String.format("%02d:00", it) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -299,7 +311,8 @@ fun AddEditActivityDialog(
                         focusedBorderColor = customColors.secondaryBackground,
                         unfocusedBorderColor = customColors.fadedBackground,
                         focusedLabelColor = customColors.secondaryBackground
-                    )
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
@@ -311,48 +324,65 @@ fun AddEditActivityDialog(
                         focusedBorderColor = customColors.secondaryBackground,
                         unfocusedBorderColor = customColors.fadedBackground,
                         focusedLabelColor = customColors.secondaryBackground
-                    )
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        ComposeTextView.TextView("Start Time (H)")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.width(130.dp).padding(horizontal = 12.dp)) {
+                        ComposeTextView.TextView(
+                            text = stringResource(R.string.start_time),
+                            fontSize = 12.sp,
+                            textColor = customColors.secondaryBackground,
+                            fontWeight = FontWeight.Medium
+                        )
 
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         ComposeViewUtils.ExposedDropDownMenu(
-                            itemList = hoursList,
-                            selected = startHour.toString(),
+                            itemList = startTimeList,
+                            selected = String.format("%02d:00", startHour),
                             modifier = Modifier
-                                .background(color = LocalCustomColors.current.primaryBackground, RoundedCornerShape(12.dp))
-                                .height(38.dp)
-                                .padding(horizontal = 16.dp)
-                                .border(2.dp, LocalCustomColors.current.secondaryBackground, RoundedCornerShape(12.dp))
-                                .wrapContentWidth(),
-                            textColor = LocalCustomColors.current.secondaryBackground,
-                            onChange = { startHour = it.toInt() }
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .border(1.dp, customColors.fadedBackground, RoundedCornerShape(8.dp))
+                                .padding(start = 24.dp),
+                            textColor = customColors.textColor,
+                            onChange = { 
+                                startHour = startTimeList.indexOf(it)
+                                if (endHour <= startHour) {
+                                    endHour = (startHour + 1).coerceAtMost(24)
+                                }
+                            }
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(modifier = Modifier.width(130.dp).padding(horizontal = 12.dp)) {
+                        ComposeTextView.TextView(
+                            text = stringResource(R.string.end_time),
+                            fontSize = 12.sp,
+                            textColor = customColors.secondaryBackground,
+                            fontWeight = FontWeight.Medium
+                        )
 
-                    Column(modifier = Modifier.weight(1f)) {
-                        ComposeTextView.TextView("End Time (H)")
-
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         ComposeViewUtils.ExposedDropDownMenu(
-                            itemList = hoursList,
-                            selected = endHour.toString(),
+                            itemList = displayEndTimeList,
+                            selected = if (endHour == 24) "24:00" else String.format("%02d:00", endHour),
                             modifier = Modifier
-                                .background(color = LocalCustomColors.current.primaryBackground, RoundedCornerShape(12.dp))
-                                .height(38.dp)
-                                .padding(horizontal = 16.dp)
-                                .border(2.dp, LocalCustomColors.current.secondaryBackground, RoundedCornerShape(12.dp))
-                                .wrapContentWidth(),
-                            textColor = LocalCustomColors.current.secondaryBackground,
-                            onChange = { endHour = it.toInt() }
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .border(1.dp, customColors.fadedBackground, RoundedCornerShape(8.dp))
+                                .padding(start = 24.dp),
+                            textColor = customColors.textColor,
+                            onChange = { 
+                                endHour = displayEndTimeList.indexOf(it) + 1
+                            }
                         )
                     }
                 }
@@ -362,14 +392,14 @@ fun AddEditActivityDialog(
             ComposeButtonView.PrimaryButtonView(
                 text = "Confirm",
                 onClick = { onConfirm(name, description, startHour, endHour) },
-                modifier = Modifier.padding(bottom = 8.dp, end = 8.dp).width(100.dp).height(40.dp)
+                modifier = Modifier.padding(bottom = 8.dp, end = 8.dp).width(110.dp).height(44.dp)
             )
         },
         dismissButton = {
             ComposeButtonView.SecondaryButtonView(
                 text = "Cancel",
                 onClick = onDismiss,
-                modifier = Modifier.padding(bottom = 8.dp).width(100.dp).height(40.dp)
+                modifier = Modifier.padding(bottom = 8.dp).width(110.dp).height(44.dp)
             )
         }
     )
