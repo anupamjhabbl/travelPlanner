@@ -8,6 +8,7 @@ import com.example.bbltripplanner.screens.userTrip.entity.InitiateExpenseRequest
 import com.example.bbltripplanner.screens.userTrip.entity.SettlementResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -30,4 +31,9 @@ interface ExpenseClient {
 
     @GET("trips/{tripId}/settlements")
     suspend fun getSettlements(@Path("tripId") tripId: String): Response<BaseResponse<SettlementResponse>>
+
+    @DELETE("trips/expenses/{expenseId}")
+    suspend fun deleteExpense(
+        @Path("expenseId") expenseId: String
+    ): Response<BaseResponse<String?>>
 }

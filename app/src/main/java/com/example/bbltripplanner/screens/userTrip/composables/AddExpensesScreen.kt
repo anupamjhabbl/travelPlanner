@@ -111,14 +111,14 @@ fun AddExpensesScreen(
 
     CommonLifecycleAwareLaunchedEffect(viewModel.addExpenseStatus) { viewEffect ->
         when (viewEffect) {
-            is ExpenseIntent.ViewEffect.AddExpenseError -> {
+            is ExpenseIntent.AddViewEffect.AddExpenseError -> {
                 isLoading = false
                 ComposeViewUtils.showToast(context, viewEffect.message)
             }
-            ExpenseIntent.ViewEffect.AddExpenseLoading -> {
+            ExpenseIntent.AddViewEffect.AddExpenseLoading -> {
                 isLoading = true
             }
-            ExpenseIntent.ViewEffect.AddExpenseSuccess -> {
+            ExpenseIntent.AddViewEffect.AddExpenseSuccess -> {
                 isLoading = false
                 ComposeViewUtils.showToast(context, successMessage)
                 CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)

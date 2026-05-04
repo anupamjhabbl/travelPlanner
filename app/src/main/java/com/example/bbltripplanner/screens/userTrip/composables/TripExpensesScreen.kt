@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material3.AlertDialog
@@ -33,6 +34,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
@@ -79,11 +84,29 @@ fun TripExpensesScreen(
     var tripInitializationPopup by remember {
         mutableStateOf(false)
     }
+    var isLoading by remember { mutableStateOf(false) }
+    val successMessage = stringResource(R.string.expesnes_deleted_success)
     var budgetInput by remember { mutableStateOf("") }
 
     LaunchedEffect(tripExpenses) {
         if (!tripExpenses.isLoading && tripExpenses.error == null && tripExpenses.data == null) {
             tripInitializationPopup = true
+        }
+    }
+
+    CommonLifecycleAwareLaunchedEffect(viewModel.deleteExpenseStatus) { viewEffect ->
+        when (viewEffect) {
+            is ExpenseIntent.DeleteViewEffect.DeleteExpenseError -> {
+                isLoading = false
+                ComposeViewUtils.showToast(context, viewEffect.message)
+            }
+            ExpenseIntent.DeleteViewEffect.DeleteExpenseLoading -> {
+                isLoading = true
+            }
+            ExpenseIntent.DeleteViewEffect.DeleteExpenseSuccess -> {
+                isLoading = false
+                ComposeViewUtils.showToast(context, successMessage)
+            }
         }
     }
 
@@ -158,7 +181,7 @@ fun TripExpensesScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (tripExpenses.isLoading) {
+        if ((tripExpenses.isLoading && tripExpenses.data == null) || isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -259,12 +282,62 @@ fun TripExpensesScreen(
                 Spacer(Modifier.height(16.dp))
 
                 LazyColumn {
-                    items(tripExpenses.data!!.expenses) {
-                        ExpenseItem(it)
+                    items(
+                        items = tripExpenses.data!!.expenses,
+                        key = { it.id }
+                    ) { item ->
+                        val dismissState = rememberSwipeToDismissBoxState(
+                            confirmValueChange = { state ->
+                                if (state == SwipeToDismissBoxValue.EndToStart) {
+                                    tripId?.let {
+                                        viewModel.processEvent(
+                                            ExpenseIntent.ViewEvent.DeleteExpense(
+                                                item.id
+                                            )
+                                        )
+                                    }
+                                    true
+                                } else false
+                            }
+                        )
+
+                        SwipeToDismissBox(
+                            state = dismissState,
+                            enableDismissFromStartToEnd = false,
+                            backgroundContent = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(horizontal = 16.dp)
+                                        .clip(RoundedCornerShape(24.dp))
+                                        .background(Color.Red),
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Delete",
+                                        tint = Color.White,
+                                        modifier = Modifier.padding(end = 24.dp)
+                                    )
+                                }
+                            }
+                        ) {
+                            ExpenseItem(item)
+                        }
 
                         Spacer(Modifier.height(16.dp))
                     }
                 }
+            }
+        }
+        if (tripExpenses.isLoading && tripExpenses.data != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                ComposeViewUtils.FullScreenLoading()
             }
         }
     }

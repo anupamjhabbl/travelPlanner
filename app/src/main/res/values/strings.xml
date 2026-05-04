@@ -254,4 +254,5 @@
     <string name="expesnes_added_success">Expense Added Successfully</string>
     <string name="provide_details">Please provide all the details.</string>
     <string name="min_budget_message">Your budget should be greater than 0</string>
+    <string name="expesnes_deleted_success">Expense deleted Successfully.</string>
 </resources>

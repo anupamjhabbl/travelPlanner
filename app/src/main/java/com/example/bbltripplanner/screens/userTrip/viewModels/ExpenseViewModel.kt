@@ -36,8 +36,11 @@ class ExpenseViewModel(
     private val _tripData = MutableStateFlow<RequestResponseStatus<TripData>>(RequestResponseStatus())
     val tripData: StateFlow<RequestResponseStatus<TripData>> = _tripData
 
-    private val _addExpenseStatus = Channel<ExpenseIntent.ViewEffect>()
-    val addExpenseStatus: Flow<ExpenseIntent.ViewEffect> = _addExpenseStatus.receiveAsFlow()
+    private val _addExpenseStatus = Channel<ExpenseIntent.AddViewEffect>()
+    val addExpenseStatus: Flow<ExpenseIntent.AddViewEffect> = _addExpenseStatus.receiveAsFlow()
+
+    private val _deleteExpenseStatus = Channel<ExpenseIntent.DeleteViewEffect>()
+    val deleteExpenseStatus: Flow<ExpenseIntent.DeleteViewEffect> = _deleteExpenseStatus.receiveAsFlow()
 
     init {
         tripId?.let {
@@ -52,6 +55,7 @@ class ExpenseViewModel(
             is ExpenseIntent.ViewEvent.InitiateBudget -> initiateBudget(viewEvent.tripId, viewEvent.budget)
             is ExpenseIntent.ViewEvent.AddExpense -> addExpense(viewEvent.tripId, viewEvent.request)
             is ExpenseIntent.ViewEvent.FetchSettlements -> fetchSettlements()
+            is ExpenseIntent.ViewEvent.DeleteExpense -> deleteExpense(viewEvent.expenseId)
         }
     }
 
@@ -91,12 +95,12 @@ class ExpenseViewModel(
 
     private fun addExpense(tripId: String, request: AddExpenseRequest) {
         viewModelScope.launch {
-            _addExpenseStatus.send(ExpenseIntent.ViewEffect.AddExpenseLoading)
+            _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseLoading)
             SafeIOUtil.safeCall {
                 expenseUseCase.addExpense(tripId, request)
             }.onSuccess { result ->
                 if (result != null) {
-                    _addExpenseStatus.send(ExpenseIntent.ViewEffect.AddExpenseSuccess)
+                    _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseSuccess)
                     expenseStatus.value.data?.let {
                         _expenseStatus.value = expenseStatus.value.copy(
                             data = ExpenseSummary(
@@ -106,13 +110,39 @@ class ExpenseViewModel(
                         )
                     }
                 } else {
-                    _addExpenseStatus.send(ExpenseIntent.ViewEffect.AddExpenseError(Constants.DEFAULT_ERROR))
+                    _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseError(Constants.DEFAULT_ERROR))
                 }
             }.onFailure {
                 if (it is TripPlannerException) {
-                    _addExpenseStatus.send(ExpenseIntent.ViewEffect.AddExpenseError(it.message ?: Constants.DEFAULT_ERROR))
+                    _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseError(it.message ?: Constants.DEFAULT_ERROR))
                 } else {
-                    _addExpenseStatus.send(ExpenseIntent.ViewEffect.AddExpenseError(Constants.DEFAULT_ERROR))
+                    _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseError(Constants.DEFAULT_ERROR))
+                }
+            }
+        }
+    }
+
+    private fun deleteExpense(expenseId: String) {
+        viewModelScope.launch {
+            _deleteExpenseStatus.send(ExpenseIntent.DeleteViewEffect.DeleteExpenseLoading)
+            SafeIOUtil.safeCall {
+                expenseUseCase.deleteExpense(expenseId)
+            }.onSuccess {
+                _deleteExpenseStatus.send(ExpenseIntent.DeleteViewEffect.DeleteExpenseSuccess)
+                _expenseStatus.value = expenseStatus.value.copy(
+                    data = expenseStatus.value.data?.copy(
+                        expenses = expenseStatus.value.data?.expenses?.toMutableList()?.filter { it.id != expenseId } ?: emptyList()
+                    )
+                )
+            }.onFailure {
+                if (it is TripPlannerException) {
+                    _deleteExpenseStatus.send(
+                        ExpenseIntent.DeleteViewEffect.DeleteExpenseError(
+                            it.message ?: Constants.DEFAULT_ERROR
+                        )
+                    )
+                } else {
+                    _deleteExpenseStatus.send(ExpenseIntent.DeleteViewEffect.DeleteExpenseError(Constants.DEFAULT_ERROR))
                 }
             }
         }

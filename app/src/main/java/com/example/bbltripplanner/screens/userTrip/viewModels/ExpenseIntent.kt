@@ -8,11 +8,18 @@ sealed class ExpenseIntent {
         data class InitiateBudget(val tripId: String, val budget: Double) : ViewEvent()
         data class AddExpense(val tripId: String, val request: AddExpenseRequest) : ViewEvent()
         data object FetchSettlements : ViewEvent()
+        data class DeleteExpense(val expenseId: String) : ViewEvent()
     }
 
-    sealed interface ViewEffect {
-        data object AddExpenseLoading: ViewEffect
-        data class AddExpenseError(val message: String): ViewEffect
-        data object AddExpenseSuccess: ViewEffect
+    sealed interface AddViewEffect {
+        data object AddExpenseLoading: AddViewEffect
+        data class AddExpenseError(val message: String): AddViewEffect
+        data object AddExpenseSuccess: AddViewEffect
+    }
+
+    sealed interface DeleteViewEffect {
+        data object DeleteExpenseSuccess: DeleteViewEffect
+        data object DeleteExpenseLoading: DeleteViewEffect
+        data class DeleteExpenseError(val message: String): DeleteViewEffect
     }
 }
