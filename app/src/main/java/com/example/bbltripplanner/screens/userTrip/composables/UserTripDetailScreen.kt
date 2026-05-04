@@ -461,11 +461,15 @@ private fun ActionTile (
 private suspend fun takeAction(key: String, tripId: String?) {
     if (tripId != null) {
         when (key) {
-            Constants.TripDetailScreen.GENERAL -> {}
-
             Constants.TripDetailScreen.ATTACHMENTS -> {}
 
-            Constants.TripDetailScreen.GROUP -> {}
+            Constants.TripDetailScreen.GROUP -> {
+                CommonNavigationChannel.navigateTo(
+                    NavigationAction.Navigate(
+                        AppNavigationScreen.TripGroupScreen.createRoute(tripId)
+                    )
+                )
+            }
 
             Constants.TripDetailScreen.ITINERARY -> {
                 CommonNavigationChannel.navigateTo(

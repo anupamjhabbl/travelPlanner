@@ -255,4 +255,6 @@
     <string name="provide_details">Please provide all the details.</string>
     <string name="min_budget_message">Your budget should be greater than 0</string>
     <string name="expesnes_deleted_success">Expense deleted Successfully.</string>
+    <string name="trip_members">Trip Members</string>
+    <string name="member_added_success">The invite has been sent to the member you added.</string>
 </resources>

@@ -49,6 +49,7 @@ import com.example.bbltripplanner.screens.userTrip.composables.ItineraryMapView
 import com.example.bbltripplanner.screens.userTrip.composables.PostingEditScreen
 import com.example.bbltripplanner.screens.userTrip.composables.PostingInitScreen
 import com.example.bbltripplanner.screens.userTrip.composables.TripExpensesScreen
+import com.example.bbltripplanner.screens.userTrip.composables.TripGroupScreen
 import com.example.bbltripplanner.screens.userTrip.composables.UserTripDetailScreen
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseViewModel
 import com.example.bbltripplanner.screens.vault.composables.UserTripsScreen
@@ -224,6 +225,11 @@ fun HomeNavigationComposable(
         composable(route = AppNavigationScreen.EditTripScreen.route) { navBackStackEntry ->
             val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
             PostingEditScreen(tripId)
+        }
+
+        composable(route = AppNavigationScreen.TripGroupScreen.route) { navBackStackEntry ->
+            val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+            tripId?.let { TripGroupScreen(it) }
         }
 
         navigation(

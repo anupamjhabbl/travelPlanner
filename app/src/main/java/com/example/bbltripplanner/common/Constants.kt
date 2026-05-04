@@ -59,6 +59,7 @@ object Constants {
         const val EXPENSE_NAV_ENTRY = "expense_nav_entry"
         const val ADD_ACTIVITY_SCREEN = "add_activity_screen"
         const val ADD_SPOTS_SCREEN = "add_spots_screen"
+        const val TRIP_GROUP_SCREEN = "trip_group_screen"
 
         // User Screens
         const val PROFILE_SCREEN = "profile_screen"
@@ -110,7 +111,6 @@ object Constants {
     }
 
     object TripDetailScreen {
-        const val GENERAL = "General"
         const val ATTACHMENTS = "Attachments"
         const val ITINERARY = "Itinerary"
         const val EXPENSES = "Expenses"

@@ -65,6 +65,7 @@ import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryDetailVie
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryMapViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitViewModel
+import com.example.bbltripplanner.screens.userTrip.viewModels.TripGroupViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailViewModel
 import com.example.bbltripplanner.screens.vault.clients.VaultClient
 import com.example.bbltripplanner.screens.vault.repositories.VaultRepository
@@ -109,6 +110,7 @@ val appModule = module {
     single<UserTripDetailClient> { Network.createWithAuth(UserTripDetailClient::class.java, get(), get(), androidContext()) }
     viewModel { (tripId: String?) -> PostingInitViewModel(tripId, get(), get(), get(), get(), get()) }
     viewModel { (tripId: String?) -> UserTripDetailViewModel(tripId, get(), get()) }
+    viewModel { (tripId: String) -> TripGroupViewModel(tripId, get(), get(), get()) }
 
     // Itinerary
     single<ItineraryClient> { Network.createWithAuth(ItineraryClient::class.java, get(), get(), androidContext()) }

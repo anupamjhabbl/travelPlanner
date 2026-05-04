@@ -80,6 +80,9 @@ sealed class AppNavigationScreen(
     data object ItineraryDetailView: AppNavigationScreen(route = "${Constants.NavigationScreen.ITINERARY_DETAIL_VIEW}/{${Constants.NavigationArgs.ITINERARY_PLACE_ID}}", isFullScreen = true) {
         fun createRoute(placeId: String) = "${Constants.NavigationScreen.ITINERARY_DETAIL_VIEW}/$placeId"
     }
+    data object TripGroupScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.TRIP_GROUP_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}") {
+        fun createRoute(tripId: String) = "${Constants.NavigationScreen.TRIP_GROUP_SCREEN}/$tripId"
+    }
 
     // General
     data object BuzzScreen: AppNavigationScreen(route = Constants.NavigationScreen.BUZZ_SCREEN, hasBottomBar = true)
@@ -125,6 +128,7 @@ fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
         route.startsWith(Constants.NavigationScreen.ADD_EXPENSE_SCREEN) -> AppNavigationScreen.AddExpenseScreen
         route.startsWith(Constants.NavigationScreen.EXPENSE_SETTLEMENT_SCREEN) -> AppNavigationScreen.ExpenseSettlementScreen
         route.startsWith(Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN) -> AppNavigationScreen.ItineraryMapViewScreen
+        route.startsWith(Constants.NavigationScreen.TRIP_GROUP_SCREEN) -> AppNavigationScreen.TripGroupScreen
 
         // Authentication
         route.startsWith(Constants.NavigationScreen.AUTH_GRAPH) -> AppNavigationScreen.AuthGraph
