@@ -11,7 +11,6 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 
 interface UserClient {
@@ -34,6 +33,6 @@ interface UserClient {
     @PUT("user/update")
     suspend fun updateUser(@Part profilePic: MultipartBody.Part?, @Part("name") name: RequestBody?, @Part("bio") bio: RequestBody?, @Part("phone") phone: RequestBody?): Response<BaseResponse<User>>
 
-    @POST("user/logout")
+    @POST("auth/logout")
     suspend fun logoutUser(): Response<BaseResponse<String>>
 }

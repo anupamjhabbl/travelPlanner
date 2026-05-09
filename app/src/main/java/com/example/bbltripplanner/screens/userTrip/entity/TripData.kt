@@ -16,7 +16,7 @@ data class TripData(
     val startDate: Long? = null,
     @SerializedName(value = "endDate", alternate = ["end_date"])
     val endDate: Long? = null,
-    @SerializedName(value = "invitedMembers", alternate = ["invited_members"])
+    @SerializedName(value = "tripMembers", alternate = ["trip_members"])
     val invitedMembers: List<User> = emptyList(),
     @SerializedName(value = "tripVisibility", alternate = ["trip_visibility"])
     val visibility: TripVisibility = TripVisibility.PRIVATE,

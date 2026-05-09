@@ -1,11 +1,13 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +28,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material3.AlertDialog
@@ -157,7 +162,9 @@ fun TripExpensesScreen(
                                     focusedBorderColor = LocalCustomColors.current.secondaryBackground,
                                     unfocusedBorderColor = LocalCustomColors.current.textColor.copy(alpha = 0.5f),
                                     cursorColor = LocalCustomColors.current.secondaryBackground,
-                                    focusedLabelColor = LocalCustomColors.current.secondaryBackground
+                                    focusedLabelColor = LocalCustomColors.current.secondaryBackground,
+                                    focusedTextColor = LocalCustomColors.current.textColor,
+                                    unfocusedTextColor = LocalCustomColors.current.textColor
                                 )
                             )
                             DropdownMenu(
@@ -195,7 +202,9 @@ fun TripExpensesScreen(
                                 focusedBorderColor = LocalCustomColors.current.secondaryBackground,
                                 unfocusedBorderColor = LocalCustomColors.current.textColor.copy(alpha = 0.5f),
                                 cursorColor = LocalCustomColors.current.secondaryBackground,
-                                focusedLabelColor = LocalCustomColors.current.secondaryBackground
+                                focusedLabelColor = LocalCustomColors.current.secondaryBackground,
+                                focusedTextColor = LocalCustomColors.current.textColor,
+                                unfocusedTextColor = LocalCustomColors.current.textColor
                             )
                         )
                     }
@@ -554,72 +563,124 @@ private fun ExpenseBanner(
 
 @Composable
 private fun ExpenseItem(item: ExpenseItem, currency: Currency) {
+    var isExpanded by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .clickable { isExpanded = !isExpanded },
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = LocalCustomColors.current.fadedBackground),
+        colors = CardDefaults.cardColors(containerColor = LocalCustomColors.current.primaryBackground),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
+        Column {
+            Row(
                 modifier = Modifier
-                    .size(56.dp)
-                    .background(Color(0xFFFDF2ED), shape = CircleShape),
-                contentAlignment = Alignment.Center
+                    .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp, bottomEnd = 16.dp, bottomStart = 16.dp))
+                    .background(LocalCustomColors.current.fadedBackground)
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = item.type.icon,
-                    contentDescription = item.type.value,
+                Box(
                     modifier = Modifier
-                        .size(30.dp)
-                        .clip(CircleShape),
-                    tint = LocalCustomColors.current.secondaryBackground
-                )
+                        .size(56.dp)
+                        .background(Color(0xFFFDF2ED), shape = CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = item.type.icon,
+                        contentDescription = item.type.value,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(CircleShape),
+                        tint = LocalCustomColors.current.secondaryBackground
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    ComposeTextView.TextView(
+                        text = item.description,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        textColor = LocalCustomColors.current.textColor
+                    )
+                    ComposeTextView.TextView(
+                        text = stringResource(R.string.paid_by_name, item.paidBy.name),
+                        fontSize = 14.sp,
+                        textColor = LocalCustomColors.current.textColor
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        ComposeTextView.TextView(
+                            text = "Split: ${item.split.count()} people",
+                            fontSize = 14.sp,
+                            textColor = LocalCustomColors.current.textColor
+                        )
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = LocalCustomColors.current.textColor
+                        )
+                    }
+                }
+
+                Column(horizontalAlignment = Alignment.End) {
+                    ComposeTextView.TextView(
+                        text = stringResource(R.string.amount_formatting, currency.symbol, item.amount.toString()),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textColor = LocalCustomColors.current.textColor
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    ComposeTextView.TextView(
+                        text = item.date.toFormattedDateString(),
+                        fontSize = 14.sp,
+                        textColor = LocalCustomColors.current.textColor
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            AnimatedVisibility(visible = isExpanded) {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(LocalCustomColors.current.primaryBackground)
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    items(item.split, key = { it.id }) { user ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .background(
+                                    LocalCustomColors.current.fadedBackground,
+                                    shape = RoundedCornerShape(20.dp)
+                                )
+                                .padding(start = 12.dp, end = 14.dp, top = 6.dp, bottom = 6.dp)
+                        ) {
+                            ComposeImageView.CircularImageView(
+                                imageURI = user.profilePicture ?: "",
+                                diameter = 32.dp
+                            )
 
-            Column(modifier = Modifier.weight(1f)) {
-                ComposeTextView.TextView(
-                    text = item.description,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    textColor = LocalCustomColors.current.textColor
-                )
-                ComposeTextView.TextView(
-                    text = stringResource(R.string.paid_by_name, item.paidBy.name),
-                    fontSize = 14.sp,
-                    textColor = LocalCustomColors.current.textColor
-                )
-                ComposeTextView.TextView(
-                    text = "Split: 3 people",
-                    fontSize = 14.sp,
-                    textColor = LocalCustomColors.current.textColor
-                )
-            }
+                            Spacer(Modifier.width(8.dp))
 
-            Column(horizontalAlignment = Alignment.End) {
-                ComposeTextView.TextView(
-                    text = stringResource(R.string.amount_formatting, currency.symbol, item.amount.toString()),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    textColor = LocalCustomColors.current.textColor
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                ComposeTextView.TextView(
-                    text = item.date.toFormattedDateString(),
-                    fontSize = 14.sp,
-                    textColor = LocalCustomColors.current.textColor
-                )
+                            ComposeTextView.TextView(
+                                text = user.name,
+                                fontSize = 14.sp,
+                                textColor = LocalCustomColors.current.textColor,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
             }
         }
     }
