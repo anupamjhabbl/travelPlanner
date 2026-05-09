@@ -7,6 +7,7 @@ import com.example.bbltripplanner.common.entity.RequestResponseStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.AddExpenseRequest
+import com.example.bbltripplanner.screens.userTrip.entity.Currency
 import com.example.bbltripplanner.screens.userTrip.entity.ExpenseItem
 import com.example.bbltripplanner.screens.userTrip.entity.ExpenseSummary
 import com.example.bbltripplanner.screens.userTrip.entity.SettlementResponse
@@ -52,7 +53,7 @@ class ExpenseViewModel(
     override fun processEvent(viewEvent: ExpenseIntent.ViewEvent) {
         when (viewEvent) {
             is ExpenseIntent.ViewEvent.FetchExpenses -> fetchExpenses(viewEvent.tripId)
-            is ExpenseIntent.ViewEvent.InitiateBudget -> initiateBudget(viewEvent.tripId, viewEvent.budget)
+            is ExpenseIntent.ViewEvent.InitiateBudget -> initiateBudget(viewEvent.tripId, viewEvent.budget, viewEvent.currency)
             is ExpenseIntent.ViewEvent.AddExpense -> addExpense(viewEvent.tripId, viewEvent.request)
             is ExpenseIntent.ViewEvent.FetchSettlements -> fetchSettlements()
             is ExpenseIntent.ViewEvent.DeleteExpense -> deleteExpense(viewEvent.expenseId)
@@ -76,11 +77,11 @@ class ExpenseViewModel(
         }
     }
 
-    private fun initiateBudget(tripId: String, budget: Double) {
+    private fun initiateBudget(tripId: String, budget: Double, currency: Currency) {
         viewModelScope.launch {
             _expenseStatus.value = RequestResponseStatus(isLoading = true)
             SafeIOUtil.safeCall {
-                expenseUseCase.initiateExpense(tripId, budget)
+                expenseUseCase.initiateExpense(tripId, budget, currency)
             }.onSuccess {
                 _expenseStatus.value = RequestResponseStatus(data = it?.toTripExpenseDetail())
             }.onFailure {
@@ -101,12 +102,13 @@ class ExpenseViewModel(
             }.onSuccess { result ->
                 if (result != null) {
                     _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseSuccess)
-                    expenseStatus.value.data?.let {
+                    expenseStatus.value.data?.let { detail ->
                         _expenseStatus.value = expenseStatus.value.copy(
-                            data = ExpenseSummary(
-                                it.budget,
-                                it.expenses.toMutableList().plus(result)
-                            ).toTripExpenseDetail()
+                            data = detail.copy(
+                                expense = calculateTotal(detail.expenses.plus(result)),
+                                left = calculateLeft(detail.budget, detail.expenses.plus(result)),
+                                expenses = detail.expenses.plus(result)
+                            )
                         )
                     }
                 } else {
@@ -130,9 +132,14 @@ class ExpenseViewModel(
             }.onSuccess {
                 _deleteExpenseStatus.send(ExpenseIntent.DeleteViewEffect.DeleteExpenseSuccess)
                 _expenseStatus.value = expenseStatus.value.copy(
-                    data = expenseStatus.value.data?.copy(
-                        expenses = expenseStatus.value.data?.expenses?.toMutableList()?.filter { it.id != expenseId } ?: emptyList()
-                    )
+                    data = expenseStatus.value.data?.let { detail ->
+                        val updatedExpenses = detail.expenses.filter { it.id != expenseId }
+                        detail.copy(
+                            expense = calculateTotal(updatedExpenses),
+                            left = calculateLeft(detail.budget, updatedExpenses),
+                            expenses = updatedExpenses
+                        )
+                    }
                 )
             }.onFailure {
                 if (it is TripPlannerException) {
@@ -191,6 +198,7 @@ class ExpenseViewModel(
     private fun ExpenseSummary.toTripExpenseDetail(): TripExpensesDetail {
         return TripExpensesDetail(
             budget,
+            currencyCode,
             calculateTotal(expenses),
             calculateLeft(budget, expenses),
             expenses

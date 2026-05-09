@@ -1,11 +1,12 @@
 package com.example.bbltripplanner.screens.userTrip.viewModels
 
 import com.example.bbltripplanner.screens.userTrip.entity.AddExpenseRequest
+import com.example.bbltripplanner.screens.userTrip.entity.Currency
 
 sealed class ExpenseIntent {
     sealed class ViewEvent {
         data class FetchExpenses(val tripId: String) : ViewEvent()
-        data class InitiateBudget(val tripId: String, val budget: Double) : ViewEvent()
+        data class InitiateBudget(val tripId: String, val budget: Double, val currency: Currency) : ViewEvent()
         data class AddExpense(val tripId: String, val request: AddExpenseRequest) : ViewEvent()
         data object FetchSettlements : ViewEvent()
         data class DeleteExpense(val expenseId: String) : ViewEvent()

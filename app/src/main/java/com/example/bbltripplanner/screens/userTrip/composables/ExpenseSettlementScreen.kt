@@ -34,6 +34,7 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.screens.userTrip.entity.Currency
 import com.example.bbltripplanner.screens.userTrip.entity.SettlementItem
 import com.example.bbltripplanner.screens.userTrip.entity.SettlementResponseType
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseIntent
@@ -45,7 +46,10 @@ fun ExpenseSettlementScreen(
     viewModel: ExpenseViewModel
 ) {
     val settlements by viewModel.settlementStatus.collectAsStateWithLifecycle()
+    val tripExpenses by viewModel.expenseStatus.collectAsStateWithLifecycle()
     val errorMessage = stringResource(R.string.generic_error)
+    val currency = tripExpenses.data?.currency ?: Currency.INR
+
 
     LaunchedEffect(Unit) {
         viewModel.processEvent(ExpenseIntent.ViewEvent.FetchSettlements)
@@ -121,7 +125,8 @@ fun ExpenseSettlementScreen(
                             ) {
                                 ComposeTextView.TitleTextView(
                                     text = stringResource(
-                                        R.string.rupee_formatting,
+                                        R.string.amount_formatting,
+                                        currency.symbol,
                                         data.totalSettlementAmount.toInt().toString()
                                     ),
                                     fontSize = 32.sp,
@@ -158,7 +163,7 @@ fun ExpenseSettlementScreen(
                             verticalArrangement = Arrangement.spacedBy(1.dp)
                         ) {
                             items(data.settlements) { item ->
-                                SettlementRow(item, data.overallType == SettlementResponseType.RECEIVE)
+                                SettlementRow(item, data.overallType == SettlementResponseType.RECEIVE, currency)
                             }
                         }
                     }
@@ -171,7 +176,8 @@ fun ExpenseSettlementScreen(
 @Composable
 fun SettlementRow(
     item: SettlementItem,
-    isReceiveMode: Boolean
+    isReceiveMode: Boolean,
+    currency: Currency
 ) {
     Row(
         modifier = Modifier
@@ -196,7 +202,7 @@ fun SettlementRow(
         }
 
         ComposeTextView.TextView(
-            text = stringResource(R.string.rupee_formatting, item.amount),
+            text = stringResource(R.string.amount_formatting, currency.symbol, item.amount.toString()),
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             textColor = if (isReceiveMode) LocalCustomColors.current.success else LocalCustomColors.current.error

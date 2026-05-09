@@ -29,7 +29,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,7 +40,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeButtonView
@@ -69,6 +68,7 @@ import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.AddExpenseRequest
+import com.example.bbltripplanner.screens.userTrip.entity.Currency
 import com.example.bbltripplanner.screens.userTrip.entity.ExpenseType
 import com.example.bbltripplanner.screens.userTrip.entity.SplitType
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseIntent
@@ -89,7 +89,10 @@ fun AddExpensesScreen(
     val successMessage = stringResource(R.string.expesnes_added_success)
     val provideAllDetailMessage = stringResource(R.string.provide_details)
     
-    val tripDataStatus by viewModel.tripData.collectAsState()
+    val tripDataStatus by viewModel.tripData.collectAsStateWithLifecycle()
+    val tripExpenses by viewModel.expenseStatus.collectAsStateWithLifecycle()
+    val currency = tripExpenses.data?.currency ?: Currency.INR
+
     var isLoading by remember { mutableStateOf(false) }
     
     var selectedPaidBy by remember { mutableStateOf<User?>(null) }
@@ -231,7 +234,12 @@ fun AddExpensesScreen(
                         .border(1.dp, LocalCustomColors.current.secondaryBackground, RoundedCornerShape(12.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.CurrencyRupee, null, tint = LocalCustomColors.current.secondaryBackground)
+                    ComposeTextView.TextView(
+                        text = currency.symbol,
+                        textColor = LocalCustomColors.current.secondaryBackground,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
                 Spacer(Modifier.width(12.dp))
                 OutlinedTextField(

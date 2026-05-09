@@ -3,6 +3,7 @@ package com.example.bbltripplanner.screens.userTrip.repositoryImpl
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.screens.userTrip.clients.ExpenseClient
 import com.example.bbltripplanner.screens.userTrip.entity.AddExpenseRequest
+import com.example.bbltripplanner.screens.userTrip.entity.Currency
 import com.example.bbltripplanner.screens.userTrip.entity.ExpenseItem
 import com.example.bbltripplanner.screens.userTrip.entity.ExpenseSummary
 import com.example.bbltripplanner.screens.userTrip.entity.InitiateExpenseRequest
@@ -17,8 +18,8 @@ class ExpenseNetwork(
         return BaseResponse.processResponse { expenseClient.getExpenses(tripId) }
     }
 
-    override suspend fun initiateExpense(tripId: String, budget: Double): ExpenseSummary? {
-        return BaseResponse.processResponse { expenseClient.initiateExpense(tripId, InitiateExpenseRequest(budget)) }
+    override suspend fun initiateExpense(tripId: String, budget: Double, currency: Currency): ExpenseSummary? {
+        return BaseResponse.processResponse { expenseClient.initiateExpense(tripId, InitiateExpenseRequest(budget, currency)) }
     }
 
     override suspend fun addExpense(

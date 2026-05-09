@@ -125,9 +125,9 @@
     <string name="trip_location_please">Please select a trip location.</string>
     <string name="trip_accept_success">You have successfully acepted the invitation.</string>
     <string name="share_message">Your friend has invited you for this trip.</string>
-    <string name="budget">Budget: \u20B9%1$s</string>
-    <string name="remaining">Remaining: \u20B9%1$s</string>
-    <string name="rupee_formatting">\u20B9%1$s</string>
+    <string name="budget">Budget: %1$s %2$s</string>
+    <string name="remaining">Remaining: %1$s %2$s</string>
+    <string name="amount_formatting">%1$s %2$s</string>
     <string name="total_spent">Total Spent</string>
     <string name="paid_by">To Be Paid By</string>
     <string name="type">Type</string>
@@ -149,7 +149,7 @@
     <string name="paid">Paid</string>
     <string name="received">Received</string>
     <string name="paid_to">Pay to</string>
-    <string name="rs">\u20A8 %1$s</string>
+    <string name="rs">%1$s %2$s</string>
     <string name="settlements">Settlements</string>
     <string name="no_notifications_to_show">No Notification to show</string>
     <string name="no_notifications_subtitle">You currently have no notifications. We will notify you when something new happens!</string>

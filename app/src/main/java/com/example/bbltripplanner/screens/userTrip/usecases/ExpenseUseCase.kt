@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.usecases
 
 import com.example.bbltripplanner.screens.userTrip.entity.AddExpenseRequest
+import com.example.bbltripplanner.screens.userTrip.entity.Currency
 import com.example.bbltripplanner.screens.userTrip.entity.ExpenseItem
 import com.example.bbltripplanner.screens.userTrip.entity.ExpenseSummary
 import com.example.bbltripplanner.screens.userTrip.entity.SettlementResponse
@@ -11,8 +12,8 @@ class ExpenseUseCase(private val repository: ExpenseRepository) {
         return repository.getExpenses(tripId)
     }
 
-    suspend fun initiateExpense(tripId: String, budget: Double): ExpenseSummary? {
-        return repository.initiateExpense(tripId, budget)
+    suspend fun initiateExpense(tripId: String, budget: Double, currency: Currency): ExpenseSummary? {
+        return repository.initiateExpense(tripId, budget, currency)
     }
 
     suspend fun addExpense(tripId: String, request: AddExpenseRequest): ExpenseItem? {

@@ -1,0 +1,209 @@
+# Trip Members API Contract
+
+---
+
+## 1. Get Trip Members
+
+### Endpoint
+
+```
+GET /api/trips/{tripId}/members
+```
+
+### Description
+
+Fetches the list of members associated with a specific trip.
+
+---
+
+### Request
+
+#### Path Parameters
+
+| Name   | Type           | Required | Description                   |
+| ------ | -------------- | -------- | ----------------------------- |
+| tripId | String/Integer | Yes      | Unique identifier of the trip |
+
+#### Headers
+
+| Key           | Value            |
+| ------------- | ---------------- |
+| Authorization | Bearer `<token>` |
+
+#### Body
+
+None (GET request)
+
+---
+
+### Response Example
+
+```json
+{
+  "data": [
+    {
+      "user": {
+        "id": 101,
+        "name": "Alice Johnson",
+        "email": "alice@example.com"
+      },
+      "status": "pending"
+    },
+    {
+      "user": {
+        "id": 102,
+        "name": "Bob Smith",
+        "email": "bob@example.com"
+      },
+      "status": "accepted"
+    }
+  ],
+  "statusCode": 200,
+  "isSuccess": true,
+  "message": "Members retrieved successfully"
+}
+```
+
+---
+
+### Response Model
+
+#### TripMember
+
+| Field  | Type   | Description             |
+| ------ | ------ | ----------------------- |
+| user   | User   | Member user details     |
+| status | String | `pending` or `accepted` |
+
+#### User
+
+| Field | Type   | Description   |
+| ----- | ------ | ------------- |
+| id    | Int    | User ID       |
+| name  | String | Full name     |
+| email | String | Email address |
+
+#### Wrapper Fields
+
+| Field      | Type    | Description               |
+| ---------- | ------- | ------------------------- |
+| statusCode | Int     | HTTP-like status code     |
+| isSuccess  | Boolean | Indicates success/failure |
+| message    | String  | Optional message          |
+
+---
+
+## 2. Add Trip Member
+
+### Endpoint
+
+```
+POST /api/trips/{tripId}/addMember
+```
+
+### Description
+
+Adds a new member to a trip and sends them an invite.
+
+---
+
+### Request
+
+#### Path Parameters
+
+| Name   | Type           | Required | Description                   |
+| ------ | -------------- | -------- | ----------------------------- |
+| tripId | String/Integer | Yes      | Unique identifier of the trip |
+
+#### Headers
+
+| Key           | Value            |
+| ------------- | ---------------- |
+| Authorization | Bearer `<token>` |
+| Content-Type  | application/json |
+
+#### Body Example
+
+```json
+{
+  "userId": 101
+}
+```
+
+---
+
+### Response Example
+
+```json
+{
+  "data": true,
+  "statusCode": 200,
+  "isSuccess": true,
+  "message": "Member added successfully"
+}
+```
+
+---
+
+### Response Model
+
+| Field      | Type    | Description                        |
+| ---------- | ------- | ---------------------------------- |
+| data       | Boolean | `true` if added, `false` otherwise |
+| statusCode | Int     | Status code (200, 400, 409, etc.)  |
+| isSuccess  | Boolean | Indicates success/failure          |
+| message    | String  | Optional message                   |
+
+---
+
+## 3. Common Response Wrapper
+
+All APIs follow the same structure:
+
+```json
+{
+  "data": T,
+  "statusCode": int,
+  "isSuccess": bool,
+  "message": "string"
+}
+```
+
+---
+
+## 4. Error Response Examples
+
+### Member Already Exists
+
+```json
+{
+  "data": false,
+  "statusCode": 409,
+  "isSuccess": false,
+  "message": "User is already a member of this trip"
+}
+```
+
+---
+
+### Trip Not Found
+
+```json
+{
+  "data": null,
+  "statusCode": 404,
+  "isSuccess": false,
+  "message": "Trip not found"
+}
+```
+
+---
+
+## Notes
+
+* Ensure `tripId` is valid before making requests.
+* Authentication may be required for both endpoints.
+* Duplicate member additions should return a `409 Conflict`.
+* APIs should follow consistent response structure using the BaseResponse wrapper.
+
+---

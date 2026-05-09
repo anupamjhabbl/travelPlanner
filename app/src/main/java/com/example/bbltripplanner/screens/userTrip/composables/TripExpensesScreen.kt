@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Payment
@@ -30,6 +32,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -65,6 +69,7 @@ import com.example.bbltripplanner.common.utils.DateUtils.toFormattedDateString
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
+import com.example.bbltripplanner.screens.userTrip.entity.Currency
 import com.example.bbltripplanner.screens.userTrip.entity.ExpenseItem
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseViewModel
@@ -87,6 +92,7 @@ fun TripExpensesScreen(
     var isLoading by remember { mutableStateOf(false) }
     val successMessage = stringResource(R.string.expesnes_deleted_success)
     var budgetInput by remember { mutableStateOf("") }
+    var currency by remember { mutableStateOf(Currency.INR) }
 
     LaunchedEffect(tripExpenses) {
         if (!tripExpenses.isLoading && tripExpenses.error == null && tripExpenses.data == null) {
@@ -112,7 +118,7 @@ fun TripExpensesScreen(
 
     if (tripInitializationPopup) {
         AlertDialog(
-            onDismissRequest = { tripInitializationPopup = false },
+            onDismissRequest = {},
             title = {
                 ComposeTextView.TitleTextView(
                     text = stringResource(R.string.initiate_expense_title),
@@ -126,24 +132,73 @@ fun TripExpensesScreen(
                         fontSize = 14.sp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    OutlinedTextField(
-                        value = budgetInput,
-                        onValueChange = {
-                            if (it.isEmpty() || it.toDoubleOrNull() != null || (it.count { char -> char == '.' } <= 1 && it.all { char -> char.isDigit() || char == '.' })) {
-                                budgetInput = it
-                            }
-                        },
-                        label = { ComposeTextView.TextView(text = stringResource(R.string.enter_budget)) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = LocalCustomColors.current.secondaryBackground,
-                            unfocusedBorderColor = LocalCustomColors.current.textColor.copy(alpha = 0.5f),
-                            cursorColor = LocalCustomColors.current.secondaryBackground,
-                            focusedLabelColor = LocalCustomColors.current.secondaryBackground
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        var expanded by remember { mutableStateOf(false) }
+                        Box(modifier = Modifier.weight(0.35f)) {
+                            OutlinedTextField(
+                                value = currency.symbol,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { ComposeTextView.TextView(text = "Code", fontSize = 12.sp) },
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = "Select Currency",
+                                        modifier = Modifier.clickable { expanded = true }
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth().clickable { expanded = true },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = LocalCustomColors.current.secondaryBackground,
+                                    unfocusedBorderColor = LocalCustomColors.current.textColor.copy(alpha = 0.5f),
+                                    cursorColor = LocalCustomColors.current.secondaryBackground,
+                                    focusedLabelColor = LocalCustomColors.current.secondaryBackground
+                                )
+                            )
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false },
+                                modifier = Modifier.background(LocalCustomColors.current.primaryBackground).height(200.dp)
+                            ) {
+                                Currency.entries.forEach { entry ->
+                                    DropdownMenuItem(
+                                        text = { ComposeTextView.TextView(text = entry.code) },
+                                        onClick = {
+                                            currency = entry
+                                            expanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        OutlinedTextField(
+                            value = budgetInput,
+                            onValueChange = {
+                                if (it.isEmpty() || it.toDoubleOrNull() != null || (it.count { char -> char == '.' } <= 1 && it.all { char -> char.isDigit() || char == '.' })) {
+                                    budgetInput = it
+                                }
+                            },
+                            label = { ComposeTextView.TextView(text = stringResource(R.string.enter_budget)) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            modifier = Modifier.weight(0.65f),
+                            singleLine = true,
+                            shape = RoundedCornerShape(8.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = LocalCustomColors.current.secondaryBackground,
+                                unfocusedBorderColor = LocalCustomColors.current.textColor.copy(alpha = 0.5f),
+                                cursorColor = LocalCustomColors.current.secondaryBackground,
+                                focusedLabelColor = LocalCustomColors.current.secondaryBackground
+                            )
                         )
-                    )
+                    }
                 }
             },
             confirmButton = {
@@ -158,7 +213,8 @@ fun TripExpensesScreen(
                                 viewModel.processEvent(
                                     ExpenseIntent.ViewEvent.InitiateBudget(
                                         it,
-                                        budget
+                                        budget,
+                                        currency
                                     )
                                 )
                             }
@@ -272,7 +328,8 @@ fun TripExpensesScreen(
                     modifier = Modifier.fillMaxWidth(),
                     tripExpenses.data!!.budget,
                     tripExpenses.data!!.expense,
-                    tripExpenses.data!!.left
+                    tripExpenses.data!!.left,
+                    tripExpenses.data!!.currency
                 )
 
                 Spacer(Modifier.height(16.dp))
@@ -322,7 +379,7 @@ fun TripExpensesScreen(
                                 }
                             }
                         ) {
-                            ExpenseItem(item)
+                            ExpenseItem(item, tripExpenses.data!!.currency)
                         }
 
                         Spacer(Modifier.height(16.dp))
@@ -432,7 +489,8 @@ private fun ExpenseBanner(
     modifier: Modifier,
     budget: Double,
     expense: Double,
-    left: Double
+    left: Double,
+    currency: Currency
 ) {
     Box(
         modifier = modifier
@@ -452,7 +510,7 @@ private fun ExpenseBanner(
                 .padding(start = 12.dp, top = 16.dp)
         ) {
             ComposeTextView.TextView(
-                text = stringResource(R.string.rupee_formatting, expense),
+                text = stringResource(R.string.amount_formatting, currency.symbol, expense.toString()),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.W600,
                 textColor = Color.Black
@@ -476,7 +534,7 @@ private fun ExpenseBanner(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             ComposeTextView.TextView(
-                text = stringResource(R.string.budget, budget.toString()),
+                text = stringResource(R.string.budget, currency.symbol, budget.toString()),
                 modifier = Modifier.padding(horizontal = 8.dp),
                 textColor = Color.Black,
                 fontSize = 16.sp,
@@ -484,7 +542,7 @@ private fun ExpenseBanner(
             )
 
             ComposeTextView.TextView(
-                text = stringResource(R.string.remaining, left.toString()),
+                text = stringResource(R.string.remaining, currency.symbol, left.toString()),
                 textColor = if (left >= 0) Color.Green else Color.Red,
                 modifier = Modifier.padding(horizontal = 8.dp),
                 fontSize = 16.sp,
@@ -495,7 +553,7 @@ private fun ExpenseBanner(
 }
 
 @Composable
-private fun ExpenseItem(item: ExpenseItem) {
+private fun ExpenseItem(item: ExpenseItem, currency: Currency) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -549,7 +607,7 @@ private fun ExpenseItem(item: ExpenseItem) {
 
             Column(horizontalAlignment = Alignment.End) {
                 ComposeTextView.TextView(
-                    text = stringResource(R.string.rupee_formatting, item.amount.toString()),
+                    text = stringResource(R.string.amount_formatting, currency.symbol, item.amount.toString()),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     textColor = LocalCustomColors.current.textColor
