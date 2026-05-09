@@ -88,7 +88,7 @@ fun AddExpensesScreen(
     val context = LocalContext.current
     val successMessage = stringResource(R.string.expesnes_added_success)
     val provideAllDetailMessage = stringResource(R.string.provide_details)
-    
+    val addSplitUserMessage = stringResource(R.string.add_split_user_message)
     val tripDataStatus by viewModel.tripData.collectAsStateWithLifecycle()
     val tripExpenses by viewModel.expenseStatus.collectAsStateWithLifecycle()
     val currency = tripExpenses.data?.currency ?: Currency.INR
@@ -312,16 +312,22 @@ fun AddExpensesScreen(
                         SplitType.SINGLE -> listOf(selectedPaidBy!!.id)
                         SplitType.GROUP -> selectedSplitUsers.map { it.id }
                     }
-                    viewModel.processEvent(ExpenseIntent.ViewEvent.AddExpense(
-                        tripId,
-                        AddExpenseRequest(
-                            description = description,
-                            paidById = selectedPaidBy!!.id,
-                            splitUserIds = splitUserIds,
-                            amount = amount.toDoubleOrNull() ?: 0.0,
-                            type = selectedType!!
+                    if (splitUserIds.isNotEmpty()) {
+                        viewModel.processEvent(
+                            ExpenseIntent.ViewEvent.AddExpense(
+                                tripId,
+                                AddExpenseRequest(
+                                    description = description,
+                                    paidById = selectedPaidBy!!.id,
+                                    splitUserIds = splitUserIds,
+                                    amount = amount.toDoubleOrNull() ?: 0.0,
+                                    type = selectedType!!
+                                )
+                            )
                         )
-                    ))
+                    } else {
+                        ComposeViewUtils.showToast(context, addSplitUserMessage)
+                    }
                 } else {
                     ComposeViewUtils.showToast(context, provideAllDetailMessage)
                 }
