@@ -165,7 +165,11 @@ class ExpenseViewModel(
                     _settlementStatus.value = RequestResponseStatus(data = it)
                 }.onFailure {
                     if (it is TripPlannerException) {
-                        _settlementStatus.value = RequestResponseStatus(error = it.message)
+                        if (it.errorCode == SETTLEMENT_ERROR_CODE) {
+                            _settlementStatus.value = RequestResponseStatus(error = SETTLEMENT_PENDING_ERROR)
+                        } else {
+                            _settlementStatus.value = RequestResponseStatus(error = it.message)
+                        }
                     } else {
                         _settlementStatus.value =
                             RequestResponseStatus(error = Constants.DEFAULT_ERROR)
@@ -211,5 +215,10 @@ class ExpenseViewModel(
 
     private fun calculateLeft(budget: Double, expenses: List<ExpenseItem>): Double {
         return budget - expenses.sumOf { it.amount }
+    }
+
+    companion object {
+        const val SETTLEMENT_PENDING_ERROR = "SETTLEMENT_PENDING_ERROR"
+        const val SETTLEMENT_ERROR_CODE = 403
     }
 }

@@ -19,11 +19,11 @@ enum class ExpenseType(
     @SerializedName("TRANSPORT")
     TRANSPORT("Transport", Icons.Default.DirectionsBus),
     @SerializedName("ACCOMMODATION")
-    ACCOMMODATION("STAY", Icons.Default.Hotel),
+    ACCOMMODATION("Stay", Icons.Default.Hotel),
     @SerializedName("SHOPPING")
-    SHOPPING("SHOPPING", Icons.Default.ShoppingBag),
-    @SerializedName("Activities")
-    ACTIVITIES("ACTIVITIES", Icons.Default.LocalActivity),
+    SHOPPING("Shopping", Icons.Default.ShoppingBag),
+    @SerializedName("ACTIVITIES")
+    ACTIVITIES("Activities", Icons.Default.LocalActivity),
     @SerializedName("OTHERS")
     OTHERS("Others", Icons.Default.Payments)
 }

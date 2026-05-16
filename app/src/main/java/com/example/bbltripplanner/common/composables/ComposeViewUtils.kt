@@ -85,6 +85,7 @@ object ComposeViewUtils {
         errorStrings: Pair<String, String>,
         isActionButton: Boolean = false,
         onActionButtonClick: () -> Unit = {},
+        imageId: Int = R.drawable.ic_vault_filled,
     ) {
         Column(
             modifier = Modifier
@@ -94,7 +95,7 @@ object ComposeViewUtils {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ComposeImageView.ImageViewWitDrawableId(
-                imageId = R.drawable.ic_vault_filled,
+                imageId = imageId,
                 contentDescription = "Error",
                 modifier = Modifier
                     .size(200.dp)

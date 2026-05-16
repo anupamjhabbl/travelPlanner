@@ -66,12 +66,23 @@ fun ExpenseSettlementScreen(
                 ComposeViewUtils.FullScreenLoading()
             }
         } else if (settlements.error != null) {
-            ComposeViewUtils.FullScreenErrorComposable(
-                Pair(
-                    errorMessage,
-                    settlements.error ?: ""
+            val error = settlements.error ?: ""
+            if (error == ExpenseViewModel.SETTLEMENT_PENDING_ERROR) {
+                ComposeViewUtils.FullScreenErrorComposable(
+                    errorStrings = Pair(
+                        stringResource(R.string.settlement_not_available_title),
+                        stringResource(R.string.settlement_not_available_description)
+                    ),
+                    imageId = R.drawable.ic_expenses
                 )
-            )
+            } else {
+                ComposeViewUtils.FullScreenErrorComposable(
+                    Pair(
+                        errorMessage,
+                        error
+                    )
+                )
+            }
         } else {
             settlements.data?.let { data ->
                 Column(
