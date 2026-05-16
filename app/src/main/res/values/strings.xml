@@ -265,4 +265,10 @@
     <string name="retry">Retry</string>
     <string name="add_photos">Add Photos</string>
     <string name="explorer_gallery">Explorer Gallery</string>
+    <string name="privacy_settings">Privacy Settings</string>
+    <string name="sharing_with">Sharing with %1$d people</string>
+    <string name="allow_downlaod">Allow Download</string>
+    <string name="allow_sharing">Allow Resharing</string>
+    <string name="done">Done</string>
+    <string name="edit_list">Edit List</string>
 </resources>

@@ -120,6 +120,13 @@ fun TripGalleryScreen(
         ) {
             ExtendedFloatingActionButton(
                 onClick = {
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.Navigate(
+                                AppNavigationScreen.TripGalleryPreviewScreen.route
+                            )
+                        )
+                    }
                     // open gallery screen to pick photos and also camera option first select what user want
                 },
                 containerColor = LocalCustomColors.current.secondaryBackground,
