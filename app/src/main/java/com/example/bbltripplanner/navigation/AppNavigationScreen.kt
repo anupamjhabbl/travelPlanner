@@ -85,10 +85,10 @@ sealed class AppNavigationScreen(
     }
 
     // Trip Gallery Screens
-    data object TripGalleryNavEntry: AppNavigationScreen(route = Constants.NavigationScreen.TRIP_GALLERY_NAV_ENTRY)
-    data object TripGalleryScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.TRIP_GALLERY_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}") {
-        fun createRoute(tripId: String) = "${Constants.NavigationScreen.TRIP_GALLERY_SCREEN}/$tripId"
+    data object TripGalleryNavEntry: AppNavigationScreen(route = "${Constants.NavigationScreen.TRIP_GALLERY_NAV_ENTRY}/{${Constants.NavigationArgs.TRIP_ID}}") {
+        fun createRoute(tripId: String) = "${Constants.NavigationScreen.TRIP_GALLERY_NAV_ENTRY}/$tripId"
     }
+    data object TripGalleryScreen: AppNavigationScreen(route = Constants.NavigationScreen.TRIP_GALLERY_SCREEN)
     data object TripGalleryPreviewScreen: AppNavigationScreen(route = Constants.NavigationScreen.TRIP_GALLERY_PREVIEW_SCREEN, isFullScreen = true)
     data object TripGalleryImageViewerScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.TRIP_GALLERY_IMAGE_VIEWER_SCREEN}/{${Constants.NavigationArgs.PHOTO_ID}}", isFullScreen = true) {
         fun createRoute(photoId: String) = "${Constants.NavigationScreen.TRIP_GALLERY_IMAGE_VIEWER_SCREEN}/$photoId"

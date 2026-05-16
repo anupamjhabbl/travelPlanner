@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.common.di_modules
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.room.Room
 import com.example.bbltripplanner.common.database.AppDatabase
 import com.example.bbltripplanner.common.infra.EncryptedPreferenceManager
@@ -151,7 +152,9 @@ val appModule = module {
     single<TripGalleryClient> { Network.createWithAuth(TripGalleryClient::class.java, get(), get(), androidContext()) }
     single<TripGalleryRepository> { TripGalleryRepositoryImpl(get(), get()) }
     single<TripGalleryUseCase> { TripGalleryUseCase(get()) }
-    viewModel { (tripId: String?) -> TripGalleryViewModel(tripId, get()) }
+    viewModel { (handle: SavedStateHandle) ->
+        TripGalleryViewModel(handle, get())
+    }
 
     // User Auth
     single<UserAuthRepository> { UserAuthNetwork(get()) }

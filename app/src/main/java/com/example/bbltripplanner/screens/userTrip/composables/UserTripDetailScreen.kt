@@ -464,7 +464,7 @@ private suspend fun takeAction(key: String, tripId: String?) {
             Constants.TripDetailScreen.ATTACHMENTS -> {
                 CommonNavigationChannel.navigateTo(
                     NavigationAction.Navigate(
-                        AppNavigationScreen.TripGalleryScreen.createRoute(tripId)
+                        AppNavigationScreen.TripGalleryNavEntry.createRoute(tripId)
                     )
                 )
             }

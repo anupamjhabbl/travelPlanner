@@ -26,26 +26,35 @@ import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
+import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import kotlinx.coroutines.launch
 
 @Composable
 fun TripGalleryPreviewScreen(
-    onDone: () -> Unit,
-    onBack: () -> Unit
+    viewModel: TripGalleryViewModel
 ) {
     var privacy by remember { mutableStateOf("Public") }
     var allowDownload by remember { mutableStateOf(true) }
     var allowResharing by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val goBack: () -> Unit = {
+        scope.launch {
+            CommonNavigationChannel.navigateTo(
+                NavigationAction.NavigateUp
+            )
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Full screen background image
         ComposeImageView.ImageViewWithUrl(
             imageURI = "", // Mock background
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
 
-        // Top Buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -55,7 +64,7 @@ fun TripGalleryPreviewScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = onBack,
+                onClick = goBack,
                 modifier = Modifier
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.3f))
@@ -68,7 +77,7 @@ fun TripGalleryPreviewScreen(
             }
 
             Button(
-                onClick = onDone,
+                onClick = goBack,
                 colors = ButtonDefaults.buttonColors(containerColor = LocalCustomColors.current.secondaryBackground),
                 shape = RoundedCornerShape(20.dp)
             ) {
@@ -76,7 +85,6 @@ fun TripGalleryPreviewScreen(
             }
         }
 
-        // Bottom Sheet Overlay
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
