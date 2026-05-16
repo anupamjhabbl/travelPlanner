@@ -49,9 +49,13 @@ import com.example.bbltripplanner.screens.userTrip.composables.ItineraryMapView
 import com.example.bbltripplanner.screens.userTrip.composables.PostingEditScreen
 import com.example.bbltripplanner.screens.userTrip.composables.PostingInitScreen
 import com.example.bbltripplanner.screens.userTrip.composables.TripExpensesScreen
+import com.example.bbltripplanner.screens.userTrip.composables.TripGalleryImageViewerScreen
+import com.example.bbltripplanner.screens.userTrip.composables.TripGalleryPreviewScreen
+import com.example.bbltripplanner.screens.userTrip.composables.TripGalleryScreen
 import com.example.bbltripplanner.screens.userTrip.composables.TripGroupScreen
 import com.example.bbltripplanner.screens.userTrip.composables.UserTripDetailScreen
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseViewModel
+import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryViewModel
 import com.example.bbltripplanner.screens.vault.composables.UserTripsScreen
 import com.example.bbltripplanner.screens.vault.composables.UserVaultScreen
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -290,6 +294,38 @@ fun HomeNavigationComposable(
             composable(route = AppNavigationScreen.ItineraryDetailView.route) { navBackStackEntry ->
                 val placeId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.ITINERARY_PLACE_ID)
                 ItineraryDetailView(placeId)
+            }
+        }
+
+        navigation(
+            startDestination = AppNavigationScreen.TripGalleryScreen.route,
+            route = AppNavigationScreen.TripGalleryNavEntry.route
+        ) {
+            composable(route = AppNavigationScreen.TripGalleryScreen.route) { navBackStackEntry ->
+                val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
+                val parentEntry = remember(navBackStackEntry) {
+                    homeNavController.getBackStackEntry(AppNavigationScreen.TripGalleryNavEntry.route)
+                }
+                val viewModel: TripGalleryViewModel = koinViewModel(
+                    viewModelStoreOwner = parentEntry,
+                    parameters = { parametersOf(tripId) }
+                )
+                TripGalleryScreen(viewModel)
+            }
+
+            composable(route = AppNavigationScreen.TripGalleryPreviewScreen.route) {
+                TripGalleryPreviewScreen(
+                    onDone = { homeNavController.navigateUp() },
+                    onBack = { homeNavController.navigateUp() }
+                )
+            }
+
+            composable(route = AppNavigationScreen.TripGalleryImageViewerScreen.route) { navBackStackEntry ->
+                val photoId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.PHOTO_ID)
+                TripGalleryImageViewerScreen(
+                    photoId,
+                    onBack = { homeNavController.navigateUp() }
+                )
             }
         }
 

@@ -84,6 +84,16 @@ sealed class AppNavigationScreen(
         fun createRoute(tripId: String) = "${Constants.NavigationScreen.TRIP_GROUP_SCREEN}/$tripId"
     }
 
+    // Trip Gallery Screens
+    data object TripGalleryNavEntry: AppNavigationScreen(route = Constants.NavigationScreen.TRIP_GALLERY_NAV_ENTRY)
+    data object TripGalleryScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.TRIP_GALLERY_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}") {
+        fun createRoute(tripId: String) = "${Constants.NavigationScreen.TRIP_GALLERY_SCREEN}/$tripId"
+    }
+    data object TripGalleryPreviewScreen: AppNavigationScreen(route = Constants.NavigationScreen.TRIP_GALLERY_PREVIEW_SCREEN, isFullScreen = true)
+    data object TripGalleryImageViewerScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.TRIP_GALLERY_IMAGE_VIEWER_SCREEN}/{${Constants.NavigationArgs.PHOTO_ID}}", isFullScreen = true) {
+        fun createRoute(photoId: String) = "${Constants.NavigationScreen.TRIP_GALLERY_IMAGE_VIEWER_SCREEN}/$photoId"
+    }
+
     // General
     data object BuzzScreen: AppNavigationScreen(route = Constants.NavigationScreen.BUZZ_SCREEN, hasBottomBar = true)
     data object NotificationScreen: AppNavigationScreen(route = Constants.NavigationScreen.NOTIFICATION_SCREEN)
@@ -129,6 +139,11 @@ fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
         route.startsWith(Constants.NavigationScreen.EXPENSE_SETTLEMENT_SCREEN) -> AppNavigationScreen.ExpenseSettlementScreen
         route.startsWith(Constants.NavigationScreen.ITINERARY_MAP_VIEW_SCREEN) -> AppNavigationScreen.ItineraryMapViewScreen
         route.startsWith(Constants.NavigationScreen.TRIP_GROUP_SCREEN) -> AppNavigationScreen.TripGroupScreen
+
+        // Trip Gallery
+        route.startsWith(Constants.NavigationScreen.TRIP_GALLERY_SCREEN) -> AppNavigationScreen.TripGalleryScreen
+        route.startsWith(Constants.NavigationScreen.TRIP_GALLERY_PREVIEW_SCREEN) -> AppNavigationScreen.TripGalleryPreviewScreen
+        route.startsWith(Constants.NavigationScreen.TRIP_GALLERY_IMAGE_VIEWER_SCREEN) -> AppNavigationScreen.TripGalleryImageViewerScreen
 
         // Authentication
         route.startsWith(Constants.NavigationScreen.AUTH_GRAPH) -> AppNavigationScreen.AuthGraph

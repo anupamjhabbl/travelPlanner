@@ -260,4 +260,8 @@
     <string name="add_split_user_message">Please add users for splitting the expense.</string>
     <string name="settlement_not_available_title">Settlement Pending</string>
     <string name="settlement_not_available_description">Settlement will be available once the trip is completed. Keep track of your expenses until then!</string>
+    <string name="uploading_single">UPLOADING %1$d ITEM…</string>
+    <string name="uploading_plural">UPLOADING %1$d ITEMS…</string>
+    <string name="retry">Retry</string>
+    <string name="add_photos">Add Photos</string>
 </resources>

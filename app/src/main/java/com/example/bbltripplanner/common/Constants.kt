@@ -61,6 +61,11 @@ object Constants {
         const val ADD_SPOTS_SCREEN = "add_spots_screen"
         const val TRIP_GROUP_SCREEN = "trip_group_screen"
 
+        const val TRIP_GALLERY_NAV_ENTRY = "trip_gallery_nav_entry"
+        const val TRIP_GALLERY_SCREEN = "trip_gallery_screen"
+        const val TRIP_GALLERY_PREVIEW_SCREEN = "trip_gallery_preview_screen"
+        const val TRIP_GALLERY_IMAGE_VIEWER_SCREEN = "trip_gallery_image_viewer_screen"
+
         // User Screens
         const val PROFILE_SCREEN = "profile_screen"
         const val ACCOUNT_SCREEN = "my_account_screen"
@@ -95,6 +100,7 @@ object Constants {
         const val TRIP_SELECTED_DATE = "trip_selected_date"
         const val ITINERARY_PLACE_ID = "itinerary_place_id"
         const val ITINERARY_ID = "itinerary_id"
+        const val PHOTO_ID = "photo_id"
     }
 
     object Origin {
