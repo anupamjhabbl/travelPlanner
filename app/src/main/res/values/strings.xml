@@ -271,4 +271,7 @@
     <string name="allow_sharing">Allow Resharing</string>
     <string name="done">Done</string>
     <string name="edit_list">Edit List</string>
+    <string name="trip_gallery">Trip Gallery</string>
+    <string name="no_photos">There is no image added in the trip.</string>
+    <string name="no_photos_title">Add Photos</string>
 </resources>

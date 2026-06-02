@@ -30,6 +30,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
+import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -58,23 +61,14 @@ fun TripGalleryScreen(
     viewModel: TripGalleryViewModel
 ) {
     val scope = rememberCoroutineScope()
-    val photos: List<TripPhoto> = listOf(
-        TripPhoto("101", "https://picsum.photos/500/300?random=101", status = PhotoUploadStatus.UPLOADING),
-        TripPhoto("105", "https://picsum.photos/500/300?random=105"),
-        TripPhoto("102", "https://picsum.photos/500/300?random=102", status = PhotoUploadStatus.FAILED),
-        TripPhoto("107", "https://picsum.photos/500/300?random=107"),
-        TripPhoto("103", "https://picsum.photos/500/300?random=103"),
-        TripPhoto("106", "https://picsum.photos/500/300?random=106"),
-        TripPhoto("104", "https://picsum.photos/500/300?random=104"),
-        TripPhoto("108", "https://picsum.photos/500/300?random=108")
-    )
-
+    val photosStatus by viewModel.remotePhotosStatus.collectAsState()
+    val photos = photosStatus.data ?: emptyList()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            GalleryTopBar(tripName = "Paris Summer 2024") {
+            GalleryTopBar(tripName = stringResource(R.string.trip_gallery)) {
                 scope.launch {
                     CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
                 }
@@ -85,27 +79,41 @@ fun TripGalleryScreen(
                     .fillMaxSize()
                     .background(LocalCustomColors.current.primaryBackground)
             ) {
-                val uploadingCount =
-                    photos.count { it.status == PhotoUploadStatus.UPLOADING || it.status == PhotoUploadStatus.PENDING }
-                if (uploadingCount > 0) {
-                    UploadingStatusHeader(uploadingCount)
-                }
+                if (photosStatus.isLoading && photos.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = LocalCustomColors.current.secondaryBackground)
+                    }
+                } else if ((photosStatus.error != null && photos.isEmpty())) {
+                    ComposeViewUtils.FullScreenErrorComposable(
+                        Pair(stringResource(R.string.server_error), photosStatus.error ?: "")
+                    )
+                } else if (photos.isEmpty()) {
+                    ComposeViewUtils.FullScreenErrorComposable(
+                        Pair(stringResource(R.string.no_photos_title), stringResource(R.string.no_photos))
+                    )
+                } else {
+                    val uploadingCount =
+                        photos.count { it.status == PhotoUploadStatus.UPLOADING || it.status == PhotoUploadStatus.PENDING }
+                    if (uploadingCount > 0) {
+                        UploadingStatusHeader(uploadingCount)
+                    }
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(photos) { photo ->
-                        PhotoGridItem(photo) {
-                            scope.launch {
-                                CommonNavigationChannel.navigateTo(
-                                    NavigationAction.Navigate(
-                                        AppNavigationScreen.TripGalleryImageViewerScreen.createRoute(photo.id)
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        contentPadding = PaddingValues(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(photos, key = { it.id }) { photo ->
+                            PhotoGridItem(photo) {
+                                scope.launch {
+                                    CommonNavigationChannel.navigateTo(
+                                        NavigationAction.Navigate(
+                                            AppNavigationScreen.TripGalleryImageViewerScreen.createRoute(photo.id)
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
                     }
@@ -127,7 +135,6 @@ fun TripGalleryScreen(
                             )
                         )
                     }
-                    // open gallery screen to pick photos and also camera option first select what user want
                 },
                 containerColor = LocalCustomColors.current.secondaryBackground,
                 contentColor = LocalCustomColors.current.primaryButtonText,
@@ -221,7 +228,7 @@ fun PhotoGridItem(photo: TripPhoto, onClick: () -> Unit) {
             .clickable(onClick = onClick)
     ) {
         ComposeImageView.ImageViewWithUrl(
-            imageURI = photo.localPath ?: photo.url,
+            imageURI = photo.compressedMediaUrl ?: photo.originalMediaUrl ?: "",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )

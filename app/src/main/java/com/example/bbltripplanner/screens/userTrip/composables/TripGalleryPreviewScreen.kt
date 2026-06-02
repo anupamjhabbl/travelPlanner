@@ -67,7 +67,6 @@ import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.AttachmentPrivacy
-import com.example.bbltripplanner.screens.userTrip.entity.PhotoUploadStatus
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhoto
 import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -78,16 +77,7 @@ import kotlinx.coroutines.launch
 fun TripGalleryPreviewScreen(
     viewModel: TripGalleryViewModel
 ) {
-    val images: List<TripPhoto> = listOf(
-        TripPhoto("101", "https://picsum.photos/500/300?random=101", status = PhotoUploadStatus.UPLOADING),
-        TripPhoto("105", "https://picsum.photos/500/300?random=105"),
-        TripPhoto("102", "https://picsum.photos/500/300?random=102", status = PhotoUploadStatus.FAILED),
-        TripPhoto("107", "https://picsum.photos/500/300?random=107"),
-        TripPhoto("103", "https://picsum.photos/500/300?random=103"),
-        TripPhoto("106", "https://picsum.photos/500/300?random=106"),
-        TripPhoto("104", "https://picsum.photos/500/300?random=104"),
-        TripPhoto("108", "https://picsum.photos/500/300?random=108")
-    )
+    val images: List<TripPhoto> = listOf()
     val peopleList = listOf(
         User(
             "1",
@@ -175,7 +165,7 @@ fun TripGalleryPreviewScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             ComposeImageView.ImageViewWithUrl(
-                imageURI = images[selectedImageIndex].url,
+                imageURI = images[selectedImageIndex].compressedMediaUrl ?: "",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit
             )
@@ -284,7 +274,7 @@ fun BottomSheetContent(
                         .clickable { onImageSelected(index) }
                 ) {
                     ComposeImageView.ImageViewWithUrl(
-                        imageURI = image.url,
+                        imageURI = image.compressedMediaUrl ?: "",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )

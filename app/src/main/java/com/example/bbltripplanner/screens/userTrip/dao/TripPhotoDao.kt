@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.bbltripplanner.screens.userTrip.entity.PhotoUploadStatus
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhotoEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -12,6 +13,9 @@ import kotlinx.coroutines.flow.Flow
 interface TripPhotoDao {
     @Query("SELECT * FROM trip_photos WHERE tripId = :tripId")
     fun getPhotosForTrip(tripId: String): Flow<List<TripPhotoEntity>>
+
+    @Query("SELECT * FROM trip_photos WHERE tripId = :tripId AND uploadStatus != :status")
+    suspend fun getIncompletePhotos(tripId: String, status: PhotoUploadStatus = PhotoUploadStatus.COMPLETE): List<TripPhotoEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPhoto(photo: TripPhotoEntity): Long
