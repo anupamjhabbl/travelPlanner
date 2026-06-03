@@ -183,14 +183,6 @@ fun GalleryTopBar(tripName: String, onBack: () -> Unit) {
                 textColor = LocalCustomColors.current.secondaryBackground
             )
         }
-
-        IconButton(onClick = {}) {
-            Icon(
-                imageVector = Icons.Default.Share,
-                contentDescription = "Share",
-                tint = LocalCustomColors.current.secondaryBackground
-            )
-        }
     }
 }
 

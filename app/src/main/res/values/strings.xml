@@ -274,4 +274,6 @@
     <string name="trip_gallery">Trip Gallery</string>
     <string name="no_photos">There is no image added in the trip.</string>
     <string name="no_photos_title">Add Photos</string>
+    <string name="download_img_msg">Downloading image…</string>
+    <string name="share_img_msg">Preparing image for sharing…</string>
 </resources>
