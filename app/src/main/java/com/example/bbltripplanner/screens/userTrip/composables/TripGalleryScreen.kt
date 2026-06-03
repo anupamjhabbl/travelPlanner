@@ -21,9 +21,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.CameraEnhance
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -142,7 +141,7 @@ fun TripGalleryScreen(
                 modifier = Modifier.padding(bottom = 16.dp),
             ) {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = Icons.Default.CameraEnhance,
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
                     tint = LocalCustomColors.current.primaryButtonText
