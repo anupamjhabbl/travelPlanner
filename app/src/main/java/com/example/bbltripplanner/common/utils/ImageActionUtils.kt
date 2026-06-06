@@ -5,10 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
@@ -17,7 +17,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import androidx.core.net.toUri
 
 object ImageActionUtils {
 
