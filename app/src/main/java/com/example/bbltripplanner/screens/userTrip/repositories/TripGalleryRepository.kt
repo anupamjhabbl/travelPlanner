@@ -6,7 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface TripGalleryRepository {
     fun getPhotos(tripId: String): Flow<List<TripPhoto>>
-    suspend fun fetchRemotePhotos(tripId: String): List<TripPhoto>?
-    suspend fun uploadPhoto(tripId: String, localPath: String)
-    suspend fun savePhotosLocally(photos: List<TripPhotoEntity>): List<TripPhoto>
+    suspend fun fetchTripPhotos(tripId: String): List<TripPhoto>?
+    suspend fun savePhotosLocally(photos: List<TripPhotoEntity>): List<TripPhotoEntity>
+    suspend fun getPhotosByIds(ids: List<Long>): List<TripPhotoEntity>
+    suspend fun updatePhoto(photo: TripPhotoEntity)
+    suspend fun deletePhoto(id: Long)
 }

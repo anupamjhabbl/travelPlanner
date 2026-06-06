@@ -34,6 +34,12 @@ object Constants {
         @SerializedName("light") LIGHT
     }
 
+    object Notification {
+        const val TRIP_GALLERY_UPLOAD_CHANNEL_ID = "trip_gallery_upload_channel"
+        const val TRIP_GALLERY_UPLOAD_CHANNEL_NAME = "Trip Gallery Upload"
+        const val TRIP_GALLERY_UPLOAD_NOTIFICATION_ID = 1001
+    }
+
     object NavigationScreen {
         // Home & Listing
         const val HOME_NAV_GRAPH = "home_nav_graph"

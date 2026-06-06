@@ -10,7 +10,7 @@ data class TripPhoto(
     val originalMediaUrl: String? = null,
     val compressedMediaUrl: String? = null,
     val createdAt: Long? = null,
-    val visibility: String? = null,
+    val visibility: AttachmentPrivacy? = null,
     val selectedUserIds: List<String> = emptyList(),
     val isDownloadable: Boolean = true,
     val isShareable: Boolean = true

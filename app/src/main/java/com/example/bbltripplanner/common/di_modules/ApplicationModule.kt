@@ -44,6 +44,7 @@ import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowe
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowingViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileViewModel
 import com.example.bbltripplanner.screens.userTrip.clients.ExpenseClient
+import com.example.bbltripplanner.screens.userTrip.clients.FileUploadClient
 import com.example.bbltripplanner.screens.userTrip.clients.ItineraryClient
 import com.example.bbltripplanner.screens.userTrip.clients.LocationSearchClient
 import com.example.bbltripplanner.screens.userTrip.clients.PostingClient
@@ -81,6 +82,7 @@ import com.example.bbltripplanner.screens.vault.repositoryImpl.VaultNetwork
 import com.example.bbltripplanner.screens.vault.usecases.VaultUseCase
 import com.example.bbltripplanner.screens.vault.viewModels.UserTripsViewModel
 import com.google.gson.Gson
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -153,8 +155,9 @@ val appModule = module {
     single<TripGalleryRepository> { TripGalleryRepositoryImpl(get(), get()) }
     single<TripGalleryUseCase> { TripGalleryUseCase(get()) }
     viewModel { (handle: SavedStateHandle) ->
-        TripGalleryViewModel(handle, get())
+        TripGalleryViewModel(androidApplication(), handle, get())
     }
+    single<FileUploadClient> { Network.create(FileUploadClient::class.java, androidContext()) }
 
     // User Auth
     single<UserAuthRepository> { UserAuthNetwork(get()) }

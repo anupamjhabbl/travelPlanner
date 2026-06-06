@@ -13,7 +13,7 @@ data class TripPhotoEntity(
     val fileName: String? = null,
     val mimeType: String? = null,
     val fileSize: Long? = null,
-    val visibility: String? = null,
+    val visibility: AttachmentPrivacy,
     val selectedUserIds: List<String> = emptyList(),
     val isDownloadable: Boolean = true,
     val isShareable: Boolean = true

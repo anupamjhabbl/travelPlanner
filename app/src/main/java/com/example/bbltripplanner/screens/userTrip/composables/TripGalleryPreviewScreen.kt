@@ -181,7 +181,7 @@ fun TripGalleryPreviewScreen(
                 },
                 onDone = {
                     val request = TripGalleryUploadRequest(
-                        visibility = privacy.value,
+                        visibility = privacy,
                         selectedUserIds = if (privacy == AttachmentPrivacy.SELECTED) selectedPeopleList.value.map { it.id } else emptyList(),
                         isDownloadable = allowDownload,
                         isShareable = allowResharing,

@@ -1,7 +1,9 @@
 package com.example.bbltripplanner.screens.userTrip.viewModels
 
+import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
@@ -10,6 +12,7 @@ import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.TripGalleryUploadRequest
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhoto
 import com.example.bbltripplanner.screens.userTrip.usecases.TripGalleryUseCase
+import com.example.bbltripplanner.screens.userTrip.workers.TripGalleryUploadWorker
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,8 +24,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.collections.toLongArray
 
 class TripGalleryViewModel(
+    private val context: Application,
     savedStateHandle: SavedStateHandle,
     private val useCase: TripGalleryUseCase
 ) : BaseMVIVViewModel<TripGalleryIntent.ViewEvent>() {
@@ -55,7 +60,6 @@ class TripGalleryViewModel(
     override fun processEvent(viewEvent: TripGalleryIntent.ViewEvent) {
         when (viewEvent) {
             is TripGalleryIntent.ViewEvent.FetchPhotos -> fetchPhotos(viewEvent.tripId)
-            is TripGalleryIntent.ViewEvent.UploadPhoto -> uploadPhoto(viewEvent.tripId, viewEvent.path)
             is TripGalleryIntent.ViewEvent.SavePhotosLocally -> savePhotosLocally(viewEvent.request)
             is TripGalleryIntent.ViewEvent.SetSelectedPhotos -> {
                 _selectedPhotos.value = viewEvent.photos
@@ -85,24 +89,12 @@ class TripGalleryViewModel(
         viewModelScope.launch {
             _photosStatus.value = RequestResponseStatus(isLoading = true)
             SafeIOUtil.safeCall {
-                useCase.fetchRemotePhotos(tripId)
+                useCase.fetchTripPhotos(tripId)
             }.onSuccess {
                 _photosStatus.value = RequestResponseStatus(data = it)
             }.onFailure {
                 val errorMessage = if (it is TripPlannerException) it.message ?: Constants.DEFAULT_ERROR else Constants.DEFAULT_ERROR
                 _photosStatus.value = RequestResponseStatus(error = errorMessage)
-            }
-        }
-    }
-
-    private fun uploadPhoto(tripId: String, path: String) {
-        viewModelScope.launch {
-            _galleryViewEffect.send(TripGalleryIntent.GalleryViewEffect.UploadLoading)
-            try {
-                useCase.uploadPhoto(tripId, path)
-                _galleryViewEffect.send(TripGalleryIntent.GalleryViewEffect.UploadSuccess)
-            } catch (e: Exception) {
-                _galleryViewEffect.send(TripGalleryIntent.GalleryViewEffect.UploadError(e.message ?: Constants.DEFAULT_ERROR))
             }
         }
     }
@@ -114,12 +106,19 @@ class TripGalleryViewModel(
                     val newPhotos = useCase.savePhotosLocally(id, request)
                     val currentPhotos = _photosStatus.value.data ?: emptyList()
                     val updatedPhotos = (newPhotos + currentPhotos).sortedByDescending { it.createdAt }
-                    
+
                     _photosStatus.value = _photosStatus.value.copy(data = updatedPhotos)
+                    TripGalleryUploadWorker.enqueue(
+                        context,
+                        newPhotos
+                            .mapNotNull { it.id.toLongOrNull() }
+                            .toLongArray(),
+                        id)
+                    
                     _galleryViewEffect.send(TripGalleryIntent.GalleryViewEffect.SaveSuccess)
                 }
             } catch (e: Exception) {
-                _galleryViewEffect.send(TripGalleryIntent.GalleryViewEffect.UploadError(e.message ?: "Failed to save photos"))
+                _galleryViewEffect.send(TripGalleryIntent.GalleryViewEffect.UploadError(e.message ?: context.getString(R.string.photos_save_failed)))
             }
         }
     }

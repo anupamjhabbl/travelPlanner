@@ -3,7 +3,6 @@ package com.example.bbltripplanner.screens.userTrip.repositoryImpl
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.screens.userTrip.clients.TripGalleryClient
 import com.example.bbltripplanner.screens.userTrip.dao.TripPhotoDao
-import com.example.bbltripplanner.screens.userTrip.entity.PhotoUploadStatus
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhoto
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhotoEntity
 import com.example.bbltripplanner.screens.userTrip.entity.toDomain
@@ -24,7 +23,7 @@ class TripGalleryRepositoryImpl(
         }
     }
 
-    override suspend fun fetchRemotePhotos(tripId: String): List<TripPhoto>? = coroutineScope {
+    override suspend fun fetchTripPhotos(tripId: String): List<TripPhoto>? = coroutineScope {
         val remoteDeferred = async {
             try {
                 BaseResponse.processResponse { client.getPhotos(tripId) }
@@ -47,18 +46,20 @@ class TripGalleryRepositoryImpl(
         combined.sortedByDescending { it.createdAt }
     }
 
-    override suspend fun uploadPhoto(tripId: String, localPath: String) {
-        val entity = TripPhotoEntity(
-            localPath = localPath,
-            uploadStatus = PhotoUploadStatus.PENDING,
-            tripId = tripId,
-            createdAt = System.currentTimeMillis()
-        )
-        dao.insertPhoto(entity)
+    override suspend fun savePhotosLocally(photos: List<TripPhotoEntity>): List<TripPhotoEntity> {
+        val ids = dao.insertPhotos(photos)
+        return dao.getPhotosByIds(ids)
     }
 
-    override suspend fun savePhotosLocally(photos: List<TripPhotoEntity>): List<TripPhoto> {
-        val ids = dao.insertPhotos(photos)
-        return dao.getPhotosByIds(ids).map { it.toDomain() }
+    override suspend fun getPhotosByIds(ids: List<Long>): List<TripPhotoEntity> {
+        return dao.getPhotosByIds(ids)
+    }
+
+    override suspend fun updatePhoto(photo: TripPhotoEntity) {
+        dao.updatePhoto(photo)
+    }
+
+    override suspend fun deletePhoto(id: Long) {
+        dao.deletePhoto(id)
     }
 }

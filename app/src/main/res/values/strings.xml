@@ -277,4 +277,10 @@
     <string name="download_img_msg">Downloading image…</string>
     <string name="share_img_msg">Preparing image for sharing…</string>
     <string name="photos_saved_successfully">Photos Saved Successfully.</string>
+    <string name="photos_save_failed">Failed to save photos</string>
+
+    <string name="notification_trip_gallery_upload_title">Uploading Trip Photos</string>
+    <string name="notification_trip_gallery_upload_progress">Uploaded %1$d of %2$d photos</string>
+    <string name="notification_trip_gallery_upload_preparing">Preparing upload…</string>
+    <string name="show_photo_upload_desc">Shows progress of trip photo uploads</string>
 </resources>
