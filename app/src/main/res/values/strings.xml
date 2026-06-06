@@ -276,4 +276,5 @@
     <string name="no_photos_title">Add Photos</string>
     <string name="download_img_msg">Downloading image…</string>
     <string name="share_img_msg">Preparing image for sharing…</string>
+    <string name="photos_saved_successfully">Photos Saved Successfully.</string>
 </resources>

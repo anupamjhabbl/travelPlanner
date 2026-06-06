@@ -1,5 +1,9 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -37,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,22 +52,71 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.common.utils.FileUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.PhotoUploadStatus
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhoto
+import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @Composable
 fun TripGalleryScreen(
     viewModel: TripGalleryViewModel
 ) {
     val scope = rememberCoroutineScope()
-    val photosStatus by viewModel.remotePhotosStatus.collectAsState()
-    val photos = photosStatus.data ?: emptyList()
+    val context = LocalContext.current
+
+    val photos by viewModel.galleryPhotos.collectAsState()
+    val photosStatus by viewModel.photosStatus.collectAsState()
+
+    // Handle ViewModel effects
+    LaunchedEffect(Unit) {
+        viewModel.galleryViewEffect.collect { effect ->
+            when (effect) {
+                is TripGalleryIntent.GalleryViewEffect.UploadError -> {
+                    Toast.makeText(context, effect.message, Toast.LENGTH_LONG).show()
+                }
+                is TripGalleryIntent.GalleryViewEffect.UploadSuccess -> {
+                    // Logic for individual photo upload success if needed
+                }
+                else -> {}
+            }
+        }
+    }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = { uris ->
+            if (uris.isNotEmpty()) {
+                val tripPhotos = uris.mapNotNull { uri ->
+                    FileUtils.saveUriToInternalStorage(context, uri)?.let { file ->
+                        TripPhoto(
+                            id = UUID.randomUUID().toString(),
+                            originalMediaUrl = file.absolutePath,
+                            compressedMediaUrl = file.absolutePath,
+                            status = PhotoUploadStatus.PENDING
+                        )
+                    }
+                }
+                
+                if (tripPhotos.isNotEmpty()) {
+                    viewModel.processEvent(TripGalleryIntent.ViewEvent.SetSelectedPhotos(tripPhotos))
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(
+                            NavigationAction.Navigate(
+                                AppNavigationScreen.TripGalleryPreviewScreen.route
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    )
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -127,13 +182,9 @@ fun TripGalleryScreen(
         ) {
             ExtendedFloatingActionButton(
                 onClick = {
-                    scope.launch {
-                        CommonNavigationChannel.navigateTo(
-                            NavigationAction.Navigate(
-                                AppNavigationScreen.TripGalleryPreviewScreen.route
-                            )
-                        )
-                    }
+                    photoPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
                 },
                 containerColor = LocalCustomColors.current.secondaryBackground,
                 contentColor = LocalCustomColors.current.primaryButtonText,

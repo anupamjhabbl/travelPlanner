@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -44,6 +45,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +59,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -67,75 +71,30 @@ import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.AttachmentPrivacy
+import com.example.bbltripplanner.screens.userTrip.entity.TripGalleryFile
+import com.example.bbltripplanner.screens.userTrip.entity.TripGalleryUploadRequest
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhoto
+import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TripGalleryPreviewScreen(
     viewModel: TripGalleryViewModel
 ) {
-    val images: List<TripPhoto> = listOf()
-    val peopleList = listOf(
-        User(
-            "1",
-            "Alex Rivera",
-            phone = null,
-            email = null,
-            bio = null,
-            profilePicture = "https://picsum.photos/400/200",
-            userStory = null,
-        ),
-        User(
-            "2",
-            "Alex Rivera",
-            phone = null,
-            email = null,
-            bio = null,
-            profilePicture = "https://picsum.photos/400/200",
-            userStory = null,
-        ),
-        User(
-            "3",
-            "Alex Rivera",
-            phone = null,
-            email = null,
-            bio = null,
-            profilePicture = "https://picsum.photos/400/200",
-            userStory = null,
-        ),
-        User(
-            "4",
-            "Alex Rivera",
-            phone = null,
-            email = null,
-            bio = null,
-            profilePicture = "https://picsum.photos/400/200",
-            userStory = null,
-        )
-    )
-    val selectedPeopleList = listOf(
-        User(
-            "1",
-            "Alex Rivera",
-            phone = null,
-            email = null,
-            bio = null,
-            profilePicture = "https://picsum.photos/400/200",
-            userStory = null,
-        ),
-        User(
-            "2",
-            "Alex Rivera",
-            phone = null,
-            email = null,
-            bio = null,
-            profilePicture = "https://picsum.photos/400/200",
-            userStory = null,
-        )
-    )
+    val context = LocalContext.current
+    val images by viewModel.selectedPhotos.collectAsState()
+    
+    var privacy: AttachmentPrivacy by remember { mutableStateOf(AttachmentPrivacy.PUBLIC) }
+    var allowDownload by remember { mutableStateOf(true) }
+    var allowResharing by remember { mutableStateOf(false) }
+
+    val peopleList = listOf<User>()
+    val selectedPeopleList = remember { mutableStateOf(emptyList<User>()) }
+
     val scope = rememberCoroutineScope()
     val sheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
@@ -145,6 +104,36 @@ fun TripGalleryPreviewScreen(
     )
 
     var selectedImageIndex by remember { mutableIntStateOf(0) }
+    val savedSuccess = stringResource(R.string.photos_saved_successfully)
+
+    var isNavigatingAway by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.galleryViewEffect.collect { effect ->
+            when (effect) {
+                is TripGalleryIntent.GalleryViewEffect.SaveSuccess -> {
+                    Toast.makeText(context, savedSuccess, Toast.LENGTH_SHORT).show()
+                    if (!isNavigatingAway) {
+                        isNavigatingAway = true
+                        CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
+                    }
+                }
+                is TripGalleryIntent.GalleryViewEffect.UploadError -> {
+                    Toast.makeText(context, effect.message, Toast.LENGTH_LONG).show()
+                }
+                else -> {}
+            }
+        }
+    }
+
+    LaunchedEffect(images.size) {
+        if (images.isNotEmpty() && selectedImageIndex >= images.size) {
+            selectedImageIndex = images.size - 1
+        } else if (images.isEmpty() && !isNavigatingAway) {
+            isNavigatingAway = true
+            CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
+        }
+    }
 
     BottomSheetScaffold(
         scaffoldState = sheetState,
@@ -154,9 +143,18 @@ fun TripGalleryPreviewScreen(
             BottomSheetContent(
                 images = images,
                 peopleList = peopleList,
-                selectedPeopleList = selectedPeopleList,
+                selectedPeopleList = selectedPeopleList.value,
                 selectedImageIndex = selectedImageIndex,
-                onImageSelected = { selectedImageIndex = it }
+                privacy = privacy,
+                allowDownload = allowDownload,
+                allowResharing = allowResharing,
+                onPrivacyChange = { privacy = it },
+                onAllowDownloadChange = { allowDownload = it },
+                onAllowResharingChange = { allowResharing = it },
+                onImageSelected = { selectedImageIndex = it },
+                onDeletePhoto = {
+                    viewModel.processEvent(TripGalleryIntent.ViewEvent.DeletePhoto(images[selectedImageIndex]))
+                }
             )
         },
         sheetShadowElevation = 16.dp
@@ -164,22 +162,43 @@ fun TripGalleryPreviewScreen(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
+            val currentImage = if (selectedImageIndex < images.size) images[selectedImageIndex] else null
+            
             ComposeImageView.ImageViewWithUrl(
-                imageURI = images[selectedImageIndex].compressedMediaUrl ?: "",
+                imageURI = currentImage?.compressedMediaUrl ?: "",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit
             )
 
             PreviewToolbar(
                 onClose = {
-                    scope.launch {
-                        CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
+                    if (!isNavigatingAway) {
+                        isNavigatingAway = true
+                        scope.launch {
+                            CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
+                        }
                     }
                 },
                 onDone = {
-                    scope.launch {
-                        CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
-                    }
+                    val request = TripGalleryUploadRequest(
+                        visibility = privacy.value,
+                        selectedUserIds = if (privacy == AttachmentPrivacy.SELECTED) selectedPeopleList.value.map { it.id } else emptyList(),
+                        isDownloadable = allowDownload,
+                        isShareable = allowResharing,
+                        files = images.mapNotNull { photo ->
+                            photo.originalMediaUrl?.let { path ->
+                                val file = File(path)
+                                TripGalleryFile(
+                                    fileName = file.name,
+                                    mimeType = "image/${file.extension}",
+                                    fileSize = file.length(),
+                                    createdAt = System.currentTimeMillis(),
+                                    localPath = path
+                                )
+                            }
+                        }
+                    )
+                    viewModel.processEvent(TripGalleryIntent.ViewEvent.SavePhotosLocally(request))
                 }
             )
         }
@@ -205,9 +224,7 @@ fun PreviewToolbar(
                 .size(42.dp)
                 .clip(CircleShape)
                 .background(LocalCustomColors.current.secondaryBackground)
-                .clickable {
-                    onClose()
-                },
+                .clickable { onClose() },
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -241,11 +258,15 @@ fun BottomSheetContent(
     peopleList: List<User>,
     selectedPeopleList: List<User>,
     selectedImageIndex: Int,
-    onImageSelected: (Int) -> Unit
+    privacy: AttachmentPrivacy,
+    allowDownload: Boolean,
+    allowResharing: Boolean,
+    onPrivacyChange: (AttachmentPrivacy) -> Unit,
+    onAllowDownloadChange: (Boolean) -> Unit,
+    onAllowResharingChange: (Boolean) -> Unit,
+    onImageSelected: (Int) -> Unit,
+    onDeletePhoto: () -> Unit
 ) {
-    var privacy: AttachmentPrivacy by remember { mutableStateOf(AttachmentPrivacy.PUBLIC) }
-    var allowDownload by remember { mutableStateOf(true) }
-    var allowResharing by remember { mutableStateOf(false) }
     val horizontalScrollState = rememberScrollState()
     var isEditing by remember { mutableStateOf(false) }
 
@@ -299,7 +320,7 @@ fun BottomSheetContent(
                 contentDescription = "Delete",
                 tint = LocalCustomColors.current.error,
                 modifier = Modifier.clickable {
-                    // delete the photo
+                    onDeletePhoto()
                 }
             )
         }
@@ -312,36 +333,36 @@ fun BottomSheetContent(
         ) {
             PrivacyOption(Icons.Default.Public, AttachmentPrivacy.PUBLIC.value, privacy == AttachmentPrivacy.PUBLIC) {
                 isEditing = false
-                privacy = AttachmentPrivacy.PUBLIC
+                onPrivacyChange(AttachmentPrivacy.PUBLIC)
             }
             PrivacyOption(Icons.Default.Lock, AttachmentPrivacy.PRIVATE.value, privacy == AttachmentPrivacy.PRIVATE) {
                 isEditing = false
-                privacy = AttachmentPrivacy.PRIVATE
+                onPrivacyChange(AttachmentPrivacy.PRIVATE)
             }
             PrivacyOption(Icons.Default.Groups, AttachmentPrivacy.SELECTED.value, privacy == AttachmentPrivacy.SELECTED) {
                 isEditing = false
-                privacy = AttachmentPrivacy.SELECTED
+                onPrivacyChange(AttachmentPrivacy.SELECTED)
             }
         }
 
-        Spacer(Modifier.height(24.dp))
+        if (privacy == AttachmentPrivacy.SELECTED) {
+            Spacer(Modifier.height(24.dp))
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(LocalCustomColors.current.secondaryBackground.copy(alpha = 0.05f))
-                .padding(8.dp, 12.dp),
-        ) {
-            Row {
-                Text(
-                    text = stringResource(R.string.sharing_with, 8),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    modifier = Modifier.weight(1f)
-                )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(LocalCustomColors.current.secondaryBackground.copy(alpha = 0.05f))
+                    .padding(8.dp, 12.dp),
+            ) {
+                Row {
+                    Text(
+                        text = stringResource(R.string.sharing_with, selectedPeopleList.size),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        modifier = Modifier.weight(1f)
+                    )
 
-                if (privacy == AttachmentPrivacy.SELECTED) {
                     val text = if (isEditing) stringResource(R.string.done) else stringResource(R.string.edit_list)
                     Text(
                         text = text,
@@ -353,62 +374,44 @@ fun BottomSheetContent(
                         }
                     )
                 }
-            }
 
-            Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(8.dp))
 
-            if (isEditing) {
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    peopleList.forEach { user ->
-                        val borderColor = if (selectedPeopleList.find { it.id == user.id } != null) LocalCustomColors.current.secondaryBackground else Color.Transparent
-                        AssistChip(
-                            onClick = {},
-                            label = { ComposeTextView.TextView(user.name) },
-                            leadingIcon = {
-                                ComposeImageView.CircularImageView(
-                                    diameter = 24.dp,
-                                    imageURI = user.profilePicture ?: ""
-                                )
-                            },
-                            shape = RoundedCornerShape(40),
-                            border = BorderStroke(1.dp, color = borderColor)
-                        )
-                    }
-
-                }
-            } else {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy((-8).dp),
-                    modifier = Modifier.horizontalScroll(horizontalScrollState)
-                ) {
-                    selectedPeopleList.forEach { people ->
-                        ComposeImageView.CircularImageView(
-                            imageURI = "https://picsum.photos/400/200?1",
-                            diameter = 32.dp,
-                            borderWidth = 2.dp,
-                            borderColor = Color.White
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier.size(32.dp)
-                            .clip(CircleShape)
-                            .background(
-                                LocalCustomColors.current.secondaryBackground.copy(alpha = 0.2f)
-                            )
-                            .border(2.dp, Color.White, CircleShape),
-                        contentAlignment = Alignment.Center
+                if (isEditing) {
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(
-                            text = "+4",
-                            fontSize = 12.sp,
-                            color = LocalCustomColors.current.secondaryBackground,
-                            fontWeight = FontWeight.Bold
-                        )
+                        peopleList.forEach { user ->
+                            val isSelected = selectedPeopleList.any { it.id == user.id }
+                            val borderColor = if (isSelected) LocalCustomColors.current.secondaryBackground else Color.Transparent
+                            AssistChip(
+                                onClick = { /* Toggle selection */ },
+                                label = { ComposeTextView.TextView(user.name) },
+                                leadingIcon = {
+                                    ComposeImageView.CircularImageView(
+                                        diameter = 24.dp,
+                                        imageURI = user.profilePicture ?: ""
+                                    )
+                                },
+                                shape = RoundedCornerShape(40),
+                                border = BorderStroke(1.dp, color = borderColor)
+                            )
+                        }
+                    }
+                } else {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy((-8).dp),
+                        modifier = Modifier.horizontalScroll(horizontalScrollState)
+                    ) {
+                        selectedPeopleList.forEach { user ->
+                            ComposeImageView.CircularImageView(
+                                imageURI = user.profilePicture ?: "",
+                                diameter = 32.dp,
+                                borderWidth = 2.dp,
+                                borderColor = Color.White
+                            )
+                        }
                     }
                 }
             }
@@ -416,9 +419,8 @@ fun BottomSheetContent(
 
         Spacer(Modifier.height(24.dp))
 
-        SettingsToggle(stringResource(R.string.allow_downlaod), allowDownload) { allowDownload = it }
-
-        SettingsToggle(stringResource(R.string.allow_sharing), allowResharing) { allowResharing = it }
+        SettingsToggle(stringResource(R.string.allow_downlaod), allowDownload, onAllowDownloadChange)
+        SettingsToggle(stringResource(R.string.allow_sharing), allowResharing, onAllowResharingChange)
     }
 }
 

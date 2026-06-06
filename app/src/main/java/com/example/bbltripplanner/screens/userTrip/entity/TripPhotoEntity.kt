@@ -14,7 +14,9 @@ data class TripPhotoEntity(
     val mimeType: String? = null,
     val fileSize: Long? = null,
     val visibility: String? = null,
-    val selectedUserIds: List<String> = emptyList()
+    val selectedUserIds: List<String> = emptyList(),
+    val isDownloadable: Boolean = true,
+    val isShareable: Boolean = true
 )
 
 fun TripPhotoEntity.toDomain(): TripPhoto {
@@ -23,6 +25,10 @@ fun TripPhotoEntity.toDomain(): TripPhoto {
         status = uploadStatus,
         createdAt = createdAt,
         originalMediaUrl = localPath,
-        compressedMediaUrl = localPath
+        compressedMediaUrl = localPath,
+        visibility = visibility,
+        selectedUserIds = selectedUserIds,
+        isDownloadable = isDownloadable,
+        isShareable = isShareable
     )
 }

@@ -28,7 +28,7 @@ class TripGalleryRepositoryImpl(
         val remoteDeferred = async {
             try {
                 BaseResponse.processResponse { client.getPhotos(tripId) }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -55,5 +55,10 @@ class TripGalleryRepositoryImpl(
             createdAt = System.currentTimeMillis()
         )
         dao.insertPhoto(entity)
+    }
+
+    override suspend fun savePhotosLocally(photos: List<TripPhotoEntity>): List<TripPhoto> {
+        val ids = dao.insertPhotos(photos)
+        return dao.getPhotosByIds(ids).map { it.toDomain() }
     }
 }

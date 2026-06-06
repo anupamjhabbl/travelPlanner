@@ -48,8 +48,10 @@ fun TripGalleryImageViewerScreen(
     photoId: String?,
 ) {
     val context = LocalContext.current
-    val photosStatus by viewModel.remotePhotosStatus.collectAsState()
-    val photo = photosStatus.data?.find { it.id == photoId }
+    val photos by viewModel.galleryPhotos.collectAsState()
+    val photosStatus by viewModel.photosStatus.collectAsState()
+    val photo = photos.find { it.id == photoId }
+
     val scope = rememberCoroutineScope()
     val downloadImageMsg = stringResource(R.string.download_img_msg)
     val shareImageMsg = stringResource(R.string.share_img_msg)
@@ -104,7 +106,7 @@ fun TripGalleryImageViewerScreen(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = photo.createdAt.toFormattedDateString(),
+                            text = (photo.createdAt ?: System.currentTimeMillis()).toFormattedDateString(),
                             color = LocalCustomColors.current.primaryBackground,
                             fontSize = 12.sp,
                             maxLines = 1,

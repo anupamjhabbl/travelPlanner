@@ -2,7 +2,7 @@ package com.example.bbltripplanner.screens.userTrip.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
+import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import com.example.bbltripplanner.screens.userTrip.entity.PhotoUploadStatus
@@ -17,8 +17,14 @@ interface TripPhotoDao {
     @Query("SELECT * FROM trip_photos WHERE tripId = :tripId AND uploadStatus != :status")
     suspend fun getIncompletePhotos(tripId: String, status: PhotoUploadStatus = PhotoUploadStatus.COMPLETE): List<TripPhotoEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Query("SELECT * FROM trip_photos WHERE id IN (:ids)")
+    suspend fun getPhotosByIds(ids: List<Long>): List<TripPhotoEntity>
+
+    @Insert(onConflict = REPLACE)
     suspend fun insertPhoto(photo: TripPhotoEntity): Long
+
+    @Insert(onConflict = REPLACE)
+    suspend fun insertPhotos(photos: List<TripPhotoEntity>): List<Long>
 
     @Update
     suspend fun updatePhoto(photo: TripPhotoEntity)

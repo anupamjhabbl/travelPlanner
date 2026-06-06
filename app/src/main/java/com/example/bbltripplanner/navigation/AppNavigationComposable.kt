@@ -90,6 +90,9 @@ fun AppNavigationComposable(
                 }
             }
             NavigationAction.NavigateUp -> homeNavController.navigateUp()
+            is NavigationAction.PopBackStack -> {
+                homeNavController.popBackStack(navigationAction.route, navigationAction.inclusive)
+            }
         }
     }
 
