@@ -38,6 +38,8 @@ object Constants {
         const val TRIP_GALLERY_UPLOAD_CHANNEL_ID = "trip_gallery_upload_channel"
         const val TRIP_GALLERY_UPLOAD_CHANNEL_NAME = "Trip Gallery Upload"
         const val TRIP_GALLERY_UPLOAD_NOTIFICATION_ID = 1001
+        const val TRIP_MEDIA_DOWNLOAD_CHANNEL_ID = "trip_media_downloads"
+        const val TRIP_MEDIA_DOWNLOAD_CHANNEL_NAME = "Trip Media Downloads"
     }
 
     object NavigationScreen {

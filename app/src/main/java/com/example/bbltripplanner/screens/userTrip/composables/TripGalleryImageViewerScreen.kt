@@ -38,6 +38,7 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.utils.DateUtils.toFormattedDateString
 import com.example.bbltripplanner.common.utils.ImageActionUtils
+import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
@@ -124,7 +125,7 @@ fun TripGalleryImageViewerScreen(
                             val url = photo.originalMediaUrl ?: photo.compressedMediaUrl
                             if (url != null) {
                                 val fileName = "TripImage_${photo.id}.jpg"
-                                ImageActionUtils.downloadImage(context, url, fileName)
+                                viewModel.processEvent(TripGalleryIntent.ViewEvent.DownloadImage(context, url, fileName))
                                 Toast.makeText(context, downloadImageMsg, Toast.LENGTH_SHORT).show()
                             }
                         },

@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.viewModels
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.R
@@ -8,6 +9,7 @@ import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
+import com.example.bbltripplanner.common.utils.ImageActionUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.PhotoUploadStatus
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
@@ -75,6 +77,13 @@ class TripGalleryViewModel(
             is TripGalleryIntent.ViewEvent.DeletePhoto -> deletePhoto(viewEvent.photo)
             is TripGalleryIntent.ViewEvent.ClearSelectedPhotos -> clearSelectedPhotos()
             is TripGalleryIntent.ViewEvent.RetryUpload -> retryUpload(viewEvent.photo)
+            is TripGalleryIntent.ViewEvent.DownloadImage -> downloadImage(viewEvent.context, viewEvent.url, viewEvent.fileName)
+        }
+    }
+
+    private fun downloadImage(context: Context, url: String, fileName: String) {
+        viewModelScope.launch {
+            ImageActionUtils.downloadImage(context, url, fileName)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.screens.userTrip.viewModels
 
+import android.content.Context
 import com.example.bbltripplanner.screens.userTrip.entity.TripGalleryUploadRequest
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhoto
 
@@ -12,6 +13,7 @@ sealed class TripGalleryIntent {
         data class DeletePhoto(val photo: TripPhoto) : ViewEvent()
         data object ClearSelectedPhotos : ViewEvent()
         data class RetryUpload(val photo: TripPhoto) : ViewEvent()
+        data class DownloadImage(val context: Context, val url: String, val fileName: String) : ViewEvent()
     }
 
     sealed interface GalleryViewEffect {
