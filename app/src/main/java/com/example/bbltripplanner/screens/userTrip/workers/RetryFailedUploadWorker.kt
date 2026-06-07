@@ -18,9 +18,12 @@ class RetryFailedUploadWorker(
         val failedPhotos = repository.getPhotosByStatus(PhotoUploadStatus.FAILED)
         if (failedPhotos.isEmpty()) return Result.success()
 
-        val photosByTrip = failedPhotos.groupBy { it.tripId }
+        val groupedPhotos = failedPhotos.groupBy { 
+            Triple(it.tripId, it.visibility, it.selectedUserIds.sorted())
+        }
 
-        photosByTrip.forEach { (tripId, photos) ->
+        groupedPhotos.forEach { (groupKey, photos) ->
+            val (tripId, _, _) = groupKey
             val photoIds = photos.map { it.id }.toLongArray()
             TripGalleryUploadWorker.enqueue(applicationContext, photoIds, tripId)
         }
@@ -30,6 +33,7 @@ class RetryFailedUploadWorker(
 
     companion object {
         private const val WORK_NAME = "retry_failed_uploads_worker"
+        private const val ONE_TIME_WORK_NAME = "retry_failed_uploads_one_time"
 
         fun schedule(context: Context) {
             val constraints = Constraints.Builder()
@@ -44,8 +48,18 @@ class RetryFailedUploadWorker(
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 WORK_NAME,
-                ExistingPeriodicWorkPolicy.KEEP,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 retryRequest
+            )
+
+            val oneTimeRequest = OneTimeWorkRequestBuilder<RetryFailedUploadWorker>()
+                .setConstraints(constraints)
+                .build()
+
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                ONE_TIME_WORK_NAME,
+                ExistingWorkPolicy.REPLACE,
+                oneTimeRequest
             )
         }
     }
