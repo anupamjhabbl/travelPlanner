@@ -104,6 +104,7 @@ dependencies {
     implementation(libs.mapbox.sdk.services)
     implementation(libs.mapbox.sdk.turf)
     implementation(libs.mapbox.sdk.core)
+    implementation(libs.androidx.work.runtime.ktx)
     ksp(libs.ksp.room)
     ksp(libs.koin.ksp.compiler)
     testImplementation(libs.io.insert.koin.test)

@@ -260,4 +260,28 @@
     <string name="add_split_user_message">Please add users for splitting the expense.</string>
     <string name="settlement_not_available_title">Settlement Pending</string>
     <string name="settlement_not_available_description">Settlement will be available once the trip is completed. Keep track of your expenses until then!</string>
+    <string name="uploading_single">UPLOADING %1$d ITEM…</string>
+    <string name="uploading_plural">UPLOADING %1$d ITEMS…</string>
+    <string name="retry">Retry</string>
+    <string name="add_photos">Add Photos</string>
+    <string name="explorer_gallery">Explorer Gallery</string>
+    <string name="privacy_settings">Privacy Settings</string>
+    <string name="sharing_with">Sharing with %1$d people</string>
+    <string name="allow_downlaod">Allow Download</string>
+    <string name="allow_sharing">Allow Resharing</string>
+    <string name="done">Done</string>
+    <string name="edit_list">Edit List</string>
+    <string name="trip_gallery">Trip Gallery</string>
+    <string name="no_photos">There is no image added in the trip.</string>
+    <string name="no_photos_title">Add Photos</string>
+    <string name="download_img_msg">Downloading image…</string>
+    <string name="share_img_msg">Preparing image for sharing…</string>
+    <string name="photos_saved_successfully">Photos Saved Successfully.</string>
+    <string name="photos_save_failed">Failed to save photos</string>
+
+    <string name="notification_trip_gallery_upload_title">Uploading Trip Photos</string>
+    <string name="notification_trip_gallery_upload_progress">Uploaded %1$d of %2$d photos</string>
+    <string name="notification_trip_gallery_upload_preparing">Preparing upload…</string>
+    <string name="show_photo_upload_desc">Shows progress of trip photo uploads</string>
+    <string name="show_photo_download_desc">Shows progress of trip media downloads</string>
 </resources>

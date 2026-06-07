@@ -9,6 +9,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.util.UUID
 
 object FileUtils {
     fun bitmapToFile(bitmap: Bitmap, context: Context): File {
@@ -48,6 +49,23 @@ object FileUtils {
             outputStream.close()
 
             fileToMultipart(file, partName)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun saveUriToInternalStorage(context: Context, uri: Uri): File? {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+            val extension = context.contentResolver.getType(uri)?.split("/")?.lastOrNull() ?: "jpg"
+            val file = File(context.filesDir, "trip_photo_${UUID.randomUUID()}.$extension")
+            
+            FileOutputStream(file).use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+            inputStream.close()
+            file
         } catch (e: Exception) {
             e.printStackTrace()
             null

@@ -9,4 +9,9 @@ sealed interface NavigationAction {
     ): NavigationAction
 
     data object NavigateUp: NavigationAction
+
+    data class PopBackStack(
+        val route: String,
+        val inclusive: Boolean = false
+    ): NavigationAction
 }

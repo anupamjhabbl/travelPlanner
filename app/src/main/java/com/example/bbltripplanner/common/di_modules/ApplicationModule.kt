@@ -1,5 +1,8 @@
 package com.example.bbltripplanner.common.di_modules
 
+import androidx.lifecycle.SavedStateHandle
+import androidx.room.Room
+import com.example.bbltripplanner.common.database.AppDatabase
 import com.example.bbltripplanner.common.infra.EncryptedPreferenceManager
 import com.example.bbltripplanner.common.infra.Network
 import com.example.bbltripplanner.common.infra.PreferenceManager
@@ -41,30 +44,36 @@ import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowe
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowingViewModel
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileViewModel
 import com.example.bbltripplanner.screens.userTrip.clients.ExpenseClient
+import com.example.bbltripplanner.screens.userTrip.clients.FileUploadClient
 import com.example.bbltripplanner.screens.userTrip.clients.ItineraryClient
 import com.example.bbltripplanner.screens.userTrip.clients.LocationSearchClient
 import com.example.bbltripplanner.screens.userTrip.clients.PostingClient
+import com.example.bbltripplanner.screens.userTrip.clients.TripGalleryClient
 import com.example.bbltripplanner.screens.userTrip.clients.UserTripDetailClient
 import com.example.bbltripplanner.screens.userTrip.repositories.ExpenseRepository
 import com.example.bbltripplanner.screens.userTrip.repositories.ItineraryRepository
 import com.example.bbltripplanner.screens.userTrip.repositories.LocationSearchRepository
 import com.example.bbltripplanner.screens.userTrip.repositories.PostingRepository
+import com.example.bbltripplanner.screens.userTrip.repositories.TripGalleryRepository
 import com.example.bbltripplanner.screens.userTrip.repositories.UserTripDetailRepository
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.ExpenseNetwork
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.ItineraryNetwork
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.LocationSearchNetwork
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.PostingNetwork
+import com.example.bbltripplanner.screens.userTrip.repositoryImpl.TripGalleryRepositoryImpl
 import com.example.bbltripplanner.screens.userTrip.repositoryImpl.UseTripDetailNetwork
 import com.example.bbltripplanner.screens.userTrip.usecases.ExpenseUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.ItineraryUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.PostingUseCase
+import com.example.bbltripplanner.screens.userTrip.usecases.TripGalleryUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryDetailViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryMapViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.ItineraryViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitViewModel
+import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.TripGroupViewModel
 import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailViewModel
 import com.example.bbltripplanner.screens.vault.clients.VaultClient
@@ -73,6 +82,7 @@ import com.example.bbltripplanner.screens.vault.repositoryImpl.VaultNetwork
 import com.example.bbltripplanner.screens.vault.usecases.VaultUseCase
 import com.example.bbltripplanner.screens.vault.viewModels.UserTripsViewModel
 import com.google.gson.Gson
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -85,6 +95,16 @@ val appModule = module {
 
     // main
     viewModel { MainActivityViewModel(get(), get()) }
+
+    // Database
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            AppDatabase::class.java,
+            "trip_planner_db"
+        ).build()
+    }
+    single { get<AppDatabase>().tripPhotoDao() }
 
     // User
     single<UserClient> { Network.createWithAuth(UserClient::class.java, get(), get(), androidContext()) }
@@ -129,6 +149,15 @@ val appModule = module {
     single<ExpenseRepository> { ExpenseNetwork(get()) }
     single<ExpenseUseCase> { ExpenseUseCase(get()) }
     viewModel { (tripId: String?) -> ExpenseViewModel(tripId, get(), get()) }
+
+    // Trip Gallery
+    single<TripGalleryClient> { Network.createWithAuth(TripGalleryClient::class.java, get(), get(), androidContext()) }
+    single<TripGalleryRepository> { TripGalleryRepositoryImpl(get(), get()) }
+    single<TripGalleryUseCase> { TripGalleryUseCase(get()) }
+    viewModel { (handle: SavedStateHandle) ->
+        TripGalleryViewModel(androidApplication(), handle, get(), get())
+    }
+    single<FileUploadClient> { Network.create(FileUploadClient::class.java, androidContext()) }
 
     // User Auth
     single<UserAuthRepository> { UserAuthNetwork(get()) }

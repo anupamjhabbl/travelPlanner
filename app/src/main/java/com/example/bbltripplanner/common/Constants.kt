@@ -34,6 +34,14 @@ object Constants {
         @SerializedName("light") LIGHT
     }
 
+    object Notification {
+        const val TRIP_GALLERY_UPLOAD_CHANNEL_ID = "trip_gallery_upload_channel"
+        const val TRIP_GALLERY_UPLOAD_CHANNEL_NAME = "Trip Gallery Upload"
+        const val TRIP_GALLERY_UPLOAD_NOTIFICATION_ID = 1001
+        const val TRIP_MEDIA_DOWNLOAD_CHANNEL_ID = "trip_media_downloads"
+        const val TRIP_MEDIA_DOWNLOAD_CHANNEL_NAME = "Trip Media Downloads"
+    }
+
     object NavigationScreen {
         // Home & Listing
         const val HOME_NAV_GRAPH = "home_nav_graph"
@@ -60,6 +68,11 @@ object Constants {
         const val ADD_ACTIVITY_SCREEN = "add_activity_screen"
         const val ADD_SPOTS_SCREEN = "add_spots_screen"
         const val TRIP_GROUP_SCREEN = "trip_group_screen"
+
+        const val TRIP_GALLERY_NAV_ENTRY = "trip_gallery_nav_entry"
+        const val TRIP_GALLERY_SCREEN = "trip_gallery_screen"
+        const val TRIP_GALLERY_PREVIEW_SCREEN = "trip_gallery_preview_screen"
+        const val TRIP_GALLERY_IMAGE_VIEWER_SCREEN = "trip_gallery_image_viewer_screen"
 
         // User Screens
         const val PROFILE_SCREEN = "profile_screen"
@@ -95,6 +108,7 @@ object Constants {
         const val TRIP_SELECTED_DATE = "trip_selected_date"
         const val ITINERARY_PLACE_ID = "itinerary_place_id"
         const val ITINERARY_ID = "itinerary_id"
+        const val PHOTO_ID = "photo_id"
     }
 
     object Origin {

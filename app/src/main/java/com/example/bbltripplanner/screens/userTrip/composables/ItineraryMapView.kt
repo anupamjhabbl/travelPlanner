@@ -174,6 +174,7 @@ fun ItineraryMapView(
 
     if (showAddSpotForm) {
         val selectLocationMessage = stringResource(R.string.select_location)
+        val fillFieldsMessage = stringResource(R.string.fill_the_fields)
         AlertDialog(
             onDismissRequest = { },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
@@ -215,24 +216,30 @@ fun ItineraryMapView(
                     text = stringResource(R.string.submit),
                     onClick = {
                         if (itineraryId != null) {
-                            selectedLocation?.let {
-                                itineraryMapViewModel.processEvent(
-                                    ItineraryMapIntent.ViewEvent.AddSpot(
-                                        itineraryId,
-                                        AddSpotRequest(
-                                            placeName = placeName,
-                                            description = description,
-                                            location = it.toModel()
+                            when {
+                                placeName.isBlank() -> {
+                                    ComposeViewUtils.showToast(context, fillFieldsMessage)
+                                }
+                                selectedLocation == null -> {
+                                    ComposeViewUtils.showToast(context, selectLocationMessage)
+                                }
+                                else -> {
+                                    itineraryMapViewModel.processEvent(
+                                        ItineraryMapIntent.ViewEvent.AddSpot(
+                                            itineraryId,
+                                            AddSpotRequest(
+                                                placeName = placeName,
+                                                description = description,
+                                                location = selectedLocation!!.toModel()
+                                            )
                                         )
                                     )
-                                )
-                                showAddSpotForm = false
-                            } ?: run {
-                                ComposeViewUtils.showToast(context, selectLocationMessage)
+                                    showAddSpotForm = false
+                                    placeName = ""
+                                    description = ""
+                                    selectedLocation = null
+                                }
                             }
-                            placeName = ""
-                            description = ""
-                            selectedLocation = null
                         }
                     }
                 )

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="uploadingStatus">
+        <item quantity="one">@string/uploading_single</item>
+        <item quantity="other">@string/uploading_plural</item>
+    </plurals>
+</resources>
