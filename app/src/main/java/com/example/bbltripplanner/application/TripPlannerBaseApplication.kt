@@ -7,6 +7,8 @@ import android.os.Build
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.di_modules.appModule
+import com.example.bbltripplanner.screens.userTrip.workers.CleanupUploadedPhotosWorker
+import com.example.bbltripplanner.screens.userTrip.workers.RetryFailedUploadWorker
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -22,6 +24,9 @@ class TripPlannerBaseApplication : Application() {
             androidLogger()
             modules(appModule)
         }
+
+        RetryFailedUploadWorker.schedule(this)
+        CleanupUploadedPhotosWorker.schedule(this)
     }
 
     private fun createNotificationChannel() {

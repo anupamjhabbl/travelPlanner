@@ -20,6 +20,9 @@ interface TripPhotoDao {
     @Query("SELECT * FROM trip_photos WHERE id IN (:ids)")
     suspend fun getPhotosByIds(ids: List<Long>): List<TripPhotoEntity>
 
+    @Query("SELECT * FROM trip_photos WHERE uploadStatus = :status")
+    suspend fun getPhotosByStatus(status: PhotoUploadStatus): List<TripPhotoEntity>
+
     @Insert(onConflict = REPLACE)
     suspend fun insertPhoto(photo: TripPhotoEntity): Long
 

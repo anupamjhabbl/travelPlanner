@@ -3,6 +3,7 @@ package com.example.bbltripplanner.screens.userTrip.repositoryImpl
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.screens.userTrip.clients.TripGalleryClient
 import com.example.bbltripplanner.screens.userTrip.dao.TripPhotoDao
+import com.example.bbltripplanner.screens.userTrip.entity.PhotoUploadStatus
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhoto
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhotoEntity
 import com.example.bbltripplanner.screens.userTrip.entity.toDomain
@@ -53,6 +54,10 @@ class TripGalleryRepositoryImpl(
 
     override suspend fun getPhotosByIds(ids: List<Long>): List<TripPhotoEntity> {
         return dao.getPhotosByIds(ids)
+    }
+
+    override suspend fun getPhotosByStatus(status: PhotoUploadStatus): List<TripPhotoEntity> {
+        return dao.getPhotosByStatus(status)
     }
 
     override suspend fun updatePhoto(photo: TripPhotoEntity) {
