@@ -88,12 +88,13 @@ fun TripGalleryPreviewScreen(
 ) {
     val context = LocalContext.current
     val images by viewModel.selectedPhotos.collectAsState()
+    val tripDataStatus by viewModel.tripData.collectAsState()
     
     var privacy: AttachmentPrivacy by remember { mutableStateOf(AttachmentPrivacy.PUBLIC) }
     var allowDownload by remember { mutableStateOf(true) }
     var allowResharing by remember { mutableStateOf(false) }
 
-    val peopleList = listOf<User>()
+    var peopleList by remember { mutableStateOf(emptyList<User>()) }
     val selectedPeopleList = remember { mutableStateOf(emptyList<User>()) }
 
     val scope = rememberCoroutineScope()
@@ -121,6 +122,12 @@ fun TripGalleryPreviewScreen(
 
     BackHandler(enabled = !isNavigatingAway) {
         onBackNavigate()
+    }
+
+    LaunchedEffect(tripDataStatus) {
+        if (!tripDataStatus.isLoading && tripDataStatus.error == null && tripDataStatus.data != null) {
+            peopleList = tripDataStatus.data!!.invitedMembers
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -169,7 +176,8 @@ fun TripGalleryPreviewScreen(
                 onImageSelected = { selectedImageIndex = it },
                 onDeletePhoto = {
                     viewModel.processEvent(TripGalleryIntent.ViewEvent.DeletePhoto(images[selectedImageIndex]))
-                }
+                },
+                onSelectedPeopleChange = { selectedPeopleList.value = it }
             )
         },
         sheetShadowElevation = 16.dp
@@ -275,7 +283,8 @@ fun BottomSheetContent(
     onAllowDownloadChange: (Boolean) -> Unit,
     onAllowResharingChange: (Boolean) -> Unit,
     onImageSelected: (Int) -> Unit,
-    onDeletePhoto: () -> Unit
+    onDeletePhoto: () -> Unit,
+    onSelectedPeopleChange: (List<User>) -> Unit
 ) {
     val horizontalScrollState = rememberScrollState()
     var isEditing by remember { mutableStateOf(false) }
@@ -396,7 +405,15 @@ fun BottomSheetContent(
                             val isSelected = selectedPeopleList.any { it.id == user.id }
                             val borderColor = if (isSelected) LocalCustomColors.current.secondaryBackground else Color.Transparent
                             AssistChip(
-                                onClick = { /* Toggle selection */ },
+                                onClick = {
+                                    val currentList = selectedPeopleList.toMutableList()
+                                    if (isSelected) {
+                                        currentList.removeAll { it.id == user.id }
+                                    } else {
+                                        currentList.add(user)
+                                    }
+                                    onSelectedPeopleChange(currentList)
+                                },
                                 label = { ComposeTextView.TextView(user.name) },
                                 leadingIcon = {
                                     ComposeImageView.CircularImageView(

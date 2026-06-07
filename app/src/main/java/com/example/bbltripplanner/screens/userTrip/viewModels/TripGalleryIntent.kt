@@ -6,6 +6,7 @@ import com.example.bbltripplanner.screens.userTrip.entity.TripPhoto
 sealed class TripGalleryIntent {
     sealed class ViewEvent {
         data class FetchPhotos(val tripId: String) : ViewEvent()
+        data class FetchTripDetails(val tripId: String) : ViewEvent()
         data class SavePhotosLocally(val request: TripGalleryUploadRequest) : ViewEvent()
         data class SetSelectedPhotos(val photos: List<TripPhoto>) : ViewEvent()
         data class DeletePhoto(val photo: TripPhoto) : ViewEvent()

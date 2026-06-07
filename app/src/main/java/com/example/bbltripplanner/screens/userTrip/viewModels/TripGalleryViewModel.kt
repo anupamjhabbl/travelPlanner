@@ -10,9 +10,11 @@ import com.example.bbltripplanner.common.entity.RequestResponseStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.PhotoUploadStatus
+import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.entity.TripGalleryUploadRequest
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhoto
 import com.example.bbltripplanner.screens.userTrip.usecases.TripGalleryUseCase
+import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
 import com.example.bbltripplanner.screens.userTrip.workers.TripGalleryUploadWorker
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -29,13 +31,17 @@ import java.io.File
 class TripGalleryViewModel(
     private val context: Application,
     savedStateHandle: SavedStateHandle,
-    private val useCase: TripGalleryUseCase
+    private val useCase: TripGalleryUseCase,
+    private val userTripDetailUseCase: UserTripDetailUseCase
 ) : BaseMVIVViewModel<TripGalleryIntent.ViewEvent>() {
 
     val tripId = savedStateHandle.get<String>(Constants.NavigationArgs.TRIP_ID)
 
     private val _photosStatus = MutableStateFlow<RequestResponseStatus<List<TripPhoto>?>>(RequestResponseStatus())
     val photosStatus: StateFlow<RequestResponseStatus<List<TripPhoto>?>> = _photosStatus
+
+    private val _tripData = MutableStateFlow<RequestResponseStatus<TripData>>(RequestResponseStatus())
+    val tripData: StateFlow<RequestResponseStatus<TripData>> = _tripData
 
     private val _selectedPhotos = MutableStateFlow<List<TripPhoto>>(emptyList())
     val selectedPhotos: StateFlow<List<TripPhoto>> = _selectedPhotos.asStateFlow()
@@ -54,12 +60,14 @@ class TripGalleryViewModel(
     init {
         tripId?.let {
             processEvent(TripGalleryIntent.ViewEvent.FetchPhotos(it))
+            processEvent(TripGalleryIntent.ViewEvent.FetchTripDetails(it))
         }
     }
 
     override fun processEvent(viewEvent: TripGalleryIntent.ViewEvent) {
         when (viewEvent) {
             is TripGalleryIntent.ViewEvent.FetchPhotos -> fetchPhotos(viewEvent.tripId)
+            is TripGalleryIntent.ViewEvent.FetchTripDetails -> fetchTripDetails(viewEvent.tripId)
             is TripGalleryIntent.ViewEvent.SavePhotosLocally -> savePhotosLocally(viewEvent.request)
             is TripGalleryIntent.ViewEvent.SetSelectedPhotos -> {
                 _selectedPhotos.value = viewEvent.photos
@@ -145,6 +153,23 @@ class TripGalleryViewModel(
             }.onFailure {
                 val errorMessage = if (it is TripPlannerException) it.message ?: Constants.DEFAULT_ERROR else Constants.DEFAULT_ERROR
                 _photosStatus.value = RequestResponseStatus(error = errorMessage)
+            }
+        }
+    }
+
+    private fun fetchTripDetails(tripId: String) {
+        viewModelScope.launch {
+            _tripData.value = RequestResponseStatus(isLoading = true)
+            runCatching {
+                userTripDetailUseCase.getUserTripDetail(tripId)
+            }.onSuccess {
+                _tripData.value = RequestResponseStatus(data = it)
+            }.onFailure {
+                if (it is TripPlannerException) {
+                    _tripData.value = RequestResponseStatus(error = it.message)
+                } else {
+                    _tripData.value = RequestResponseStatus(error = Constants.DEFAULT_ERROR)
+                }
             }
         }
     }

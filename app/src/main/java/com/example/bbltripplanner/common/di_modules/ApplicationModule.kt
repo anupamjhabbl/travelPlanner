@@ -155,7 +155,7 @@ val appModule = module {
     single<TripGalleryRepository> { TripGalleryRepositoryImpl(get(), get()) }
     single<TripGalleryUseCase> { TripGalleryUseCase(get()) }
     viewModel { (handle: SavedStateHandle) ->
-        TripGalleryViewModel(androidApplication(), handle, get())
+        TripGalleryViewModel(androidApplication(), handle, get(), get())
     }
     single<FileUploadClient> { Network.create(FileUploadClient::class.java, androidContext()) }
 
