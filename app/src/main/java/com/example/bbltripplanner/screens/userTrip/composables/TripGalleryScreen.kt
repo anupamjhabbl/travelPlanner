@@ -288,16 +288,6 @@ fun PhotoGridItem(photo: TripPhoto, onClick: () -> Unit, onRetryUpload: () -> Un
                     .background(Color.Black.copy(alpha = 0.4f))
             ) {
                 when (photo.status) {
-                    PhotoUploadStatus.UPLOADING, PhotoUploadStatus.PENDING -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .align(Alignment.Center),
-                            color = Color.White,
-                            strokeWidth = 2.dp
-                        )
-                    }
-
                     PhotoUploadStatus.FAILED -> {
                         Surface(
                             shape = RoundedCornerShape(24.dp),
