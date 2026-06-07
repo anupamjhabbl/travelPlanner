@@ -33,7 +33,7 @@ class RetryFailedUploadWorker(
 
         fun schedule(context: Context) {
             val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.UNMETERED)
+                .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
             val retryRequest = PeriodicWorkRequestBuilder<RetryFailedUploadWorker>(

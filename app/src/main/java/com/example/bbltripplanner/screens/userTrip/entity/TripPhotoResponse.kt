@@ -13,7 +13,7 @@ data class TripPhotoResponse(
 
 fun TripPhotoResponse.toDomain(): TripPhoto {
     return TripPhoto(
-        id = id,
+        id = id + "88",
         uploadedBy = uploadedBy,
         status = PhotoUploadStatus.COMPLETE,
         originalMediaUrl = originalUrl,

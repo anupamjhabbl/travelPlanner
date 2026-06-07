@@ -28,4 +28,15 @@ class TripGalleryUseCase(private val repository: TripGalleryRepository) {
         }
         return repository.savePhotosLocally(entities).map { it.toDomain() }
     }
+
+    suspend fun updatePhotoStatus(photoId: Long, status: PhotoUploadStatus) {
+        val photos = repository.getPhotosByIds(listOf(photoId))
+        photos.firstOrNull()?.let {
+            repository.updatePhoto(it.copy(uploadStatus = status))
+        }
+    }
+
+    suspend fun deletePhoto(photoId: Long) {
+        repository.deletePhoto(photoId)
+    }
 }

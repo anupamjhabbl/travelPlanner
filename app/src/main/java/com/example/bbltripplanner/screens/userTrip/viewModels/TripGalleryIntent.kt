@@ -10,6 +10,7 @@ sealed class TripGalleryIntent {
         data class SetSelectedPhotos(val photos: List<TripPhoto>) : ViewEvent()
         data class DeletePhoto(val photo: TripPhoto) : ViewEvent()
         data object ClearSelectedPhotos : ViewEvent()
+        data class RetryUpload(val photo: TripPhoto) : ViewEvent()
     }
 
     sealed interface GalleryViewEffect {

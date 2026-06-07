@@ -9,6 +9,7 @@ import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.utils.SafeIOUtil
+import com.example.bbltripplanner.screens.userTrip.entity.PhotoUploadStatus
 import com.example.bbltripplanner.screens.userTrip.entity.TripGalleryUploadRequest
 import com.example.bbltripplanner.screens.userTrip.entity.TripPhoto
 import com.example.bbltripplanner.screens.userTrip.usecases.TripGalleryUseCase
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
-import kotlin.collections.toLongArray
 
 class TripGalleryViewModel(
     private val context: Application,
@@ -66,6 +66,7 @@ class TripGalleryViewModel(
             }
             is TripGalleryIntent.ViewEvent.DeletePhoto -> deletePhoto(viewEvent.photo)
             is TripGalleryIntent.ViewEvent.ClearSelectedPhotos -> clearSelectedPhotos()
+            is TripGalleryIntent.ViewEvent.RetryUpload -> retryUpload(viewEvent.photo)
         }
     }
 
@@ -102,6 +103,34 @@ class TripGalleryViewModel(
                         e.printStackTrace()
                     }
                 }
+            }
+        }
+    }
+
+    private fun retryUpload(photo: TripPhoto) {
+        viewModelScope.launch {
+            val photoId = photo.id.toLongOrNull() ?: return@launch
+            val path = photo.originalMediaUrl ?: return@launch
+            val file = File(path)
+
+            if (!file.exists()) {
+                useCase.deletePhoto(photoId)
+                val currentPhotos = _photosStatus.value.data ?: emptyList()
+                _photosStatus.value = _photosStatus.value.copy(
+                    data = currentPhotos.filter { it.id != photo.id }
+                )
+                return@launch
+            }
+
+            useCase.updatePhotoStatus(photoId, PhotoUploadStatus.PENDING)
+            val currentPhotos = _photosStatus.value.data ?: emptyList()
+            val updatedPhotos = currentPhotos.map {
+                if (it.id == photo.id) it.copy(status = PhotoUploadStatus.PENDING) else it
+            }
+            _photosStatus.value = _photosStatus.value.copy(data = updatedPhotos)
+
+            tripId?.let { id ->
+                TripGalleryUploadWorker.enqueue(context, longArrayOf(photoId), id)
             }
         }
     }

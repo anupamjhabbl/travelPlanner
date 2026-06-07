@@ -85,7 +85,7 @@ class TripGalleryUploadWorker(
                             repository.updatePhoto(photo.copy(uploadStatus = PhotoUploadStatus.FAILED))
                         }
                     } else {
-                        repository.updatePhoto(photo.copy(uploadStatus = PhotoUploadStatus.FAILED))
+                        repository.deletePhoto(photo.id)
                     }
                     updateForeground(uploadedCount, totalCount)
                 }

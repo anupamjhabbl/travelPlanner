@@ -70,19 +70,19 @@ fun TripGalleryScreen(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val messageSuccess = stringResource(R.string.photos_saved_successfully)
 
     val photos by viewModel.galleryPhotos.collectAsState()
     val photosStatus by viewModel.photosStatus.collectAsState()
 
-    // Handle ViewModel effects
     LaunchedEffect(Unit) {
         viewModel.galleryViewEffect.collect { effect ->
             when (effect) {
                 is TripGalleryIntent.GalleryViewEffect.UploadError -> {
-                    Toast.makeText(context, effect.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                 }
                 is TripGalleryIntent.GalleryViewEffect.UploadSuccess -> {
-                    // Logic for individual photo upload success if needed
+                    Toast.makeText(context, messageSuccess, Toast.LENGTH_SHORT).show()
                 }
                 else -> {}
             }
@@ -160,15 +160,21 @@ fun TripGalleryScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(photos, key = { it.id }) { photo ->
-                            PhotoGridItem(photo) {
-                                scope.launch {
-                                    CommonNavigationChannel.navigateTo(
-                                        NavigationAction.Navigate(
-                                            AppNavigationScreen.TripGalleryImageViewerScreen.createRoute(photo.id)
+                            PhotoGridItem(
+                                photo,
+                                onClick = {
+                                    scope.launch {
+                                        CommonNavigationChannel.navigateTo(
+                                            NavigationAction.Navigate(
+                                                AppNavigationScreen.TripGalleryImageViewerScreen.createRoute(photo.id)
+                                            )
                                         )
-                                    )
+                                    }
+                                },
+                                onRetryUpload = {
+                                    viewModel.processEvent(TripGalleryIntent.ViewEvent.RetryUpload(photo))
                                 }
-                            }
+                            )
                         }
                     }
                 }
@@ -262,7 +268,7 @@ fun UploadingStatusHeader(count: Int) {
 }
 
 @Composable
-fun PhotoGridItem(photo: TripPhoto, onClick: () -> Unit) {
+fun PhotoGridItem(photo: TripPhoto, onClick: () -> Unit, onRetryUpload: () -> Unit) {
     Box(
         modifier = Modifier
             .aspectRatio(1f)
@@ -318,7 +324,7 @@ fun PhotoGridItem(photo: TripPhoto, onClick: () -> Unit) {
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.clickable {
-                                        // retry to upload photo
+                                        onRetryUpload()
                                     }
                                 )
                             }
