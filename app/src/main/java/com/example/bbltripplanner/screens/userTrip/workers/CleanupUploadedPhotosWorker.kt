@@ -26,7 +26,7 @@ class CleanupUploadedPhotosWorker(
                 }
             }
             Result.success()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure()
         }
     }

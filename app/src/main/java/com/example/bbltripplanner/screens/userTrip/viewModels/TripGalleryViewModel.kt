@@ -65,6 +65,7 @@ class TripGalleryViewModel(
                 _selectedPhotos.value = viewEvent.photos
             }
             is TripGalleryIntent.ViewEvent.DeletePhoto -> deletePhoto(viewEvent.photo)
+            is TripGalleryIntent.ViewEvent.ClearSelectedPhotos -> clearSelectedPhotos()
         }
     }
 
@@ -80,6 +81,26 @@ class TripGalleryViewModel(
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun clearSelectedPhotos() {
+        viewModelScope.launch {
+            val photosToDelete = _selectedPhotos.value
+            _selectedPhotos.value = emptyList()
+            
+            photosToDelete.forEach { photo ->
+                photo.originalMediaUrl?.let { path ->
+                    try {
+                        val file = File(path)
+                        if (file.exists()) {
+                            file.delete()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }

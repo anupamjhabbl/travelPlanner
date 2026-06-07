@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -108,6 +109,20 @@ fun TripGalleryPreviewScreen(
 
     var isNavigatingAway by remember { mutableStateOf(false) }
 
+    val onBackNavigate = {
+        if (!isNavigatingAway) {
+            isNavigatingAway = true
+            viewModel.processEvent(TripGalleryIntent.ViewEvent.ClearSelectedPhotos)
+            scope.launch {
+                CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
+            }
+        }
+    }
+
+    BackHandler(enabled = !isNavigatingAway) {
+        onBackNavigate()
+    }
+
     LaunchedEffect(Unit) {
         viewModel.galleryViewEffect.collect { effect ->
             when (effect) {
@@ -172,12 +187,7 @@ fun TripGalleryPreviewScreen(
 
             PreviewToolbar(
                 onClose = {
-                    if (!isNavigatingAway) {
-                        isNavigatingAway = true
-                        scope.launch {
-                            CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
-                        }
-                    }
+                    onBackNavigate()
                 },
                 onDone = {
                     val request = TripGalleryUploadRequest(
