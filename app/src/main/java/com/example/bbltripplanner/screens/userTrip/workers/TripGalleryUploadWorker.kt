@@ -79,7 +79,6 @@ class TripGalleryUploadWorker(
 
                         if (uploadResponse.isSuccessful) {
                             repository.updatePhoto(photo.copy(uploadStatus = PhotoUploadStatus.COMPLETE))
-                            file.delete()
                             uploadedCount++
                         } else {
                             repository.updatePhoto(photo.copy(uploadStatus = PhotoUploadStatus.FAILED))

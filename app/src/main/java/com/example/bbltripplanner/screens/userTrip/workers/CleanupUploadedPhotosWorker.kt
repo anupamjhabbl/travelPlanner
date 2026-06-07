@@ -24,6 +24,7 @@ class CleanupUploadedPhotosWorker(
                 if (file.exists()) {
                     file.delete()
                 }
+                repository.deletePhoto(photo.id)
             }
             Result.success()
         } catch (_: Exception) {
