@@ -284,4 +284,5 @@
     <string name="notification_trip_gallery_upload_preparing">Preparing upload…</string>
     <string name="show_photo_upload_desc">Shows progress of trip photo uploads</string>
     <string name="show_photo_download_desc">Shows progress of trip media downloads</string>
+    <string name="accept_to_see_prpmpt">Please accept the invitation to use this feature.</string>
 </resources>

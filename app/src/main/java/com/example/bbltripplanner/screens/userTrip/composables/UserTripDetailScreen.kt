@@ -2,6 +2,7 @@ package com.example.bbltripplanner.screens.userTrip.composables
 
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -83,6 +84,7 @@ fun UserTripDetailScreen(
         mutableStateOf(true)
     }
     val successMessage = stringResource(R.string.trip_accept_success)
+    val acceptToSeePrompt = stringResource(R.string.accept_to_see_prpmpt)
     val context = LocalContext.current
 
     CommonLifecycleAwareLaunchedEffect(viewModel.viewEffect) { viewEffect ->
@@ -106,7 +108,7 @@ fun UserTripDetailScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            UserTripDetailToolbar(viewModel.getUserId())
+            UserTripDetailToolbar()
 
             Spacer(Modifier.height(30.dp))
 
@@ -124,7 +126,9 @@ fun UserTripDetailScreen(
                             item
                         ) { key ->
                             scope.launch {
-                                takeAction(key, tripId)
+                                takeAction(key, tripDataStatus.value.data) {
+                                    Toast.makeText(context, acceptToSeePrompt, Toast.LENGTH_LONG).show()
+                                }
                             }
                         }
 
@@ -359,7 +363,7 @@ private fun TripSummaryDetailItem(
 }
 
 @Composable
-private fun UserTripDetailToolbar(userId: String?) {
+private fun UserTripDetailToolbar() {
     val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier
@@ -458,40 +462,60 @@ private fun ActionTile (
     }
 }
 
-private suspend fun takeAction(key: String, tripId: String?) {
-    if (tripId != null) {
+private suspend fun takeAction(
+    key: String,
+    trip: TripData?,
+    acceptToSeePrompt: () -> Unit
+) {
+    if (trip?.tripId != null) {
         when (key) {
             Constants.TripDetailScreen.ATTACHMENTS -> {
-                CommonNavigationChannel.navigateTo(
-                    NavigationAction.Navigate(
-                        AppNavigationScreen.TripGalleryNavEntry.createRoute(tripId)
-                    )
+                navigateToIfAllowed(
+                    AppNavigationScreen.TripGalleryNavEntry.createRoute(trip.tripId),
+                    !trip.acceptanceNeeded,
+                    acceptToSeePrompt
                 )
             }
 
             Constants.TripDetailScreen.GROUP -> {
-                CommonNavigationChannel.navigateTo(
-                    NavigationAction.Navigate(
-                        AppNavigationScreen.TripGroupScreen.createRoute(tripId)
-                    )
+                navigateToIfAllowed(
+                    AppNavigationScreen.TripGroupScreen.createRoute(trip.tripId),
+                    true,
+                    acceptToSeePrompt
                 )
             }
 
             Constants.TripDetailScreen.ITINERARY -> {
-                CommonNavigationChannel.navigateTo(
-                    NavigationAction.Navigate(
-                        AppNavigationScreen.ItineraryListView.createRoute(tripId)
-                    )
+                navigateToIfAllowed(
+                    AppNavigationScreen.ItineraryListView.createRoute(trip.tripId),
+                    !trip.acceptanceNeeded,
+                    acceptToSeePrompt
                 )
             }
 
             Constants.TripDetailScreen.EXPENSES -> {
-                CommonNavigationChannel.navigateTo(
-                    NavigationAction.Navigate(
-                        AppNavigationScreen.ExpenseScreen.createRoute(tripId)
-                    )
+                navigateToIfAllowed(
+                    AppNavigationScreen.ExpenseScreen.createRoute(trip.tripId),
+                    !trip.acceptanceNeeded,
+                    acceptToSeePrompt
                 )
             }
         }
+    }
+}
+
+private suspend fun navigateToIfAllowed(
+    route: String,
+    allowed: Boolean,
+    acceptToSeePrompt: () -> Unit
+) {
+    if (allowed) {
+        CommonNavigationChannel.navigateTo(
+            NavigationAction.Navigate(
+                route
+            )
+        )
+    } else {
+        acceptToSeePrompt()
     }
 }
