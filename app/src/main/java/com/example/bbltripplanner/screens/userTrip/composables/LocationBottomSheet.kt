@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,13 +45,22 @@ fun LocationBottomSheet (
             onValueChange = { onQueryChanged(it) },
             modifier = Modifier.fillMaxWidth(),
             placeholder = {
-                ComposeTextView.TitleTextView(
-                    stringResource(R.string.search_by_name),
-                    fontSize = 16.sp
+                ComposeTextView.TextView(
+                    text = stringResource(R.string.search_by_name),
+                    fontSize = 15.sp,
+                    textColor = LocalCustomColors.current.hintTextColor
                 )
             },
             singleLine = true,
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(16.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = LocalCustomColors.current.defaultImageCardColor.copy(alpha = 0.2f),
+                unfocusedContainerColor = LocalCustomColors.current.defaultImageCardColor.copy(alpha = 0.1f),
+                focusedBorderColor = LocalCustomColors.current.secondaryBackground,
+                unfocusedBorderColor = LocalCustomColors.current.defaultImageCardColor,
+                errorBorderColor = LocalCustomColors.current.error,
+                disabledBorderColor = LocalCustomColors.current.fadedBackground
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -89,12 +100,13 @@ fun LocationBottomSheet (
 
                     Box(
                         modifier = Modifier
-                            .background(LocalCustomColors.current.defaultImageCardColor, shape)
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp, horizontal = 16.dp)
+                            .clip(shape)
+                            .background(LocalCustomColors.current.defaultImageCardColor)
                             .clickable {
                                 updateLocation(location)
                             }
+                            .padding(vertical = 12.dp, horizontal = 16.dp)
                     ) {
                         ComposeTextView.TitleTextView(
                             text = location.displayName ?: "",

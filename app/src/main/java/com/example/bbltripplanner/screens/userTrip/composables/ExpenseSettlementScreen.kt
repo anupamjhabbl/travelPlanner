@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,12 +36,16 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.common.composables.ToolBarView
+import com.example.bbltripplanner.navigation.CommonNavigationChannel
+import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.Currency
 import com.example.bbltripplanner.screens.userTrip.entity.SettlementItem
 import com.example.bbltripplanner.screens.userTrip.entity.SettlementResponseType
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import kotlinx.coroutines.launch
 
 @Composable
 fun ExpenseSettlementScreen(
@@ -49,47 +55,54 @@ fun ExpenseSettlementScreen(
     val tripExpenses by viewModel.expenseStatus.collectAsStateWithLifecycle()
     val errorMessage = stringResource(R.string.generic_error)
     val currency = tripExpenses.data?.currency ?: Currency.INR
-
+    val customColors = LocalCustomColors.current
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.processEvent(ExpenseIntent.ViewEvent.FetchSettlements)
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(customColors.primaryBackground)
     ) {
-        if (settlements.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                ComposeViewUtils.FullScreenLoading()
+        ToolBarView.SimpleToolbarWithBackButton(title = stringResource(R.string.settlements)) {
+            scope.launch {
+                CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
             }
-        } else if (settlements.error != null) {
-            val error = settlements.error ?: ""
-            if (error == ExpenseViewModel.SETTLEMENT_PENDING_ERROR) {
-                ComposeViewUtils.FullScreenErrorComposable(
-                    errorStrings = Pair(
-                        stringResource(R.string.settlement_not_available_title),
-                        stringResource(R.string.settlement_not_available_description)
-                    ),
-                    imageId = R.drawable.ic_expenses
-                )
-            } else {
-                ComposeViewUtils.FullScreenErrorComposable(
-                    Pair(
-                        errorMessage,
-                        error
-                    )
-                )
-            }
-        } else {
-            settlements.data?.let { data ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(LocalCustomColors.current.primaryBackground)
+        }
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            if (settlements.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
+                    ComposeViewUtils.FullScreenLoading()
+                }
+            } else if (settlements.error != null) {
+                val error = settlements.error ?: ""
+                if (error == ExpenseViewModel.SETTLEMENT_PENDING_ERROR) {
+                    ComposeViewUtils.FullScreenErrorComposable(
+                        errorStrings = Pair(
+                            stringResource(R.string.settlement_not_available_title),
+                            stringResource(R.string.settlement_not_available_description)
+                        ),
+                        imageId = R.drawable.ic_expenses
+                    )
+                } else {
+                    ComposeViewUtils.FullScreenErrorComposable(
+                        Pair(
+                            errorMessage,
+                            error
+                        )
+                    )
+                }
+            } else {
+                settlements.data?.let { data ->
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -102,32 +115,38 @@ fun ExpenseSettlementScreen(
                             Icon(
                                 imageVector = if (data.overallType == SettlementResponseType.RECEIVE) Icons.Default.CheckCircle else Icons.Default.AccountBalance,
                                 contentDescription = null,
-                                tint = if (data.overallType == SettlementResponseType.RECEIVE) LocalCustomColors.current.success else LocalCustomColors.current.error,
-                                modifier = Modifier.size(32.dp)
+                                tint = if (data.overallType == SettlementResponseType.RECEIVE) customColors.success else customColors.error,
+                                modifier = Modifier.size(28.dp)
                             )
 
                             Spacer(Modifier.width(8.dp))
 
                             ComposeTextView.TitleTextView(
                                 text = stringResource(if (data.overallType == SettlementResponseType.RECEIVE) R.string.receive_money else R.string.pay_money),
-                                fontSize = 24.sp
+                                fontSize = 20.sp,
+                                textColor = customColors.titleTextColor
                             )
                         }
 
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(8.dp))
 
-                        val cardBg =
-                            if (data.overallType == SettlementResponseType.RECEIVE) LocalCustomColors.current.success.copy(alpha = 0.1f) else LocalCustomColors.current.error.copy(
-                                alpha = 0.1f
-                            )
-                        val accentColor =
-                            if (data.overallType == SettlementResponseType.RECEIVE) LocalCustomColors.current.success else LocalCustomColors.current.error
+                        val cardBg = if (data.overallType == SettlementResponseType.RECEIVE) {
+                            customColors.success.copy(alpha = 0.12f)
+                        } else {
+                            customColors.error.copy(alpha = 0.12f)
+                        }
+                        val accentColor = if (data.overallType == SettlementResponseType.RECEIVE) {
+                            customColors.success
+                        } else {
+                            customColors.error
+                        }
 
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(16.dp))
+                                .clip(RoundedCornerShape(20.dp))
                                 .background(cardBg)
+                                .border(1.dp, accentColor.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
                                 .padding(24.dp),
                             contentAlignment = Alignment.CenterStart
                         ) {
@@ -143,7 +162,7 @@ fun ExpenseSettlementScreen(
                                     fontSize = 32.sp,
                                     textColor = accentColor
                                 )
-                                Spacer(Modifier.width(8.dp))
+                                Spacer(Modifier.width(10.dp))
                                 ComposeTextView.TextView(
                                     text = stringResource(if (data.overallType == SettlementResponseType.RECEIVE) R.string.to_receive else R.string.to_pay),
                                     fontSize = 14.sp,
@@ -153,25 +172,23 @@ fun ExpenseSettlementScreen(
                             }
                         }
 
-                        Spacer(Modifier.height(24.dp))
+                        Spacer(Modifier.height(28.dp))
 
                         ComposeTextView.TitleTextView(
                             text = stringResource(if (data.overallType == SettlementResponseType.RECEIVE) R.string.paid_by else R.string.paid_to),
                             fontSize = 16.sp,
-                            modifier = Modifier.padding(bottom = 12.dp)
+                            modifier = Modifier.padding(bottom = 12.dp),
+                            textColor = customColors.titleTextColor
                         )
 
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(
-                                    LocalCustomColors.current.defaultImageCardColor.copy(
-                                        alpha = 0.3f
-                                    )
-                                )
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(customColors.fadedBackground.copy(alpha = 0.35f))
+                                .border(1.dp, customColors.defaultImageCardColor, RoundedCornerShape(20.dp))
                                 .padding(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(1.dp)
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(data.settlements) { item ->
                                 SettlementRow(item, data.overallType == SettlementResponseType.RECEIVE, currency)
@@ -190,33 +207,38 @@ fun SettlementRow(
     isReceiveMode: Boolean,
     currency: Currency
 ) {
+    val customColors = LocalCustomColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp),
+            .clip(RoundedCornerShape(16.dp))
+            .background(customColors.primaryBackground)
+            .border(1.dp, customColors.defaultImageCardColor.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
+            .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ComposeImageView.CircularImageView(
                 imageURI = item.user.profilePicture ?: "",
-                diameter = 40.dp
+                diameter = 36.dp
             )
 
             Spacer(Modifier.width(12.dp))
 
             ComposeTextView.TextView(
                 text = item.user.name,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                textColor = customColors.textColor
             )
         }
 
         ComposeTextView.TextView(
             text = stringResource(R.string.amount_formatting, currency.symbol, item.amount.toString()),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold,
-            textColor = if (isReceiveMode) LocalCustomColors.current.success else LocalCustomColors.current.error
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            textColor = if (isReceiveMode) customColors.success else customColors.error
         )
     }
 }

@@ -1,12 +1,14 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,12 +17,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,11 +37,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
@@ -58,7 +65,7 @@ fun ItineraryListView(
     val viewModel: ItineraryViewModel = koinViewModel(parameters = { parametersOf(tripId) })
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
-    val itineraryStatus by viewModel.itineraryStatus.collectAsState()
+    val itineraryStatus by viewModel.itineraryStatus.collectAsStateWithLifecycle()
     val errorMessage = stringResource(R.string.generic_error)
     var addItineraryDialogVisibility by remember { mutableStateOf(false) }
 
@@ -91,38 +98,32 @@ fun ItineraryListView(
             .fillMaxSize()
             .background(customColors.primaryBackground)
     ) {
+        // Updated Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    horizontal = dimensionResource(id = R.dimen.module_16),
-                    vertical = dimensionResource(id = R.dimen.module_8)
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(16.dp, 48.dp, 16.dp, 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(
+                onClick = {
+                    scope.launch { CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp) }
+                },
+                modifier = Modifier.size(32.dp)
+            ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_back_arrow),
+                    Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    modifier = Modifier
-                        .size(dimensionResource(id = R.dimen.module_24))
-                        .clickable {
-                            scope.launch {
-                                CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
-                            }
-                        },
                     tint = customColors.secondaryBackground
                 )
-
-                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.module_16)))
-
-                ComposeTextView.TitleTextView(
-                    text = stringResource(id = R.string.choose_date),
-                    fontSize = 20.sp,
-                    textColor = customColors.secondaryBackground
-                )
             }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            ComposeTextView.TitleTextView(
+                text = stringResource(id = R.string.itinerary),
+                fontSize = 24.sp
+            )
         }
 
         if (itineraryStatus.isLoading) {
@@ -138,45 +139,49 @@ fun ItineraryListView(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = dimensionResource(id = R.dimen.module_16))
+                    .padding(horizontal = 20.dp)
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.module_24)))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     ComposeTextView.TitleTextView(
                         text = itinerary?.itineraryName ?: stringResource(id = R.string.your_itineary),
-                        fontSize = 24.sp
+                        fontSize = 20.sp,
+                        textColor = customColors.secondaryBackground
                     )
 
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.module_10)))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     ComposeTextView.TextView(
                         text = itinerary?.itinerarySummary ?: stringResource(id = R.string.select_date_summary),
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        textColor = customColors.hintTextColor
                     )
 
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.module_24)))
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
 
                 itemsIndexed(itineraryDays) { index, day ->
-                    DayItem(
+                    DayCard(
                         day = day,
                         dayNumber = index + 1,
+                        isLast = index == itineraryDays.size - 1,
                         onClick = {
                             scope.launch {
                                 day.itineraryId.let {
                                     CommonNavigationChannel.navigateTo(
                                         NavigationAction.Navigate(
-                                            AppNavigationScreen.ItineraryMapViewScreen.createRoute(
-                                                it,
-                                            )
+                                            AppNavigationScreen.ItineraryMapViewScreen.createRoute(it)
                                         )
                                     )
                                 }
                             }
                         }
                     )
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.module_16)))
+                }
+                
+                item {
+                    Spacer(modifier = Modifier.height(40.dp))
                 }
             }
         }
@@ -184,9 +189,10 @@ fun ItineraryListView(
 }
 
 @Composable
-fun DayItem(
+fun DayCard(
     day: ItineraryDay,
     dayNumber: Int,
+    isLast: Boolean,
     onClick: () -> Unit
 ) {
     val customColors = LocalCustomColors.current
@@ -194,29 +200,77 @@ fun DayItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.module_20)))
-            .background(customColors.deepPurpleGlow)
-            .clickable { onClick() }
-            .padding(dimensionResource(id = R.dimen.module_12)),
-        verticalAlignment = Alignment.CenterVertically
+            .height(IntrinsicSize.Min)
     ) {
-        ComposeImageView.ImageViewWithUrl(
-            imageURI = day.imageUrl ?: "",
-            modifier = Modifier
-                .size(dimensionResource(id = R.dimen.module_90))
-                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.module_12))),
-            contentScale = ContentScale.Crop
-        )
-
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.module_16)))
-
-        Column(modifier = Modifier.weight(1f)) {
-            ComposeTextView.TextView(
-                text = stringResource(id = R.string.from_to_day, dayNumber, DateTimeUtils.formatLongToDate(day.date)),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                textColor = customColors.titleTextColor
+        // Timeline Dot and Line
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.width(40.dp)
+        ) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .background(customColors.primaryButtonBg, CircleShape)
             )
+            if (!isLast) {
+                Box(
+                    modifier = Modifier
+                        .width(2.dp)
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .background(customColors.fadedBackground)
+                )
+            }
+        }
+
+        Card(
+            modifier = Modifier
+                .weight(1f)
+                .padding(bottom = 24.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .border(1.dp, customColors.defaultImageCardColor, RoundedCornerShape(16.dp))
+                .clickable { onClick() },
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = customColors.defaultImageCardColor.copy(alpha = 0.35f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ComposeImageView.ImageViewWithUrl(
+                    imageURI = day.imageUrl ?: "",
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column {
+                    ComposeTextView.TextView(
+                        text = "Day $dayNumber",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        textColor = customColors.primaryButtonBg
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    ComposeTextView.TextView(
+                        text = DateTimeUtils.formatLongToDate(day.date),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        textColor = customColors.titleTextColor
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    ComposeTextView.TextView(
+                        text = "Tap to view schedule",
+                        fontSize = 12.sp,
+                        textColor = customColors.hintTextColor
+                    )
+                }
+            }
         }
     }
 }

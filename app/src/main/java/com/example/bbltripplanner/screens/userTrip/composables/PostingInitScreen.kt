@@ -1,6 +1,5 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,12 +23,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
@@ -37,7 +36,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -54,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -68,7 +67,6 @@ import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.utils.DateUtils
-import com.example.bbltripplanner.common.utils.DateUtils.toFormattedDateString
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -79,6 +77,7 @@ import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitViewMod
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -304,49 +303,14 @@ fun PostingInitScreen() {
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedButton(
-                    onClick = {
-                        showDatePicker = DatePickerType.START_DATE
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        Icons.Default.DateRange,
-                        contentDescription = null,
-                        tint = LocalCustomColors.current.secondaryBackground
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    ComposeTextView.TextView(
-                        text = postingFormData.startDate?.toFormattedDateString()  ?: startDate,
-                        textColor = LocalCustomColors.current.secondaryBackground
-                    )
-                }
-                OutlinedButton(
-                    onClick = {
-                        showDatePicker = DatePickerType.END_DATE
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        Icons.Default.DateRange,
-                        contentDescription = null,
-                        tint = LocalCustomColors.current.secondaryBackground
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    ComposeTextView.TextView(
-                        text = postingFormData.endDate?.toFormattedDateString() ?: endDate,
-                        textColor = LocalCustomColors.current.secondaryBackground
-                    )
-                }
-            }
+            UnifiedTripDatePickerCard(
+                startDate = postingFormData.startDate,
+                endDate = postingFormData.endDate,
+                startDatePlaceholder = startDate,
+                endDatePlaceholder = endDate,
+                onStartDateClick = { showDatePicker = DatePickerType.START_DATE },
+                onEndDateClick = { showDatePicker = DatePickerType.END_DATE }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -356,16 +320,20 @@ fun PostingInitScreen() {
                     viewModel.processEvent(PostingInitIntent.ViewEvent.UpdateTripName(it))
                 },
                 placeholder = {
-                    ComposeTextView.TitleTextView(
+                    ComposeTextView.TextView(
                         text = stringResource(R.string.trip_name),
-                        fontSize = 16.sp
+                        fontSize = 15.sp,
+                        textColor = LocalCustomColors.current.hintTextColor
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(16.dp),
+                singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = LocalCustomColors.current.defaultImageCardColor.copy(alpha = 0.2f),
+                    unfocusedContainerColor = LocalCustomColors.current.defaultImageCardColor.copy(alpha = 0.1f),
                     focusedBorderColor = LocalCustomColors.current.secondaryBackground,
-                    unfocusedBorderColor = LocalCustomColors.current.secondaryBackground,
+                    unfocusedBorderColor = LocalCustomColors.current.defaultImageCardColor,
                     errorBorderColor = LocalCustomColors.current.error,
                     disabledBorderColor = LocalCustomColors.current.fadedBackground
                 )
@@ -394,50 +362,69 @@ fun PostingInitScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(scrollState),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 postingFormData.invitedMembers.forEach { user ->
-                    AssistChip(
-                        onClick = {},
-                        label = { ComposeTextView.TextView(user.name) },
-                        leadingIcon = {
-                            ComposeImageView.CircularImageView(
-                                diameter = 24.dp,
-                                imageURI = user.profilePicture ?: ""
-                            )
-                        },
-                        trailingIcon = {
-                            Icon(
-                                Icons.Default.Clear,
-                                contentDescription = "remove",
-                                tint = LocalCustomColors.current.fadedBackground,
-                                modifier = Modifier.size(20.dp)
-                                    .clickable {
-                                        viewModel.processEvent(PostingInitIntent.ViewEvent.RemoveTripMates(user))
-                                    }
-                            )
-                        },
-                        shape = RoundedCornerShape(40),
-                        border = BorderStroke(1.dp, color = LocalCustomColors.current.secondaryBackground)
-                    )
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(LocalCustomColors.current.defaultImageCardColor.copy(alpha = 0.3f))
+                            .border(1.dp, LocalCustomColors.current.defaultImageCardColor, RoundedCornerShape(12.dp))
+                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ComposeImageView.CircularImageView(
+                            diameter = 22.dp,
+                            imageURI = user.profilePicture ?: ""
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        ComposeTextView.TextView(
+                            text = user.name,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            textColor = LocalCustomColors.current.titleTextColor
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "remove",
+                            tint = LocalCustomColors.current.hintTextColor,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    viewModel.processEvent(PostingInitIntent.ViewEvent.RemoveTripMates(user))
+                                }
+                        )
+                    }
                 }
 
-                AssistChip(
-                    onClick = {
-                        viewModel.processEvent(PostingInitIntent.ViewEvent.GetInviteList)
-                        showBottomSheet = BottomSheetType.USER_SELECTION
-                    },
-                    label = { ComposeTextView.TextView(stringResource(R.string.add)) },
-                    leadingIcon = {
-                        Icon(
-                            Icons.Default.Add,
-                            modifier = Modifier.size(20.dp),
-                            contentDescription = "Add more"
-                        )
-                    },
-                    shape = RoundedCornerShape(40),
-                    border = BorderStroke(1.dp, color = LocalCustomColors.current.secondaryBackground)
-                )
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(LocalCustomColors.current.secondaryBackground)
+                        .clickable {
+                            viewModel.processEvent(PostingInitIntent.ViewEvent.GetInviteList)
+                            showBottomSheet = BottomSheetType.USER_SELECTION
+                        }
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add more",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    ComposeTextView.TextView(
+                        text = stringResource(R.string.add),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        textColor = Color.White
+                    )
+                }
             }
         }
 
@@ -669,6 +656,146 @@ enum class BottomSheetType {
 enum class DatePickerType {
     START_DATE,
     END_DATE
+}
+
+@Composable
+fun UnifiedTripDatePickerCard(
+    startDate: Long?,
+    endDate: Long?,
+    startDatePlaceholder: String,
+    endDatePlaceholder: String,
+    onStartDateClick: () -> Unit,
+    onEndDateClick: () -> Unit
+) {
+    val customColors = LocalCustomColors.current
+    val formattedStart = startDate?.let {
+        val timeZone = kotlinx.datetime.TimeZone.currentSystemDefault()
+        val date = kotlin.time.Instant.fromEpochMilliseconds(it).toLocalDateTime(timeZone).date
+        val month = date.month.name.take(3).lowercase().replaceFirstChar { it.uppercase() }
+        "$month ${date.day}, ${date.year}"
+    } ?: startDatePlaceholder
+
+    val formattedEnd = endDate?.let {
+        val timeZone = kotlinx.datetime.TimeZone.currentSystemDefault()
+        val date = kotlin.time.Instant.fromEpochMilliseconds(it).toLocalDateTime(timeZone).date
+        val month = date.month.name.take(3).lowercase().replaceFirstChar { it.uppercase() }
+        "$month ${date.day}, ${date.year}"
+    } ?: endDatePlaceholder
+
+    val duration = if (startDate != null && endDate != null) {
+        val days = ((endDate - startDate) / (24 * 60 * 60 * 1000)).toInt() + 1
+        "$days ${if (days == 1) "day" else "days"}"
+    } else null
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(customColors.defaultImageCardColor.copy(alpha = 0.2f))
+            .border(1.dp, customColors.defaultImageCardColor, RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Start Date Section
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { onStartDateClick() },
+                horizontalAlignment = Alignment.Start
+            ) {
+                ComposeTextView.TextView(
+                    text = "DEPARTURE",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textColor = customColors.hintTextColor
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = null,
+                        tint = customColors.secondaryBackground,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    ComposeTextView.TextView(
+                        text = formattedStart,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        textColor = customColors.titleTextColor
+                    )
+                }
+            }
+
+            // Arrow/Duration Badge Section in the middle
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                if (duration != null) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(customColors.secondaryBackground.copy(alpha = 0.12f))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        ComposeTextView.TextView(
+                            text = duration,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            textColor = customColors.secondaryBackground
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    tint = customColors.secondaryBackground,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            // End Date Section
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { onEndDateClick() },
+                horizontalAlignment = Alignment.End
+            ) {
+                ComposeTextView.TextView(
+                    text = "RETURN",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textColor = customColors.hintTextColor
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = null,
+                        tint = customColors.secondaryBackground,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    ComposeTextView.TextView(
+                        text = formattedEnd,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        textColor = customColors.titleTextColor
+                    )
+                }
+            }
+        }
+    }
 }
 
 suspend fun moveToNextPage(isEdit: Boolean, tripId: String?, showSuccess: () -> Unit, showError: () -> Unit) {

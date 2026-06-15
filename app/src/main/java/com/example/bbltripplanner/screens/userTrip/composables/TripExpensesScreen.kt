@@ -522,12 +522,12 @@ private fun ExpenseBanner(
                 text = stringResource(R.string.amount_formatting, currency.symbol, expense.toString()),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.W600,
-                textColor = Color.Black
+                textColor = Color.White
             )
 
             ComposeTextView.TextView(
                 text = stringResource(R.string.total_spent),
-                textColor = Color.Black
+                textColor = Color.White
             )
         }
 
@@ -546,16 +546,16 @@ private fun ExpenseBanner(
                 text = stringResource(R.string.budget, currency.symbol, budget.toString()),
                 modifier = Modifier.padding(horizontal = 8.dp),
                 textColor = Color.Black,
-                fontSize = 16.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.W500
             )
 
             ComposeTextView.TextView(
                 text = stringResource(R.string.remaining, currency.symbol, left.toString()),
-                textColor = if (left >= 0) Color.Green else Color.Red,
+                textColor = if (left >= 0) LocalCustomColors.current.warning else Color.Red,
                 modifier = Modifier.padding(horizontal = 8.dp),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W500
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W600
             )
         }
     }
@@ -603,19 +603,25 @@ private fun ExpenseItem(item: ExpenseItem, currency: Currency) {
                 Column(modifier = Modifier.weight(1f)) {
                     ComposeTextView.TextView(
                         text = item.description,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
                         textColor = LocalCustomColors.current.textColor
                     )
+
+                    Spacer(Modifier.height(4.dp))
+
                     ComposeTextView.TextView(
                         text = stringResource(R.string.paid_by_name, item.paidBy.name),
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         textColor = LocalCustomColors.current.textColor
                     )
+
+                    Spacer(Modifier.height(2.dp))
+
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         ComposeTextView.TextView(
                             text = "Split: ${item.split.count()} people",
-                            fontSize = 14.sp,
+                            fontSize = 12.sp,
                             textColor = LocalCustomColors.current.textColor
                         )
                         Icon(
@@ -630,7 +636,7 @@ private fun ExpenseItem(item: ExpenseItem, currency: Currency) {
                 Column(horizontalAlignment = Alignment.End) {
                     ComposeTextView.TextView(
                         text = stringResource(R.string.amount_formatting, currency.symbol, item.amount.toString()),
-                        fontSize = 20.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         textColor = LocalCustomColors.current.textColor
                     )
@@ -639,7 +645,7 @@ private fun ExpenseItem(item: ExpenseItem, currency: Currency) {
 
                     ComposeTextView.TextView(
                         text = item.date.toFormattedDateString(),
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         textColor = LocalCustomColors.current.textColor
                     )
                 }

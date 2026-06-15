@@ -3,13 +3,13 @@ package com.example.bbltripplanner.screens.userTrip.composables
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,19 +18,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,10 +40,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -52,7 +52,6 @@ import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
-import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
@@ -86,6 +85,7 @@ fun UserTripDetailScreen(
     val successMessage = stringResource(R.string.trip_accept_success)
     val acceptToSeePrompt = stringResource(R.string.accept_to_see_prpmpt)
     val context = LocalContext.current
+    val customColors = LocalCustomColors.current
 
     CommonLifecycleAwareLaunchedEffect(viewModel.viewEffect) { viewEffect ->
         when (viewEffect) {
@@ -105,43 +105,92 @@ fun UserTripDetailScreen(
     } else if(tripDataStatus.value.data == null ||  tripDataStatus.value.error != null) {
         FullScreenError(tripDataStatus.value.error)
     } else {
-        Column(
-            modifier = Modifier.fillMaxSize()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(customColors.primaryBackground)
         ) {
-            UserTripDetailToolbar()
-
-            Spacer(Modifier.height(30.dp))
-
-            TripSummarySection(tripDataStatus.value.data, acceptButtonVisibility) { tripId ->
-                viewModel.processEvent(UserTripDetailIntent.ViewEvent.AcceptInvitation(tripId))
-            }
-
-            LazyColumn(
+            val scrollState = rememberScrollState()
+            Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
             ) {
-                itemsIndexed(tripActionList) { index, item ->
-                    Column {
-                        ActionTile(
-                            item
-                        ) { key ->
-                            scope.launch {
-                                takeAction(key, tripDataStatus.value.data) {
-                                    Toast.makeText(context, acceptToSeePrompt, Toast.LENGTH_LONG).show()
+                UserTripDetailToolbar()
+
+                Spacer(Modifier.height(16.dp))
+
+                TripSummarySection(tripDataStatus.value.data, acceptButtonVisibility) { tripId ->
+                    viewModel.processEvent(UserTripDetailIntent.ViewEvent.AcceptInvitation(tripId))
+                }
+
+                Spacer(Modifier.height(12.dp))
+
+                ComposeTextView.TitleTextView(
+                    text = "Trip Dashboard",
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    fontSize = 18.sp,
+                    textColor = customColors.titleTextColor
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                // Modern 2x2 grid for action shortcuts
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            ActionCard(tripActionList[0]) { key ->
+                                scope.launch {
+                                    takeAction(key, tripDataStatus.value.data) {
+                                        Toast.makeText(context, acceptToSeePrompt, Toast.LENGTH_LONG).show()
+                                    }
                                 }
                             }
                         }
-
-                        if (index != tripActionList.size - 1) {
-                            Spacer(
-                                Modifier
-                                    .height(1.dp)
-                                    .fillMaxWidth()
-                                    .background(LocalCustomColors.current.defaultImageCardColor)
-                            )
+                        Box(modifier = Modifier.weight(1f)) {
+                            ActionCard(tripActionList[1]) { key ->
+                                scope.launch {
+                                    takeAction(key, tripDataStatus.value.data) {
+                                        Toast.makeText(context, acceptToSeePrompt, Toast.LENGTH_LONG).show()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            ActionCard(tripActionList[2]) { key ->
+                                scope.launch {
+                                    takeAction(key, tripDataStatus.value.data) {
+                                        Toast.makeText(context, acceptToSeePrompt, Toast.LENGTH_LONG).show()
+                                    }
+                                }
+                            }
+                        }
+                        Box(modifier = Modifier.weight(1f)) {
+                            ActionCard(tripActionList[3]) { key ->
+                                scope.launch {
+                                    takeAction(key, tripDataStatus.value.data) {
+                                        Toast.makeText(context, acceptToSeePrompt, Toast.LENGTH_LONG).show()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
+                
+                Spacer(Modifier.height(24.dp))
             }
         }
     }
@@ -165,176 +214,150 @@ private fun TripSummarySection(
         return
     }
     val scope = rememberCoroutineScope()
-    Column(
+    val customColors = LocalCustomColors.current
+
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = customColors.fadedBackground.copy(alpha = 0.35f)
+        ),
+        border = BorderStroke(1.dp, customColors.defaultImageCardColor)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.padding(20.dp)
         ) {
-            ComposeTextView.TitleTextView(
-                text = userTripData.tripName
-            )
-
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .background(color = LocalCustomColors.current.secondaryBackground, CircleShape)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
-                    onClick = {
-                        shareDeepLink(context, shareMessage, userTripData.tripId)
-                    }
+                ComposeTextView.TitleTextView(
+                    text = userTripData.tripName,
+                    fontSize = 24.sp,
+                    textColor = customColors.titleTextColor
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(color = customColors.secondaryBackground.copy(alpha = 0.12f), CircleShape)
+                        .clickable {
+                            shareDeepLink(context, shareMessage, userTripData.tripId)
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         Icons.Default.Share,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(16.dp),
                         contentDescription = "Share Trip",
-                        tint = LocalCustomColors.current.primaryBackground
+                        tint = customColors.secondaryBackground
                     )
                 }
             }
-        }
 
-        Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(20.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                TripSummaryDetailItem(
-                    Icons.Default.DateRange,
-                    "${userTripData.startDate.toFormattedDateString()} - ${userTripData.endDate.toFormattedDateString()}"
-                )
-
-                Spacer(Modifier.height(6.dp))
-
-                TripSummaryDetailItem(
-                    Icons.Default.LocationOn,
-                    userTripData.whereTo?.displayName
-                        ?: userTripData.whereTo?.address?.name?.plus(", ")?.plus(userTripData.whereTo.address.city)
-                        ?: ""
-                )
-
-                Spacer(Modifier.height(6.dp))
-
-                TripSummaryDetailItem(Icons.Filled.Face, userTripData.visibility.value)
-            }
-
-            if (acceptButtonVisibility && userTripData.acceptanceNeeded) {
-                Box(
-                    modifier = Modifier
-                        .background(
-                            LocalCustomColors.current.secondaryBackground,
-                            RoundedCornerShape(8.dp)
-                        )
-                        .padding(16.dp, 8.dp)
-                        .clickable {
-                            userTripData.tripId?.let { onAccept(it) }
-                        }
+                Column(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    ComposeTextView.TextView(
-                        text = stringResource(R.string.accept),
-                        textColor = LocalCustomColors.current.primaryBackground
+                    TripSummaryDetailItem(
+                        Icons.Default.DateRange,
+                        "${userTripData.startDate.toFormattedDateString()} - ${userTripData.endDate.toFormattedDateString()}"
                     )
-                }
-            }
-        }
 
-        Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(10.dp))
 
-        TripMatesList(userTripData.invitedMembers)
-
-        Spacer(Modifier.height(16.dp))
-
-        ComposeButtonView.PrimaryButtonView(
-            text = stringResource(R.string.edit_details),
-            fontSize = 16.sp,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            scope.launch {
-                userTripData.tripId?.let {
-                    CommonNavigationChannel.navigateTo(
-                        NavigationAction.Navigate(
-                            AppNavigationScreen.EditTripScreen.createRoute(
-                                it
-                            )
-                        )
+                    TripSummaryDetailItem(
+                        Icons.Default.LocationOn,
+                        userTripData.whereTo?.displayName
+                            ?: userTripData.whereTo?.address?.name?.plus(", ")?.plus(userTripData.whereTo.address.city)
+                            ?: ""
                     )
+
+                    Spacer(Modifier.height(10.dp))
+
+                    TripSummaryDetailItem(Icons.Filled.Face, userTripData.visibility.value)
                 }
-            }
-        }
 
-    }
-}
-
-fun shareDeepLink(context: Context, message: String, tripId: String?) {
-    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_SUBJECT, "Check out this product!")
-        putExtra(Intent.EXTRA_TEXT, "$message ${getDeeplinkUrl(tripId)}")
-    }
-    context.startActivity(Intent.createChooser(shareIntent, "Share deep link via"))
-}
-
-fun getDeeplinkUrl(tripId: String?): String {
-    return if (tripId.isNullOrEmpty()) {
-        Constants.TRIP_PLANNER_DEEPLINK
-    } else {
-        "${Constants.TRIP_PLANNER_DEEPLINK}/$tripId"
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun TripMatesList(tripMates: List<User>) {
-    val coroutineScope = rememberCoroutineScope()
-    var completeListVisibility by remember {
-        mutableStateOf(false)
-    }
-    val defaultShown = 7
-
-    val itemsToTake = if (completeListVisibility) Int.MAX_VALUE else defaultShown
-    val visibleList = tripMates.take(itemsToTake)
-    FlowRow(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        itemVerticalAlignment = Alignment.CenterVertically
-    ) {
-        visibleList.forEach { user ->
-            Box(
-                modifier = Modifier.clickable {
-                    coroutineScope.launch {
-                        CommonNavigationChannel.navigateTo(
-                            NavigationAction.Navigate(
-                                AppNavigationScreen.ProfileScreen.createRoute(user.id)
+                if (acceptButtonVisibility && userTripData.acceptanceNeeded) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                customColors.secondaryBackground,
+                                RoundedCornerShape(12.dp)
                             )
+                            .clickable {
+                                userTripData.tripId?.let { onAccept(it) }
+                            }
+                            .padding(16.dp, 10.dp)
+                    ) {
+                        ComposeTextView.TextView(
+                            text = stringResource(R.string.accept),
+                            textColor = Color.White,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
-            ) {
-                ComposeImageView.CircularImageView(
-                    imageURI = user.profilePicture ?: "",
-                    diameter = 36.dp
-                )
             }
-        }
 
-        if (!completeListVisibility && tripMates.size > defaultShown) {
-            ComposeTextView.TextView(
-                text = "+${tripMates.size - defaultShown}",
-                fontSize = 14.sp,
-                modifier = Modifier.clickable {
-                    completeListVisibility = true
+            Spacer(Modifier.height(24.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (userTripData.invitedMembers.isNotEmpty()) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        OverlappingAvatars(members = userTripData.invitedMembers)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        ComposeTextView.TextView(
+                            text = "${userTripData.invitedMembers.size} planned mates",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            textColor = customColors.textColor
+                        )
+                    }
+                } else {
+                    ComposeTextView.TextView(
+                        text = "Solo Trip",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        textColor = customColors.textColor
+                    )
                 }
-            )
+
+                Box(
+                    modifier = Modifier
+                        .background(customColors.secondaryBackground.copy(alpha = 0.12f), RoundedCornerShape(12.dp))
+                        .clickable {
+                            scope.launch {
+                                userTripData.tripId?.let {
+                                    CommonNavigationChannel.navigateTo(
+                                        NavigationAction.Navigate(
+                                            AppNavigationScreen.EditTripScreen.createRoute(it)
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                        .padding(14.dp, 8.dp)
+                ) {
+                    ComposeTextView.TextView(
+                        text = stringResource(R.string.edit_details),
+                        textColor = customColors.secondaryBackground,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
         }
     }
 }
@@ -344,20 +367,23 @@ private fun TripSummaryDetailItem(
     icon: ImageVector,
     text: String
 ) {
+    val customColors = LocalCustomColors.current
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             icon,
-            contentDescription = "trip time",
-            modifier = Modifier.size(14.dp),
-            tint = LocalCustomColors.current.secondaryBackground
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = customColors.secondaryBackground
         )
 
-        Spacer(Modifier.width(4.dp))
+        Spacer(Modifier.width(8.dp))
 
         ComposeTextView.TextView(
-            text = text
+            text = text,
+            fontSize = 15.sp,
+            textColor = customColors.textColor
         )
     }
 }
@@ -365,38 +391,39 @@ private fun TripSummaryDetailItem(
 @Composable
 private fun UserTripDetailToolbar() {
     val scope = rememberCoroutineScope()
+    val customColors = LocalCustomColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp, 8.dp),
+            .padding(16.dp, 16.dp, 16.dp, 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(36.dp)
-                .background(color = LocalCustomColors.current.secondaryBackground, CircleShape)
-        ) {
-            IconButton(
-                onClick = {
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(customColors.secondaryBackground.copy(alpha = 0.12f))
+                .clickable {
                     scope.launch {
                         CommonNavigationChannel.navigateTo(
                             NavigationAction.NavigateUp
                         )
                     }
-                }
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = LocalCustomColors.current.primaryBackground
-                )
-            }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = customColors.secondaryBackground,
+                modifier = Modifier.size(20.dp)
+            )
         }
 
         ComposeTextView.TextView(
             text = stringResource(R.string.see_trips),
-            textColor = LocalCustomColors.current.secondaryBackground,
+            textColor = customColors.secondaryBackground,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             textDecoration = TextDecoration.Underline,
@@ -414,51 +441,119 @@ private fun UserTripDetailToolbar() {
 }
 
 @Composable
-private fun ActionTile (
+private fun ActionCard(
     item: TripActionItem,
     onClick: (key: String) -> Unit
 ) {
-    Row(
+    val customColors = LocalCustomColors.current
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp, 12.dp, 8.dp, 12.dp)
-            .clickable { onClick(item.key) },
-        verticalAlignment = Alignment.CenterVertically
+            .clip(RoundedCornerShape(20.dp))
+            .background(customColors.fadedBackground.copy(alpha = 0.35f))
+            .border(1.dp, customColors.defaultImageCardColor, RoundedCornerShape(20.dp))
+            .clickable { onClick(item.key) }
+            .padding(16.dp),
+        horizontalAlignment = Alignment.Start
     ) {
-        ComposeImageView.ImageViewWitDrawableId(
-            imageId = item.vectorId,
-            modifier = Modifier.height(dimensionResource(id = R.dimen.module_36)),
-            contentDescription = stringResource(id = item.title)
-        )
-
-        Column(
+        Box(
             modifier = Modifier
-                .wrapContentWidth()
-                .padding(32.dp, 0.dp, 0.dp, 0.dp)
+                .size(44.dp)
+                .background(customColors.secondaryBackground.copy(alpha = 0.12f), CircleShape),
+            contentAlignment = Alignment.Center
         ) {
-            ComposeTextView.TextView(
-                text = stringResource(id = item.title),
-                fontSize = with(LocalDensity.current) {
-                    dimensionResource(id = R.dimen.module_18sp).toSp()
-                },
-                fontWeight = FontWeight.W500
-            )
-            ComposeTextView.TextView(
-                text = stringResource(id = item.title),
-                fontSize = with(LocalDensity.current) {
-                    dimensionResource(id = R.dimen.module_16sp).toSp()
-                },
-                fontWeight = FontWeight.W400
+            ComposeImageView.ImageViewWitDrawableId(
+                imageId = item.vectorId,
+                modifier = Modifier.size(24.dp),
+                contentDescription = stringResource(id = item.title)
             )
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        ComposeImageView.ImageViewWitDrawableId(
-            imageId = R.drawable.ic_right_arrow,
-            modifier = Modifier.height(dimensionResource(id = R.dimen.module_20)),
-            contentDescription = "right arrow"
+        ComposeTextView.TextView(
+            text = stringResource(id = item.title),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            textColor = customColors.titleTextColor
         )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        ComposeTextView.TextView(
+            text = stringResource(id = item.subTitle),
+            fontSize = 13.sp,
+            textColor = customColors.hintTextColor,
+            maxLines = 2
+        )
+    }
+}
+
+@Composable
+fun OverlappingAvatars(members: List<User>, modifier: Modifier = Modifier) {
+    val customColors = LocalCustomColors.current
+    val maxVisible = 3
+    Box(modifier = modifier, contentAlignment = Alignment.CenterStart) {
+        members.take(maxVisible).forEachIndexed { index, member ->
+            Box(
+                modifier = Modifier
+                    .padding(start = (index * 14).dp)
+                    .size(22.dp)
+                    .border(1.5.dp, customColors.primaryBackground, CircleShape)
+                    .clip(CircleShape)
+                    .background(customColors.fadedBackground),
+                contentAlignment = Alignment.Center
+            ) {
+                if (!member.profilePicture.isNullOrEmpty()) {
+                    ComposeImageView.CircularImageView(
+                        imageURI = member.profilePicture,
+                        diameter = 22.dp
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Face,
+                        contentDescription = null,
+                        tint = customColors.secondaryBackground,
+                        modifier = Modifier.size(10.dp)
+                    )
+                }
+            }
+        }
+        if (members.size > maxVisible) {
+            Box(
+                modifier = Modifier
+                    .padding(start = (maxVisible * 14).dp)
+                    .size(22.dp)
+                    .border(1.5.dp, customColors.primaryBackground, CircleShape)
+                    .clip(CircleShape)
+                    .background(customColors.secondaryBackground),
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.material3.Text(
+                    text = "+${members.size - maxVisible}",
+                    color = Color.White,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+fun shareDeepLink(context: Context, message: String, tripId: String?) {
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, "Check out this product!")
+        putExtra(Intent.EXTRA_TEXT, "$message ${getDeeplinkUrl(tripId)}")
+    }
+    context.startActivity(Intent.createChooser(shareIntent, "Share deep link via"))
+}
+
+fun getDeeplinkUrl(tripId: String?): String {
+    return if (tripId.isNullOrEmpty()) {
+        Constants.TRIP_PLANNER_DEEPLINK
+    } else {
+        "${Constants.TRIP_PLANNER_DEEPLINK}/$tripId"
     }
 }
 

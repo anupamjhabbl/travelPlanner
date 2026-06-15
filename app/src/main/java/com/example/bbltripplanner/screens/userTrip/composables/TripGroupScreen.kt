@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -150,33 +151,46 @@ fun TripGroupScreen(tripId: String) {
 
 @Composable
 fun MemberItem(member: TripMember) {
+    val customColors = LocalCustomColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(LocalCustomColors.current.defaultImageCardColor)
-            .padding(12.dp),
+            .clip(RoundedCornerShape(16.dp))
+            .background(customColors.defaultImageCardColor.copy(alpha = 0.35f))
+            .border(1.dp, customColors.defaultImageCardColor, RoundedCornerShape(16.dp))
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ComposeImageView.CircularImageView(
-            imageURI = member.user.profilePicture ?: "",
-            diameter = 48.dp
-        )
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape)
+                .border(1.5.dp, customColors.secondaryBackground.copy(alpha = 0.3f), CircleShape)
+        ) {
+            ComposeImageView.CircularImageView(
+                imageURI = member.user.profilePicture ?: "",
+                diameter = 50.dp
+            )
+        }
 
         Spacer(modifier = Modifier.width(16.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             ComposeTextView.TextView(
                 text = member.user.name,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                textColor = customColors.titleTextColor
             )
+            Spacer(modifier = Modifier.height(6.dp))
             ComposeTextView.TextView(
                 text = member.user.email ?: "",
                 fontSize = 12.sp,
-                textColor = LocalCustomColors.current.fadedBackground
+                textColor = customColors.hintTextColor
             )
         }
+
+        Spacer(modifier = Modifier.width(8.dp))
 
         StatusBadge(member.status)
     }
@@ -192,22 +206,23 @@ fun StatusBadge(status: TripMemberStatus) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(color.copy(alpha = 0.1f))
+            .clip(RoundedCornerShape(12.dp))
+            .background(color.copy(alpha = 0.12f))
+            .border(1.dp, color.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             tint = color,
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(14.dp)
         )
         Spacer(modifier = Modifier.width(4.dp))
         ComposeTextView.TextView(
             text = text,
-            fontSize = 12.sp,
+            fontSize = 11.sp,
             textColor = color,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Bold
         )
     }
 }

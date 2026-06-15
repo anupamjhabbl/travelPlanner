@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -218,11 +219,13 @@ fun AddExpensesScreen(
                 value = description,
                 onValueChange = { description = it },
                 modifier = Modifier.fillMaxWidth().height(100.dp),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = LocalCustomColors.current.secondaryBackground,
-                    unfocusedBorderColor = LocalCustomColors.current.secondaryBackground,
-                    cursorColor = LocalCustomColors.current.secondaryBackground
+                    unfocusedBorderColor = LocalCustomColors.current.defaultImageCardColor,
+                    cursorColor = LocalCustomColors.current.secondaryBackground,
+                    focusedContainerColor = LocalCustomColors.current.fadedBackground.copy(alpha = 0.15f),
+                    unfocusedContainerColor = LocalCustomColors.current.fadedBackground.copy(alpha = 0.15f)
                 )
             )
 
@@ -230,8 +233,9 @@ fun AddExpensesScreen(
 
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Box(
-                    modifier = Modifier.size(56.dp).clip(RoundedCornerShape(12.dp))
-                        .border(1.dp, LocalCustomColors.current.secondaryBackground, RoundedCornerShape(12.dp)),
+                    modifier = Modifier.size(54.dp).clip(RoundedCornerShape(16.dp))
+                        .border(1.dp, LocalCustomColors.current.defaultImageCardColor, RoundedCornerShape(16.dp))
+                        .background(LocalCustomColors.current.fadedBackground.copy(alpha = 0.2f)),
                     contentAlignment = Alignment.Center
                 ) {
                     ComposeTextView.TextView(
@@ -247,11 +251,13 @@ fun AddExpensesScreen(
                     onValueChange = { amount = it },
                     placeholder = { ComposeTextView.TextView(stringResource(R.string.amount), fontSize = 16.sp, textColor = LocalCustomColors.current.hintTextColor) },
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = LocalCustomColors.current.secondaryBackground,
-                        unfocusedBorderColor = LocalCustomColors.current.secondaryBackground,
-                        cursorColor = LocalCustomColors.current.secondaryBackground
+                        unfocusedBorderColor = LocalCustomColors.current.defaultImageCardColor,
+                        cursorColor = LocalCustomColors.current.secondaryBackground,
+                        focusedContainerColor = LocalCustomColors.current.fadedBackground.copy(alpha = 0.15f),
+                        unfocusedContainerColor = LocalCustomColors.current.fadedBackground.copy(alpha = 0.15f)
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true
@@ -338,16 +344,30 @@ fun AddExpensesScreen(
 
 @Composable
 fun SelectionItem(label: String, icon: ImageVector, isSelected: Boolean, onClick: () -> Unit) {
-    val backgroundColor = if (isSelected) LocalCustomColors.current.secondaryBackground else LocalCustomColors.current.defaultImageCardColor
-    val contentColor = if (isSelected) LocalCustomColors.current.primaryBackground else LocalCustomColors.current.textColor
-    Column(
-        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(backgroundColor).clickable { onClick() }.padding(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    val backgroundColor = if (isSelected) LocalCustomColors.current.secondaryBackground else LocalCustomColors.current.fadedBackground.copy(alpha = 0.35f)
+    val contentColor = if (isSelected) Color.White else LocalCustomColors.current.textColor
+    val borderStroke = if (isSelected) null else BorderStroke(1.dp, LocalCustomColors.current.defaultImageCardColor)
+    
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(backgroundColor)
+            .let { modifier ->
+                if (borderStroke != null) modifier.border(borderStroke, RoundedCornerShape(16.dp)) else modifier
+            }
+            .clickable { onClick() }
+            .padding(12.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Icon(icon, label, tint = contentColor, modifier = Modifier.size(24.dp))
-        Spacer(modifier = Modifier.height(8.dp))
-        ComposeTextView.TextView(label, fontSize = 12.sp, textColor = contentColor, fontWeight = FontWeight.Medium)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(icon, label, tint = contentColor, modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            ComposeTextView.TextView(label, fontSize = 12.sp, textColor = contentColor, fontWeight = FontWeight.Medium)
+        }
     }
 }
 
@@ -359,9 +379,10 @@ fun FieldLabel(text: String) {
 @Composable
 fun ClickableSelectorField(text: String, placeholder: String, onClick: () -> Unit) {
     Box(
-        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
-            .border(1.dp, LocalCustomColors.current.secondaryBackground, RoundedCornerShape(12.dp))
-            .clickable { onClick() }.padding(horizontal = 12.dp, vertical = 14.dp)
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))
+            .border(1.dp, LocalCustomColors.current.defaultImageCardColor, RoundedCornerShape(16.dp))
+            .background(LocalCustomColors.current.fadedBackground.copy(alpha = 0.15f))
+            .clickable { onClick() }.padding(horizontal = 16.dp, vertical = 14.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
             ComposeTextView.TextView(text = text.ifEmpty { placeholder }, fontSize = 16.sp, 

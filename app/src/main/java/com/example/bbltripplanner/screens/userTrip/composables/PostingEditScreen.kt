@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,17 +18,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
@@ -40,8 +39,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -53,7 +55,6 @@ import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.utils.DateUtils
-import com.example.bbltripplanner.common.utils.DateUtils.toFormattedDateString
 import com.example.bbltripplanner.screens.userTrip.entity.Location
 import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitViewModel
@@ -282,47 +283,14 @@ fun PostingEditScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedButton(
-                    onClick = {
-                        showDatePicker = DatePickerType.START_DATE
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        Icons.Default.DateRange,
-                        contentDescription = null,
-                        tint = LocalCustomColors.current.secondaryBackground
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    ComposeTextView.TextView(
-                        text = postingFormData.startDate?.toFormattedDateString()  ?: startDate,
-                        textColor = LocalCustomColors.current.secondaryBackground
-                    )
-                }
-                OutlinedButton(
-                    onClick = {
-                        showDatePicker = DatePickerType.END_DATE
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        Icons.Default.DateRange,
-                        contentDescription = null,
-                        tint = LocalCustomColors.current.secondaryBackground
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    ComposeTextView.TextView(
-                        text = postingFormData.endDate?.toFormattedDateString() ?: endDate,
-                        textColor = LocalCustomColors.current.secondaryBackground
-                    )
-                }
-            }
+            UnifiedTripDatePickerCard(
+                startDate = postingFormData.startDate,
+                endDate = postingFormData.endDate,
+                startDatePlaceholder = startDate,
+                endDatePlaceholder = endDate,
+                onStartDateClick = { showDatePicker = DatePickerType.START_DATE },
+                onEndDateClick = { showDatePicker = DatePickerType.END_DATE }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -332,16 +300,20 @@ fun PostingEditScreen(
                     viewModel.processEvent(PostingInitIntent.ViewEvent.UpdateTripName(it))
                 },
                 placeholder = {
-                    ComposeTextView.TitleTextView(
+                    ComposeTextView.TextView(
                         text = stringResource(R.string.trip_name),
-                        fontSize = 16.sp
+                        fontSize = 15.sp,
+                        textColor = LocalCustomColors.current.hintTextColor
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(16.dp),
+                singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = LocalCustomColors.current.defaultImageCardColor.copy(alpha = 0.2f),
+                    unfocusedContainerColor = LocalCustomColors.current.defaultImageCardColor.copy(alpha = 0.1f),
                     focusedBorderColor = LocalCustomColors.current.secondaryBackground,
-                    unfocusedBorderColor = LocalCustomColors.current.secondaryBackground,
+                    unfocusedBorderColor = LocalCustomColors.current.defaultImageCardColor,
                     errorBorderColor = LocalCustomColors.current.error,
                     disabledBorderColor = LocalCustomColors.current.fadedBackground
                 )
@@ -370,50 +342,69 @@ fun PostingEditScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(scrollState),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 postingFormData.invitedMembers.forEach { user ->
-                    AssistChip(
-                        onClick = {},
-                        label = { ComposeTextView.TextView(user.name) },
-                        leadingIcon = {
-                            ComposeImageView.CircularImageView(
-                                diameter = 24.dp,
-                                imageURI = user.profilePicture ?: ""
-                            )
-                        },
-                        trailingIcon = {
-                            Icon(
-                                Icons.Default.Clear,
-                                contentDescription = "remove",
-                                tint = LocalCustomColors.current.fadedBackground,
-                                modifier = Modifier.size(20.dp)
-                                    .clickable {
-                                        viewModel.processEvent(PostingInitIntent.ViewEvent.RemoveTripMates(user))
-                                    }
-                            )
-                        },
-                        shape = RoundedCornerShape(40),
-                        border = BorderStroke(1.dp, color = LocalCustomColors.current.secondaryBackground)
-                    )
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(LocalCustomColors.current.defaultImageCardColor.copy(alpha = 0.3f))
+                            .border(1.dp, LocalCustomColors.current.defaultImageCardColor, RoundedCornerShape(12.dp))
+                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ComposeImageView.CircularImageView(
+                            diameter = 22.dp,
+                            imageURI = user.profilePicture ?: ""
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        ComposeTextView.TextView(
+                            text = user.name,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            textColor = LocalCustomColors.current.titleTextColor
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "remove",
+                            tint = LocalCustomColors.current.hintTextColor,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    viewModel.processEvent(PostingInitIntent.ViewEvent.RemoveTripMates(user))
+                                }
+                        )
+                    }
                 }
 
-                AssistChip(
-                    onClick = {
-                        viewModel.processEvent(PostingInitIntent.ViewEvent.GetInviteList)
-                        showBottomSheet = BottomSheetType.USER_SELECTION
-                    },
-                    label = { ComposeTextView.TextView(stringResource(R.string.add)) },
-                    leadingIcon = {
-                        Icon(
-                            Icons.Default.Add,
-                            modifier = Modifier.size(20.dp),
-                            contentDescription = "Add more"
-                        )
-                    },
-                    shape = RoundedCornerShape(40),
-                    border = BorderStroke(1.dp, color = LocalCustomColors.current.secondaryBackground)
-                )
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(LocalCustomColors.current.secondaryBackground)
+                        .clickable {
+                            viewModel.processEvent(PostingInitIntent.ViewEvent.GetInviteList)
+                            showBottomSheet = BottomSheetType.USER_SELECTION
+                        }
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add more",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    ComposeTextView.TextView(
+                        text = stringResource(R.string.add),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        textColor = Color.White
+                    )
+                }
             }
         }
 
