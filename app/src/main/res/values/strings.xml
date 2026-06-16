@@ -287,4 +287,14 @@
     <string name="accept_to_see_prpmpt">Please accept the invitation to use this feature.</string>
     <string name="search">Search with name</string>
     <string name="social">Social</string>
+    <string name="travel_vault">Travel Vault</string>
+    <string name="welcome_vault">Welcome to your Vault</string>
+    <string name="travel_stats">Your Travel Statistics</string>
+    <string name="manage_journey">Manage your journeys</string>
+    <string name="vault_buzz_sub_title">Share experiences and read social threads from mates</string>
+    <string name="vault_buzz_title">Travel Buzz</string>
+    <string name="vault_fav_title">Your Favourites</string>
+    <string name="vault_trip_title">Your Trips</string>
+    <string name="vault_trip_sub_title">Manage your active itineraries, maps, and schedules</string>
+    <string name="vault_fav_sub_title">Revisit your favourites trips, stories, buzz</string>
 </resources>

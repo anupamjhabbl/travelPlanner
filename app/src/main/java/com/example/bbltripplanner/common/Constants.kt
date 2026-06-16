@@ -1,7 +1,5 @@
 package com.example.bbltripplanner.common
 
-import com.google.gson.annotations.SerializedName
-
 object Constants {
     const val EMPTY_STRING =  ""
     const val PROFILE_DETAILS = "profile_details"
@@ -20,18 +18,12 @@ object Constants {
     const val CONTACTS = "CONTACTS"
     const val APP_NAME_URI = "tripplanner"
     const val PROFILE_PICTURE_PART_NAME = "profilePicture"
-
     const val DEFAULT_ERROR_MESSAGE = "Something went wrong"
 
     object HTTPHeaders {
         const val AUTHORIZATION_BEARER = "Bearer"
         const val AUTHORIZATION = "Authorization"
         const val DEVICE_ID = "x-device-id"
-    }
-
-    enum class Theme {
-        @SerializedName("dark") DARK,
-        @SerializedName("light") LIGHT
     }
 
     object Notification {
@@ -65,8 +57,6 @@ object Constants {
         const val ITINERARY_LIST_VIEW = "itinerary_list_view"
         const val ITINERARY_NAV_ENTRY = "itinerary_nav_entry"
         const val EXPENSE_NAV_ENTRY = "expense_nav_entry"
-        const val ADD_ACTIVITY_SCREEN = "add_activity_screen"
-        const val ADD_SPOTS_SCREEN = "add_spots_screen"
         const val TRIP_GROUP_SCREEN = "trip_group_screen"
 
         const val TRIP_GALLERY_NAV_ENTRY = "trip_gallery_nav_entry"
@@ -105,7 +95,6 @@ object Constants {
         const val USER_ID = "user_id"
         const val PAGE_ID = "page_id"
         const val DESTINATION_ID = "destination_id"
-        const val TRIP_SELECTED_DATE = "trip_selected_date"
         const val ITINERARY_PLACE_ID = "itinerary_place_id"
         const val ITINERARY_ID = "itinerary_id"
         const val PHOTO_ID = "photo_id"

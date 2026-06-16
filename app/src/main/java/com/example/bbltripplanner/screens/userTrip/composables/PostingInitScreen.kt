@@ -272,7 +272,7 @@ fun PostingInitScreen() {
     }
     
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().padding(top = 8.dp)
     ) {
         Box(
             modifier = Modifier
@@ -290,7 +290,7 @@ fun PostingInitScreen() {
                 .padding(16.dp, 16.dp,16.dp, Dp(bottomHeight)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(Modifier.height(60.dp))
+            Spacer(Modifier.height(110.dp))
 
             ComposeTextView.TitleTextView(
                 text = stringResource(R.string.posting_heading),
@@ -305,6 +305,8 @@ fun PostingInitScreen() {
                 textAlign = TextAlign.Center
             )
 
+            Spacer(Modifier.height(24.dp))
+
             UnifiedTripDatePickerCard(
                 startDate = postingFormData.startDate,
                 endDate = postingFormData.endDate,
@@ -314,7 +316,7 @@ fun PostingInitScreen() {
                 onEndDateClick = { showDatePicker = DatePickerType.END_DATE }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             OutlinedTextField(
                 value = postingFormData.tripName,
@@ -335,7 +337,7 @@ fun PostingInitScreen() {
                     focusedContainerColor = LocalCustomColors.current.defaultImageCardColor.copy(alpha = 0.2f),
                     unfocusedContainerColor = LocalCustomColors.current.defaultImageCardColor.copy(alpha = 0.1f),
                     focusedBorderColor = LocalCustomColors.current.secondaryBackground,
-                    unfocusedBorderColor = LocalCustomColors.current.defaultImageCardColor,
+                    unfocusedBorderColor = LocalCustomColors.current.secondaryBackground.copy(alpha = 0.7f),
                     errorBorderColor = LocalCustomColors.current.error,
                     disabledBorderColor = LocalCustomColors.current.fadedBackground
                 )

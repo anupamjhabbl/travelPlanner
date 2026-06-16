@@ -18,11 +18,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.FlightTakeoff
-import androidx.compose.material.icons.filled.Forum
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,28 +28,40 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ToolBarView
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
+import com.example.bbltripplanner.screens.vault.viewModels.UserVaultViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun UserVaultScreen() {
     val customColors = LocalCustomColors.current
     val scope = rememberCoroutineScope()
 
+    val viewModel: UserVaultViewModel = koinViewModel()
+    val vaultItems by viewModel.vaultItems.collectAsStateWithLifecycle()
+    val tripCount by viewModel.tripCount.collectAsStateWithLifecycle()
+    val favoritesCount by viewModel.favoritesCount.collectAsStateWithLifecycle()
+    val storiesCount by viewModel.storiesCount.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(customColors.primaryBackground)
     ) {
-        ToolBarView.SimpleToolbarWithBackButton(title = "Travel Vault") {
+        ToolBarView.SimpleToolbarWithBackButton(title = stringResource(R.string.travel_vault)) {
             scope.launch {
                 CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
             }
@@ -59,7 +69,6 @@ fun UserVaultScreen() {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Stats section banner (rich layout)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -77,14 +86,14 @@ fun UserVaultScreen() {
         ) {
             Column {
                 ComposeTextView.TextView(
-                    text = "Welcome to your Vault",
+                    text = stringResource(R.string.welcome_vault),
                     textColor = Color.White.copy(alpha = 0.8f),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 ComposeTextView.TitleTextView(
-                    text = "Your Travel Statistics",
+                    text = stringResource(R.string.travel_stats),
                     textColor = Color.White,
                     fontSize = 22.sp
                 )
@@ -94,9 +103,9 @@ fun UserVaultScreen() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    StatItem(number = "12", label = "Trips", tintColor = Color.White)
-                    StatItem(number = "8", label = "Favourites", tintColor = Color.White)
-                    StatItem(number = "34", label = "Stories", tintColor = Color.White)
+                    StatItem(number = tripCount.toString(), label = "Trips", tintColor = Color.White)
+                    StatItem(number = favoritesCount.toString(), label = "Favourites", tintColor = Color.White)
+                    StatItem(number = storiesCount.toString(), label = "Stories", tintColor = Color.White)
                 }
             }
         }
@@ -104,7 +113,7 @@ fun UserVaultScreen() {
         Spacer(modifier = Modifier.height(28.dp))
 
         ComposeTextView.TitleTextView(
-            text = "Manage your journeys",
+            text = stringResource(R.string.manage_journey),
             modifier = Modifier.padding(horizontal = 20.dp),
             fontSize = 18.sp,
             textColor = customColors.titleTextColor
@@ -112,57 +121,33 @@ fun UserVaultScreen() {
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        // Menu items
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            VaultMenuCard(
-                icon = Icons.Default.FlightTakeoff,
-                title = "Your Trips",
-                subtitle = "Manage your active itineraries, maps, and schedules",
-                onClick = {
-                    scope.launch {
-                        CommonNavigationChannel.navigateTo(
-                            NavigationAction.Navigate(
-                                AppNavigationScreen.UserTripsScreen.route
-                            )
-                        )
-                    }
+            vaultItems.forEach { item ->
+                val route = when (item.key) {
+                    Constants.TRIP_PAGE -> AppNavigationScreen.UserTripsScreen.route
+                    Constants.BUZZ_PAGE -> AppNavigationScreen.BuzzScreen.route
+                    else -> null
                 }
-            )
-
-            VaultMenuCard(
-                icon = Icons.Default.Forum,
-                title = "Travel Buzz",
-                subtitle = "Share experiences and read social threads from mates",
-                onClick = {
-                    scope.launch {
-                        CommonNavigationChannel.navigateTo(
-                            NavigationAction.Navigate(
-                                AppNavigationScreen.BuzzScreen.route
-                            )
-                        )
+                VaultMenuCard(
+                    icon = item.icon,
+                    title = stringResource(item.title),
+                    subtitle = stringResource(item.subTitle),
+                    onClick = {
+                        route?.let {
+                            scope.launch {
+                                CommonNavigationChannel.navigateTo(
+                                    NavigationAction.Navigate(it)
+                                )
+                            }
+                        }
                     }
-                }
-            )
-
-            VaultMenuCard(
-                icon = Icons.Default.Settings,
-                title = "Preferences",
-                subtitle = "Configure system preferences and support",
-                onClick = {
-                    scope.launch {
-                        CommonNavigationChannel.navigateTo(
-                            NavigationAction.Navigate(
-                                AppNavigationScreen.UserSettingsScreen.route
-                            )
-                        )
-                    }
-                }
-            )
+                )
+            }
         }
     }
 }
@@ -179,7 +164,9 @@ private fun StatItem(number: String, label: String, tintColor: Color) {
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
+
         Spacer(modifier = Modifier.height(4.dp))
+
         ComposeTextView.TextView(
             text = label,
             textColor = tintColor.copy(alpha = 0.7f),
@@ -232,7 +219,9 @@ private fun VaultMenuCard(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
+
             Spacer(modifier = Modifier.height(6.dp))
+
             ComposeTextView.TextView(
                 text = subtitle,
                 textColor = customColors.hintTextColor,
