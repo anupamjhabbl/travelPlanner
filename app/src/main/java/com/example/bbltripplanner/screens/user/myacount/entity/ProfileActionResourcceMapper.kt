@@ -20,7 +20,7 @@ object ProfileActionResourceMapper {
             ProfileActionItem(Constants.FAVOURITES, R.drawable.ic_favourites_filled, R.string.favouriees, 0),
             ProfileActionItem(Constants.REVIEW_PAGES, R.drawable.ic_threads, R.string.your_story, 0),
             ProfileActionItem(Constants.BUZZ_PAGE, R.drawable.ic_buzz_filled, R.string.your_buzz, 0),
-            ProfileActionItem(Constants.CONTACTS, R.drawable.ic_contacts, R.string.contacts, 0)
+            ProfileActionItem(Constants.CONTACTS, R.drawable.ic_contacts, R.string.social, 0)
         )
     }
 

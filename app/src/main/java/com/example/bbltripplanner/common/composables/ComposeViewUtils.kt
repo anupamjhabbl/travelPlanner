@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -36,6 +36,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -315,8 +316,10 @@ object ComposeViewUtils {
             .background(color = LocalCustomColors.current.secondaryBackground, RoundedCornerShape(50))
             .height(38.dp)
             .padding(horizontal = 16.dp)
-            .wrapContentWidth(),
+            .widthIn(min = 120.dp),
         textColor: Color = LocalCustomColors.current.primaryBackground,
+        itemIcons: List<androidx.compose.ui.graphics.vector.ImageVector?>? = null,
+        selectedIcon: androidx.compose.ui.graphics.vector.ImageVector? = null,
         onChange: (String) -> Unit,
     ) {
         var expanded by remember {
@@ -332,19 +335,34 @@ object ComposeViewUtils {
         ) {
             Box(
                 modifier = Modifier
-                    .menuAnchor(),
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true)
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 Row(
-                    modifier = Modifier.fillMaxHeight(),
+                    modifier = Modifier.fillMaxHeight().fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    ComposeTextView.TitleTextView(
-                        selected,
-                        fontSize = 14.sp,
-                        textColor = textColor
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        if (selectedIcon != null) {
+                            Icon(
+                                imageVector = selectedIcon,
+                                contentDescription = null,
+                                tint = textColor,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                        }
+                        ComposeTextView.TitleTextView(
+                            selected,
+                            fontSize = 14.sp,
+                            textColor = textColor
+                        )
+                    }
 
                     Icon(
                         Icons.Default.ArrowDropDown,
@@ -363,14 +381,26 @@ object ComposeViewUtils {
                     .border(1.dp, customColors.defaultImageCardColor, RoundedCornerShape(12.dp))
             ) {
                 itemList.forEachIndexed { index, item ->
+                    val icon = itemIcons?.getOrNull(index)
                     DropdownMenuItem(
                         text = {
-                            ComposeTextView.TextView(
-                                text = item,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                textColor = customColors.titleTextColor
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (icon != null) {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = null,
+                                        tint = customColors.secondaryBackground,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                }
+                                ComposeTextView.TextView(
+                                    text = item,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    textColor = customColors.titleTextColor
+                                )
+                            }
                         },
                         onClick = {
                             onChange(item)

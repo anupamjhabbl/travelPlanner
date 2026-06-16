@@ -28,6 +28,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
@@ -520,7 +522,23 @@ fun PostingInitScreenToolbar(
             }
         }
 
-        ComposeViewUtils.ExposedDropDownMenu(TripVisibility.entries.map { it.value }, visibility.value) {
+        val itemIcons = remember {
+            listOf(Icons.Default.Lock, Icons.Default.Public)
+        }
+        val selectedIcon = if (visibility == TripVisibility.PUBLIC) Icons.Default.Public else Icons.Default.Lock
+
+        ComposeViewUtils.ExposedDropDownMenu(
+            itemList = TripVisibility.entries.map { it.value.replaceFirstChar { char -> char.uppercase() } },
+            selected = visibility.value.replaceFirstChar { char -> char.uppercase() },
+            modifier = Modifier
+                .background(color = LocalCustomColors.current.secondaryBackground, RoundedCornerShape(50))
+                .height(38.dp)
+                .width(130.dp)
+                .padding(horizontal = 16.dp),
+            textColor = LocalCustomColors.current.primaryBackground,
+            itemIcons = itemIcons,
+            selectedIcon = selectedIcon
+        ) {
             onChange(TripVisibility.getEnum(it))
         }
     }

@@ -31,7 +31,7 @@ class ProfileFollowersViewModel(
         return authPreferencesUseCase.getUserIdLogged() == userId
     }
 
-    private fun fetchFollowers() {
+    fun fetchFollowers() {
         userId?.let {
             viewModelScope.launch {
                 _userList.value = _userList.value.copy(isLoading = true)
@@ -60,8 +60,17 @@ class ProfileFollowersViewModel(
             SafeIOUtil.safeCall {
                 profileRelationUsecase.followUser(ProfileFollow(targetUserId))
             }
-            val currentList = _userList.value.data?.toMutableList()?.filter { it.id == targetUserId }?.map { it.copy(isFollowing = true) }
+            val currentList = _userList.value.data?.map { 
+                if (it.id == targetUserId) it.copy(isFollowing = true) else it 
+            }
             _userList.value = _userList.value.copy(data = currentList)
         }
+    }
+
+    fun updateFollowStatusLocal(targetUserId: String, isFollowing: Boolean) {
+        val currentList = _userList.value.data?.map { 
+            if (it.id == targetUserId) it.copy(isFollowing = isFollowing) else it 
+        }
+        _userList.value = _userList.value.copy(data = currentList)
     }
 }

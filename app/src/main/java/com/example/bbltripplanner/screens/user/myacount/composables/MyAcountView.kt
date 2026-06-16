@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -241,7 +240,6 @@ private fun ProfileContainer(
     user: User,
     onClick: () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .wrapContentHeight()
@@ -265,7 +263,7 @@ private fun ProfileContainer(
         ){
             com.example.bbltripplanner.common.composables.ComposeImageView.CircularImageView(
                 imageURI = user.profilePicture ?: "",
-                diameter = dimensionResource(id = R.dimen.module_90)
+                diameter = dimensionResource(id = R.dimen.module_80)
             )
 
             ProfileNameAndTravelsContainer(
@@ -274,27 +272,6 @@ private fun ProfileContainer(
                     .fillMaxHeight(),
                 user
             )
-
-            Spacer(Modifier.weight(1f))
-
-            IconButton(
-                onClick = {
-                    scope.launch {
-                        CommonNavigationChannel.navigateTo(
-                            NavigationAction.Navigate(
-                                AppNavigationScreen.EditProfileScreen.route
-                            )
-                        )
-                    }
-                }
-            ) {
-                Icon(
-                    modifier = Modifier.size(32.dp),
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Back",
-                    tint = LocalCustomColors.current.secondaryBackground
-                )
-            }
         }
     }
 }
@@ -311,7 +288,7 @@ private fun ProfileNameAndTravelsContainer(
         ComposeTextView.TextView(
             text = user.name,
             fontSize = with(LocalDensity.current) {
-                dimensionResource(id = R.dimen.module_20sp).toSp()
+                dimensionResource(id = R.dimen.module_18sp).toSp()
             },
             textColor = LocalCustomColors.current.textColor
         )
@@ -321,7 +298,7 @@ private fun ProfileNameAndTravelsContainer(
         ComposeTextView.TextView(
             text = stringResource(R.string.trip_count, user.tripCount),
             fontSize = with(LocalDensity.current) {
-                dimensionResource(id = R.dimen.module_18sp).toSp()
+                dimensionResource(id = R.dimen.module_16sp).toSp()
             },
             textColor = LocalCustomColors.current.textColor
         )
@@ -370,12 +347,16 @@ private fun ProfileActionTile (
                     },
                     fontWeight = FontWeight.W500
                 )
+
+                Spacer(Modifier.height(4.dp))
+
                 ComposeTextView.TextView(
-                    text = stringResource(id = item.title),
+                    text = stringResource(id = item.subTitle),
                     fontSize = with(LocalDensity.current) {
-                        dimensionResource(id = R.dimen.module_16sp).toSp()
+                        dimensionResource(id = R.dimen.module_14sp).toSp()
                     },
-                    fontWeight = FontWeight.W400
+                    fontWeight = FontWeight.W400,
+                    textColor = LocalCustomColors.current.hintTextColor
                 )
             }
 
