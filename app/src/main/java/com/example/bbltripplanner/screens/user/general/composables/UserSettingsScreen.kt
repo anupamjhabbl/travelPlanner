@@ -450,7 +450,7 @@ private fun UserSettingsToolbar() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp)
+            .padding(horizontal = 12.dp, vertical = 12.dp)
     ) {
         IconButton(
             onClick = {
@@ -474,7 +474,7 @@ private fun UserSettingsToolbar() {
         ) {
             ComposeTextView.TitleTextView(
                 text = stringResource(R.string.settings),
-                fontSize = 24.sp
+                fontSize = 22.sp
             )
             ComposeTextView.TextView(
                 text = stringResource(R.string.settings_description),

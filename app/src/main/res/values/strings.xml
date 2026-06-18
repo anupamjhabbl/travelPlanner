@@ -297,4 +297,15 @@
     <string name="vault_trip_title">Your Trips</string>
     <string name="vault_trip_sub_title">Manage your active itineraries, maps, and schedules</string>
     <string name="vault_fav_sub_title">Revisit your favourites trips, stories, buzz</string>
+    <string name="active_crew">Active Crew</string>
+    <string name="pending_invitataion">Pending Invitations</string>
+    <string name="crew_summary">Crew Summary</string>
+    <string name="trip_members_total">%1$d members total</string>
+    <string name="active_crew_count">%1$d Active</string>
+    <string name="pending_crew_count">%1$d Pending</string>
+    <string name="trip_followers_stats">%1$d Trips • %2$d Followers</string>
+    <string name="status_joined">Joined</string>
+    <string name="status_pending">Pending</string>
+    <string name="empty_state_title">No Adventurers Yet</string>
+    <string name="empty_state_desc">Every great journey is better with friends. Invite people to join your trip crew!</string>
 </resources>

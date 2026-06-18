@@ -31,6 +31,8 @@ class TripGroupViewModel(
     private val _viewEffect = MutableSharedFlow<TripGroupIntent.ViewEffect>()
     val viewEffect: SharedFlow<TripGroupIntent.ViewEffect> = _viewEffect.asSharedFlow()
 
+    private var cachedFollowers: List<User>? = null
+
     init {
         processEvent(TripGroupIntent.ViewEvent.GetTripMembers)
     }
@@ -61,14 +63,26 @@ class TripGroupViewModel(
 
     private fun getInviteList() {
         val currentUserId = authPreferencesUseCase.getUserIdLogged() ?: return
+        
+        cachedFollowers?.let { followers ->
+            val existingUserIds = _viewState.value.tripMembers.map { it.user.id }.toSet()
+            val inviteList = followers.filter { it.id !in existingUserIds }
+            _viewState.update { it.copy(inviteList = inviteList) }
+            return
+        }
+
+        if (_viewState.value.isFollowersLoading) return
+
         viewModelScope.launch {
             _viewState.update { it.copy(isFollowersLoading = true) }
             val result = SafeIOUtil.safeCall {
                 profileRelationUseCase.getFollowers(currentUserId)
             }
             result.onSuccess { followersData ->
+                val followers = followersData?.followers ?: emptyList()
+                cachedFollowers = followers
                 val existingUserIds = _viewState.value.tripMembers.map { it.user.id }.toSet()
-                val inviteList = followersData?.followers?.filter { it.id !in existingUserIds } ?: emptyList()
+                val inviteList = followers.filter { it.id !in existingUserIds }
                 _viewState.update { it.copy(isFollowersLoading = false, inviteList = inviteList) }
             }
             result.onFailure {
