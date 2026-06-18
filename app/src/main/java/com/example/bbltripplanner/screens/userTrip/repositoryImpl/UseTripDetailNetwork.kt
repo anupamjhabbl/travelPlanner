@@ -5,6 +5,7 @@ import com.example.bbltripplanner.common.entity.ApiFailureException
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.common.utils.JsonResponseUtils
 import com.example.bbltripplanner.screens.userTrip.clients.UserTripDetailClient
+import com.example.bbltripplanner.screens.userTrip.entity.AddMemberRequest
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.entity.TripMember
 import com.example.bbltripplanner.screens.userTrip.repositories.UserTripDetailRepository
@@ -29,7 +30,7 @@ class UseTripDetailNetwork(
     }
 
     override suspend fun addTripMember(tripId: String, userId: String): Boolean {
-        return processAcceptInvitationResponse(userTripDetailClient.addTripMember(tripId, userId))
+        return processAcceptInvitationResponse(userTripDetailClient.addTripMember(tripId, AddMemberRequest(userId)))
     }
 
     private fun processTripMembersResponse(response: BaseResponse<List<TripMember>>): List<TripMember> {
@@ -44,15 +45,11 @@ class UseTripDetailNetwork(
         }
     }
 
-    private fun processAcceptInvitationResponse(acceptInvitation: BaseResponse<Boolean>): Boolean {
-        if (acceptInvitation.isSuccess && acceptInvitation.data != null) {
-            return acceptInvitation.data
+    private fun processAcceptInvitationResponse(acceptInvitation: BaseResponse<*>): Boolean {
+        if (acceptInvitation.isSuccess) {
+            return true
         } else {
-            if (acceptInvitation.statusCode == JsonResponseUtils.HTTP_SUCCESS_RESPONSE_CODE) {
-                throw JsonParseException("Error during parsing")
-            } else {
-                throw ApiFailureException(acceptInvitation.message?.ifEmpty { Constants.DEFAULT_ERROR_MESSAGE })
-            }
+            throw ApiFailureException(acceptInvitation.message?.ifEmpty { Constants.DEFAULT_ERROR_MESSAGE })
         }
     }
 

@@ -81,6 +81,7 @@ import com.example.bbltripplanner.screens.vault.repositories.VaultRepository
 import com.example.bbltripplanner.screens.vault.repositoryImpl.VaultNetwork
 import com.example.bbltripplanner.screens.vault.usecases.VaultUseCase
 import com.example.bbltripplanner.screens.vault.viewModels.UserTripsViewModel
+import com.example.bbltripplanner.screens.vault.viewModels.UserVaultViewModel
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -204,5 +205,8 @@ val appModule = module {
     single<VaultClient> { Network.createWithAuth(VaultClient::class.java, get(), get(), androidContext()) }
     viewModel {
         UserTripsViewModel(get())
+    }
+    viewModel {
+        UserVaultViewModel(get())
     }
 }

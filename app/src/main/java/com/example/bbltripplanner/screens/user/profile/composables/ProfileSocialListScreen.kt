@@ -1,13 +1,17 @@
 package com.example.bbltripplanner.screens.user.profile.composables
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -15,10 +19,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,18 +52,16 @@ import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowe
 import com.example.bbltripplanner.screens.user.profile.viewModels.ProfileFollowingViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ProfileFollowersPage(
-    userId: String?
+    viewModel: ProfileFollowersViewModel,
+    searchQuery: String,
+    onFollowClick: (User) -> Unit = { viewModel.followUser(it.id) }
 ) {
     val scope = rememberCoroutineScope()
     val emptyTitle = stringResource(R.string.followers_empty_heading)
     val emptyContent = stringResource(R.string.followers_empty_content)
-
-    val viewModel: ProfileFollowersViewModel = koinViewModel(parameters = { parametersOf(userId) })
     val uiState by viewModel.userList.collectAsStateWithLifecycle()
     val isSelf = viewModel.isSelfProfile()
 
@@ -64,32 +72,39 @@ fun ProfileFollowersPage(
             errorStrings = Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
         )
     } else {
+        val filteredUsers = remember(uiState.data, searchQuery) {
+            uiState.data?.filter {
+                it.name.contains(searchQuery, ignoreCase = true) ||
+                        (it.bio?.contains(searchQuery, ignoreCase = true) == true)
+            }
+        }
+
         if (uiState.data.isNullOrEmpty()) {
             ComposeViewUtils.FullScreenErrorComposable(
                 errorStrings = Pair(emptyTitle, emptyContent)
             )
+        } else if (filteredUsers.isNullOrEmpty()) {
+            SearchEmptyState(searchQuery)
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 items(
-                    items = uiState.data as List<User>,
+                    items = filteredUsers,
                     key = { it.id }
                 ) { user ->
                     SocialProfileItem(
                         user = user,
                         actionLabel = if (isSelf && user.isFollowing == false) stringResource(R.string.follow) else null,
                         onActionClick = {
-                            viewModel.followUser(user.id)
+                            onFollowClick(user)
                         },
                         onUserClick = {
                             scope.launch {
                                 CommonNavigationChannel.navigateTo(
                                     NavigationAction.Navigate(
-                                        AppNavigationScreen.ProfileScreen.createRoute(
-                                            user.id
-                                        )
+                                        AppNavigationScreen.ProfileScreen.createRoute(user.id)
                                     )
                                 )
                             }
@@ -103,12 +118,13 @@ fun ProfileFollowersPage(
 
 @Composable
 fun ProfileFollowingPage(
-    userId: String?
+    viewModel: ProfileFollowingViewModel,
+    searchQuery: String,
+    onUnfollowClick: (String) -> Unit = { viewModel.unfollowUser(it) }
 ) {
     val scope = rememberCoroutineScope()
     val emptyTitle = stringResource(R.string.following_empty_heading)
     val emptyContent = stringResource(R.string.following_empty_content)
-    val viewModel: ProfileFollowingViewModel = koinViewModel(parameters = { parametersOf(userId) })
     val uiState by viewModel.userList.collectAsStateWithLifecycle()
     val isSelf = viewModel.isSelfProfile()
 
@@ -119,32 +135,39 @@ fun ProfileFollowingPage(
             errorStrings = Pair(Constants.DEFAULT_ERROR, uiState.error ?: "")
         )
     } else {
+        val filteredUsers = remember(uiState.data, searchQuery) {
+            uiState.data?.filter {
+                it.name.contains(searchQuery, ignoreCase = true) ||
+                        (it.bio?.contains(searchQuery, ignoreCase = true) == true)
+            }
+        }
+
         if (uiState.data.isNullOrEmpty()) {
             ComposeViewUtils.FullScreenErrorComposable(
                 errorStrings = Pair(emptyTitle, emptyContent)
             )
+        } else if (filteredUsers.isNullOrEmpty()) {
+            SearchEmptyState(searchQuery)
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 items(
-                    items = uiState.data as List<User>,
+                    items = filteredUsers,
                     key = { it.id }
                 ) { user ->
                     SocialProfileItem(
                         user = user,
                         actionLabel = if (isSelf) stringResource(R.string.unfollow) else null,
                         onActionClick = {
-                            viewModel.unfollowUser(user.id)
+                            onUnfollowClick(user.id)
                         },
                         onUserClick = {
                             scope.launch {
                                 CommonNavigationChannel.navigateTo(
                                     NavigationAction.Navigate(
-                                        AppNavigationScreen.ProfileScreen.createRoute(
-                                            user.id
-                                        )
+                                        AppNavigationScreen.ProfileScreen.createRoute(user.id)
                                     )
                                 )
                             }
@@ -167,20 +190,21 @@ fun SocialProfileItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 6.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(customColors.defaultImageCardColor)
+            .border(1.dp, customColors.fadedBackground, RoundedCornerShape(16.dp))
             .clickable { onUserClick(user.id) }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         AsyncImage(
             model = user.profilePicture ?: "",
             contentDescription = null,
             modifier = Modifier
-                .size(52.dp)
+                .size(56.dp)
                 .clip(CircleShape)
+                .border(2.dp, customColors.secondaryBackground.copy(alpha = 0.3f), CircleShape)
                 .background(customColors.secondaryBackground.copy(alpha = 0.1f)),
             contentScale = ContentScale.Crop
         )
@@ -212,10 +236,13 @@ fun SocialProfileItem(
                     containerColor = if (actionLabel == stringResource(R.string.unfollow)) 
                         customColors.fadedBackground else customColors.secondaryBackground,
                     contentColor = if (actionLabel == stringResource(R.string.unfollow)) 
-                        customColors.titleTextColor else customColors.primaryButtonText
+                        customColors.textColor else customColors.primaryButtonText
                 ),
-                shape = RoundedCornerShape(8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                border = if (actionLabel == stringResource(R.string.unfollow))
+                    BorderStroke(1.dp, customColors.secondaryBackground.copy(alpha = 0.4f))
+                else null,
+                shape = RoundedCornerShape(20.dp),
+                contentPadding = PaddingValues(horizontal = 18.dp, vertical = 6.dp),
                 modifier = Modifier.padding(start = 8.dp)
             ) {
                 ComposeTextView.TextView(
@@ -223,9 +250,50 @@ fun SocialProfileItem(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     textColor = if (actionLabel == stringResource(R.string.unfollow)) 
-                        customColors.titleTextColor else customColors.primaryButtonText
+                        customColors.textColor else customColors.primaryButtonText
                 )
             }
+        } else {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = customColors.secondaryBackground,
+                modifier = Modifier
+                    .size(24.dp)
+                    .padding(start = 8.dp)
+            )
         }
+    }
+}
+
+@Composable
+private fun SearchEmptyState(query: String) {
+    val customColors = LocalCustomColors.current
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = null,
+            tint = customColors.hintTextColor,
+            modifier = Modifier.size(64.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        ComposeTextView.TitleTextView(
+            text = "No Results Found",
+            fontSize = 18.sp,
+            textColor = customColors.titleTextColor
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        ComposeTextView.TextView(
+            text = "We couldn't find any match for \"$query\".",
+            fontSize = 14.sp,
+            textColor = customColors.hintTextColor,
+            textAlign = TextAlign.Center
+        )
     }
 }

@@ -8,7 +8,7 @@
     <string name="logout">Logout</string>
     <string name="profile_details_subtitle">View and edit your profile</string>
     <string name="notifications_subtitle">View notifications</string>
-    <string name="settings_subtitle">Review and Update profile Settings</string>
+    <string name="settings_subtitle">Review and Update User Settings</string>
     <string name="help_support_subtitle">Help centre and legal terms</string>
     <string name="logout_subtitle">Logout your profile</string>
     <string name="follow">Follow</string>
@@ -81,7 +81,7 @@
     <string name="server_error_subtitle">The server isn’t responding right now. We’re fixing it, please try again soon.</string>
     <string name="verify_otp">Verify OTP</string>
     <string name="password_not_empty">Password should not be empty</string>
-    <string name="trip_count">%1$d Trips</string>
+    <string name="trip_count">Trips: %1$d</string>
     <string name="inconvenience_sorry">Sorry for the inconvenience</string>
     <string name="restart_app_message">Please restart the app and come back.</string>
     <string name="total_trips">Total trips</string>
@@ -285,4 +285,27 @@
     <string name="show_photo_upload_desc">Shows progress of trip photo uploads</string>
     <string name="show_photo_download_desc">Shows progress of trip media downloads</string>
     <string name="accept_to_see_prpmpt">Please accept the invitation to use this feature.</string>
+    <string name="search">Search with name</string>
+    <string name="social">Social</string>
+    <string name="travel_vault">Travel Vault</string>
+    <string name="welcome_vault">Welcome to your Vault</string>
+    <string name="travel_stats">Your Travel Statistics</string>
+    <string name="manage_journey">Manage your journeys</string>
+    <string name="vault_buzz_sub_title">Share experiences and read social threads from mates</string>
+    <string name="vault_buzz_title">Travel Buzz</string>
+    <string name="vault_fav_title">Your Favourites</string>
+    <string name="vault_trip_title">Your Trips</string>
+    <string name="vault_trip_sub_title">Manage your active itineraries, maps, and schedules</string>
+    <string name="vault_fav_sub_title">Revisit your favourites trips, stories, buzz</string>
+    <string name="active_crew">Active Crew</string>
+    <string name="pending_invitataion">Pending Invitations</string>
+    <string name="crew_summary">Crew Summary</string>
+    <string name="trip_members_total">%1$d members total</string>
+    <string name="active_crew_count">%1$d Active</string>
+    <string name="pending_crew_count">%1$d Pending</string>
+    <string name="trip_followers_stats">%1$d Trips • %2$d Followers</string>
+    <string name="status_joined">Joined</string>
+    <string name="status_pending">Pending</string>
+    <string name="empty_state_title">No Adventurers Yet</string>
+    <string name="empty_state_desc">Every great journey is better with friends. Invite people to join your trip crew!</string>
 </resources>

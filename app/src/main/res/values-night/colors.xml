@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_background_light">#000000</color>
-    <color name="primary_background_dark">#ffffff</color>
-    <color name="secondary_background_light">#B5ADFF</color>
-    <color name="secondary_background_dark">#6851EB</color>
-    <color name="faded_background_light">#B6ACE0</color>
-    <color name="faded_background_dark">#4A4376</color>
-    <color name="titleTextColor">#070821</color>
-    <color name="textColor">#1A1C34</color>
-    <color name="bg_default_image">#E3DFEF</color>
-    <color name="error_red">#F60E1E</color>
-    <color name="ongoing_green">#67ea68</color>
-    <color name="planned_yellow">#f6ec07</color>
-    <color name="input_hint_color">#B3B3B3</color>
+    <color name="primary_background_light">#0B1220</color>
+    <color name="primary_background_dark">#F8FAFC</color>
+    <color name="secondary_background_light">#3B82F6</color>
+    <color name="secondary_background_dark">#3B82F6</color>
+    <color name="faded_background_light">#172033</color>
+    <color name="faded_background_dark">#E6EEF5</color>
+    <color name="titleTextColor">#F8FAFC</color>
+    <color name="textColor">#E2E8F0</color>
+    <color name="bg_default_image">#162032</color>
+    <color name="error_red">#EF4444</color>
+    <color name="ongoing_green">#22C55E</color>
+    <color name="planned_yellow">#FBBF24</color>
+    <color name="input_hint_color">#94A3B8</color>
 </resources>

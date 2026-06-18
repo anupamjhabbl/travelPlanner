@@ -40,4 +40,6 @@
     <dimen name="module_10">10dp</dimen>
     <dimen name="module_25">25dp</dimen>
     <dimen name="module_440">440dp</dimen>
+    <dimen name="module_80">80dp</dimen>
+    <dimen name="module_60">60dp</dimen>
 </resources>

@@ -119,7 +119,8 @@ fun ProfileScreen (
 
                     if (isMyProfile) {
                         val profileActionList = profileViewModel.getProfileActionList()
-                        Spacer(Modifier.height(38.dp))
+
+                        Spacer(Modifier.height(24.dp))
 
                         ProfileActionComposable(
                             profileActionList,

@@ -31,7 +31,7 @@ class ProfileFollowingViewModel(
         return authPreferencesUseCase.getUserIdLogged() == userId
     }
 
-    private fun fetchFollowing() {
+    fun fetchFollowing() {
         userId?.let {
             viewModelScope.launch {
                 _userList.value = _userList.value.copy(isLoading = true)
@@ -62,6 +62,14 @@ class ProfileFollowingViewModel(
             }
             val currentList = _userList.value.data?.toMutableList()
             currentList?.removeAll { it.id == targetUserId }
+            _userList.value = _userList.value.copy(data = currentList)
+        }
+    }
+
+    fun addFollowedUserLocal(user: User) {
+        val currentList = _userList.value.data?.toMutableList() ?: mutableListOf()
+        if (currentList.none { it.id == user.id }) {
+            currentList.add(user.copy(isFollowing = true))
             _userList.value = _userList.value.copy(data = currentList)
         }
     }
