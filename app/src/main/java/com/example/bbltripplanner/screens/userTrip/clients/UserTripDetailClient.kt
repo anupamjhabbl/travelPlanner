@@ -15,13 +15,13 @@ interface UserTripDetailClient {
     @GET("trips/getTrip/{tripId}")
     suspend fun getUserTripDetail(@Path("tripId") tripId: String): BaseResponse<TripData>
 
-    @PATCH("v1/trip/{tripId}/acceptTrip")
+    @PATCH("trip/{tripId}/acceptTrip")
     suspend fun acceptInvitation(@Path("tripId") tripId: String): BaseResponse<Any?>
 
-    @GET("v1/trip/{tripId}/members")
+    @GET("trip/{tripId}/members")
     suspend fun getTripMembers(@Path("tripId") tripId: String): BaseResponse<List<TripMember>>
 
-    @POST("v1/trip/{tripId}/members")
+    @POST("trip/{tripId}/members")
     suspend fun addTripMember(
         @Path("tripId") tripId: String,
         @Body request: AddMemberRequest
