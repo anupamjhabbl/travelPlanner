@@ -134,15 +134,41 @@ fun MyAccountView() {
 
                 Spacer(Modifier.height(8.dp))
 
-                ProfileContainer(user) {
-                    scope.launch {
-                        CommonNavigationChannel.navigateTo(
-                            NavigationAction.Navigate(
-                                destination = AppNavigationScreen.VaultScreen.route
+                ProfileContainer(
+                    user = user,
+                    onVaultClick = {
+                        scope.launch {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.Navigate(
+                                    destination = AppNavigationScreen.VaultScreen.route
+                                )
                             )
-                        )
+                        }
+                    },
+                    onStoriesClick = {
+                        scope.launch {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.Navigate(
+                                    destination = AppNavigationScreen.BuzzScreen.route
+                                )
+                            )
+                        }
+                    },
+                    onTripsClick = {
+                        scope.launch {
+                            CommonNavigationChannel.navigateTo(
+                                NavigationAction.Navigate(
+                                    destination = AppNavigationScreen.UserTripsScreen.route
+                                )
+                            )
+                        }
+                    },
+                    onProfileClick = {
+                        scope.launch {
+                            openMyProfilePage(user.id)
+                        }
                     }
-                }
+                )
 
                 Spacer(Modifier.height(24.dp))
 
@@ -240,7 +266,10 @@ private fun logoutFailure(context: Context, message: String) {
 @Composable
 private fun ProfileContainer(
     user: User,
-    onClick: () -> Unit
+    onVaultClick: () -> Unit,
+    onStoriesClick: () -> Unit,
+    onTripsClick: () -> Unit,
+    onProfileClick: () ->  Unit
 ) {
     val customColors = LocalCustomColors.current
     Box(
@@ -250,12 +279,15 @@ private fun ProfileContainer(
             .clip(RoundedCornerShape(24.dp))
             .background(customColors.fadedBackground.copy(alpha = 0.35f))
             .border(1.dp, customColors.defaultImageCardColor, RoundedCornerShape(24.dp))
-            .clickable { onClick() }
             .padding(20.dp)
     ) {
         Column {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable{
+                        onProfileClick()
+                    },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
@@ -300,11 +332,9 @@ private fun ProfileContainer(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                StatItem(label = "Trips", count = user.tripCount)
+                StatItem(label = "Trips", count = user.tripCount, onTripsClick)
                 StatDivider()
-                StatItem(label = "Followers", count = user.followersCount)
-                StatDivider()
-                StatItem(label = "Following", count = user.followCount)
+                StatItem(label = "Stories", count = 34, onStoriesClick)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -314,7 +344,10 @@ private fun ProfileContainer(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(customColors.secondaryBackground.copy(alpha = 0.1f))
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .clickable {
+                        onVaultClick()
+                    },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -337,10 +370,13 @@ private fun ProfileContainer(
 }
 
 @Composable
-private fun StatItem(label: String, count: Long) {
+private fun StatItem(label: String, count: Long, onClick: () -> Unit) {
     val customColors = LocalCustomColors.current
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable {
+            onClick()
+        }
     ) {
         ComposeTextView.TextView(
             text = count.toString(),
@@ -348,7 +384,9 @@ private fun StatItem(label: String, count: Long) {
             fontWeight = FontWeight.Bold,
             textColor = customColors.titleTextColor
         )
+
         Spacer(modifier = Modifier.height(2.dp))
+
         ComposeTextView.TextView(
             text = label,
             fontSize = 12.sp,
