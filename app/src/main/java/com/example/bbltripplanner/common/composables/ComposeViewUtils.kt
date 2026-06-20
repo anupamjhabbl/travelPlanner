@@ -471,11 +471,13 @@ object ComposeViewUtils {
         confirmButtonText: String,
         dismissButtonText: String = stringResource(R.string.cancel),
         isConfirmPositive: Boolean = true,
+        showDismissButton: Boolean = true,
+        isCancellable: Boolean = true,
         onConfirm: () -> Unit,
         onDismiss: () -> Unit
     ) {
         AlertDialog(
-            onDismissRequest = onDismiss,
+            onDismissRequest = { if (isCancellable) onDismiss() },
             confirmButton = {
                 Box(modifier = Modifier.padding(4.dp)) {
                     if (isConfirmPositive) {
@@ -511,35 +513,37 @@ object ComposeViewUtils {
                 }
             },
             dismissButton = {
-                Box(modifier = Modifier.padding(4.dp)) {
-                    if (isConfirmPositive) {
-                        OutlinedButton(
-                            onClick = onDismiss,
-                            shape = RoundedCornerShape(8.dp),
-                            contentPadding = PaddingValues(16.dp, 8.dp),
-                            border = BorderStroke(2.dp, LocalCustomColors.current.secondaryBackground)
-                        ) {
-                            ComposeTextView.TextView(
-                                text = dismissButtonText,
-                                textColor = LocalCustomColors.current.secondaryBackground,
-                                fontSize = 16.sp
-                            )
-                        }
-                    } else {
-                        Button(
-                            onClick = onDismiss,
-                            colors = ButtonDefaults.buttonColors().copy(
-                                containerColor = LocalCustomColors.current.secondaryBackground,
-                                contentColor = LocalCustomColors.current.primaryBackground
-                            ),
-                            shape = RoundedCornerShape(8.dp),
-                            contentPadding = PaddingValues(16.dp, 8.dp)
-                        ) {
-                            ComposeTextView.TextView(
-                                text = dismissButtonText,
-                                textColor = LocalCustomColors.current.primaryBackground,
-                                fontSize = 16.sp
-                            )
+                if (showDismissButton) {
+                    Box(modifier = Modifier.padding(4.dp)) {
+                        if (isConfirmPositive) {
+                            OutlinedButton(
+                                onClick = onDismiss,
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(16.dp, 8.dp),
+                                border = BorderStroke(2.dp, LocalCustomColors.current.secondaryBackground)
+                            ) {
+                                ComposeTextView.TextView(
+                                    text = dismissButtonText,
+                                    textColor = LocalCustomColors.current.secondaryBackground,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        } else {
+                            Button(
+                                onClick = onDismiss,
+                                colors = ButtonDefaults.buttonColors().copy(
+                                    containerColor = LocalCustomColors.current.secondaryBackground,
+                                    contentColor = LocalCustomColors.current.primaryBackground
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(16.dp, 8.dp)
+                            ) {
+                                ComposeTextView.TextView(
+                                    text = dismissButtonText,
+                                    textColor = LocalCustomColors.current.primaryBackground,
+                                    fontSize = 16.sp
+                                )
+                            }
                         }
                     }
                 }
@@ -556,7 +560,11 @@ object ComposeViewUtils {
                 )
             },
             shape = RoundedCornerShape(12.dp),
-            containerColor = LocalCustomColors.current.defaultImageCardColor
+            containerColor = LocalCustomColors.current.defaultImageCardColor,
+            properties = DialogProperties(
+                dismissOnBackPress = isCancellable,
+                dismissOnClickOutside = isCancellable
+            )
         )
     }
 

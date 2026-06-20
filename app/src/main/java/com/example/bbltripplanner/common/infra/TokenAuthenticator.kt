@@ -1,10 +1,12 @@
 package com.example.bbltripplanner.common.infra
 
+import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.entity.BaseResponse
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
+import com.example.bbltripplanner.navigation.PopupAction
 import com.example.bbltripplanner.screens.user.auth.entity.AuthToken
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.auth.usecases.UserAuthUseCase
@@ -29,7 +31,7 @@ class TokenAuthenticator(
 
             val refreshResponse = try {
                 userAuthUseCase.getNewAccessToken("${Constants.HTTPHeaders.AUTHORIZATION_BEARER} $refreshToken").execute()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 return null
             }
 
@@ -61,13 +63,23 @@ class TokenAuthenticator(
     private fun removeTokens() {
         authPreferencesUseCase.removeAccessToken()
         authPreferencesUseCase.removeRefreshToken()
-        CommonNavigationChannel.navigateToSynchronous(
-            NavigationAction.Navigate(
-                AppNavigationScreen.AuthGraph.route
-            ) {
-                popUpTo(0) { inclusive = true }
-                launchSingleTop = true
-            }
+        CommonNavigationChannel.showPopupSynchronous(
+            PopupAction.ShowPopup(
+                titleRes = R.string.session_expired_title,
+                messageRes = R.string.session_expired_message,
+                confirmButtonTextRes = R.string.go_to_login,
+                isCancellable = false,
+                onConfirm = {
+                    CommonNavigationChannel.navigateToSynchronous(
+                        NavigationAction.Navigate(
+                            AppNavigationScreen.AuthGraph.route
+                        ) {
+                            popUpTo(0) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    )
+                }
+            )
         )
     }
 

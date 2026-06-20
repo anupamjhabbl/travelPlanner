@@ -12,8 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,6 +27,7 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.BottomNavigationPanel
 import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
+import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.BottomNavigationItem
 import com.example.bbltripplanner.screens.buzz.composables.BuzzScreen
 import com.example.bbltripplanner.screens.destination.composables.DestinationScreen
@@ -82,6 +86,8 @@ fun AppNavigationComposable(
         }
     }
 
+    var currentPopupAction by remember { mutableStateOf<PopupAction.ShowPopup?>(null) }
+
     CommonLifecycleAwareLaunchedEffect(CommonNavigationChannel.navigationChannel) { navigationAction ->
         when (navigationAction) {
             is NavigationAction.Navigate -> {
@@ -92,6 +98,16 @@ fun AppNavigationComposable(
             NavigationAction.NavigateUp -> homeNavController.navigateUp()
             is NavigationAction.PopBackStack -> {
                 homeNavController.popBackStack(navigationAction.route, navigationAction.inclusive)
+            }
+        }
+    }
+
+    CommonLifecycleAwareLaunchedEffect(CommonNavigationChannel.popupChannel) { popupAction ->
+        when (popupAction) {
+            is PopupAction.ShowPopup -> {
+                if (currentPopupAction == null || currentPopupAction?.isCancellable == true) {
+                    currentPopupAction = popupAction
+                }
             }
         }
     }
@@ -121,6 +137,33 @@ fun AppNavigationComposable(
                 .padding(paddingToApply)
         ) {
             HomeNavigationComposable(accessToken, homeNavController)
+
+            currentPopupAction?.let { action ->
+                val title = action.titleRes?.let { stringResource(it) } ?: stringResource(R.string.alert)
+                val message = action.messageRes?.let { stringResource(it) } ?: ""
+                val confirmText = action.confirmButtonTextRes?.let { stringResource(it) } ?: stringResource(R.string.ok)
+                val cancelText = action.cancelButtonTextRes?.let { stringResource(it) } ?: stringResource(R.string.cancel)
+
+                ComposeViewUtils.ConfirmationDialog(
+                    title = title,
+                    message = message,
+                    confirmButtonText = confirmText,
+                    dismissButtonText = cancelText,
+                    isCancellable = action.isCancellable,
+                    isConfirmPositive = action.isConfirmPositive,
+                    showDismissButton = (action.onCancel != null || action.cancelButtonTextRes != null) && action.isCancellable,
+                    onConfirm = {
+                        action.onConfirm?.invoke()
+                        currentPopupAction = null
+                    },
+                    onDismiss = {
+                        if (action.isCancellable) {
+                            action.onCancel?.invoke()
+                            currentPopupAction = null
+                        }
+                    }
+                )
+            }
         }
     }
 }

@@ -32,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -283,7 +282,7 @@ private fun ProfileContainer(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     ComposeTextView.TextView(
-                        text = user.email ?: "",
+                        text = user.bio ?: "",
                         fontSize = 13.sp,
                         textColor = customColors.hintTextColor
                     )

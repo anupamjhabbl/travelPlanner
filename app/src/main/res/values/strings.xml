@@ -308,4 +308,7 @@
     <string name="status_pending">Pending</string>
     <string name="empty_state_title">No Adventurers Yet</string>
     <string name="empty_state_desc">Every great journey is better with friends. Invite people to join your trip crew!</string>
+    <string name="session_expired_title">Session Expired</string>
+    <string name="session_expired_message">Your session has expired. Please login again to continue.</string>
+    <string name="go_to_login">Go to Login</string>
 </resources>
