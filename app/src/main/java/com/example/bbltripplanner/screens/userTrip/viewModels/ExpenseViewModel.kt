@@ -69,11 +69,11 @@ class ExpenseViewModel(
                 _expenseStatus.value = RequestResponseStatus(data = it?.toTripExpenseDetail())
             }.onFailure {
                 val errorMsg = when {
-                    it is java.io.IOException -> "NETWORK_ERROR"
-                    it is TripPlannerException && it.errorCode == 404 -> "NOT_FOUND"
-                    it is TripPlannerException && it.errorCode in 500..599 -> "SERVER_ERROR"
+                    it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    it is TripPlannerException && it.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     it is TripPlannerException -> it.message
-                    else -> "SERVER_ERROR"
+                    else -> Constants.ErrorType.SERVER_ERROR
                 }
                 _expenseStatus.value = RequestResponseStatus(error = errorMsg)
             }
@@ -89,11 +89,11 @@ class ExpenseViewModel(
                 _expenseStatus.value = RequestResponseStatus(data = it?.toTripExpenseDetail())
             }.onFailure {
                 val errorMsg = when {
-                    it is java.io.IOException -> "NETWORK_ERROR"
-                    it is TripPlannerException && it.errorCode == 404 -> "NOT_FOUND"
-                    it is TripPlannerException && it.errorCode in 500..599 -> "SERVER_ERROR"
+                    it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    it is TripPlannerException && it.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     it is TripPlannerException -> it.message
-                    else -> "SERVER_ERROR"
+                    else -> Constants.ErrorType.SERVER_ERROR
                 }
                 _expenseStatus.value = RequestResponseStatus(error = errorMsg)
             }
@@ -197,11 +197,11 @@ class ExpenseViewModel(
                 _tripData.value = RequestResponseStatus(data = it)
             }.onFailure {
                 val errorMsg = when {
-                    it is java.io.IOException -> "NETWORK_ERROR"
-                    it is TripPlannerException && it.errorCode == 404 -> "NOT_FOUND"
-                    it is TripPlannerException && it.errorCode in 500..599 -> "SERVER_ERROR"
+                    it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    it is TripPlannerException && it.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     it is TripPlannerException -> it.message
-                    else -> "SERVER_ERROR"
+                    else -> Constants.ErrorType.SERVER_ERROR
                 }
                 _tripData.value = RequestResponseStatus(error = errorMsg)
             }

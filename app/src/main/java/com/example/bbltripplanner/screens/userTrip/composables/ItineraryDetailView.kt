@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
@@ -111,9 +112,9 @@ fun ItineraryDetailView(
             }
         } else if (activitiesStatus.error != null) {
             val errorStrings = when (activitiesStatus.error) {
-                "NETWORK_ERROR" -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
-                "SERVER_ERROR" -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-                "NOT_FOUND" -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
+                Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
+                Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
+                Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
                 else -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
             }
             ComposeViewUtils.FullScreenErrorComposable(errorStrings)

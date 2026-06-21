@@ -1,8 +1,10 @@
 package com.example.bbltripplanner.screens.vault.viewModels
 
 import androidx.lifecycle.viewModelScope
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
+import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.vault.usecases.VaultUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,19 +27,29 @@ class UserTripsViewModel(private val vaultUseCase: VaultUseCase) : BaseMVIVViewM
     }
 
     fun getUserTrips() {
+        _userTripsStatus.value = _userTripsStatus.value.copy(isLoading = true)
         viewModelScope.launch {
-            _userTripsStatus.value = _userTripsStatus.value.copy(isLoading = true)
-            try {
-                val trips = vaultUseCase.getUserTrips()
+            val result = SafeIOUtil.safeCall {
+                vaultUseCase.getUserTrips()
+            }
+            result.onSuccess { trips ->
                 _userTripsStatus.value = _userTripsStatus.value.copy(
                     isLoading = false,
                     data = trips,
                     error = null
                 )
-            } catch (e: Exception) {
+            }
+            result.onFailure { exception ->
+                val errorMsg = when {
+                    exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    exception is com.example.bbltripplanner.common.entity.TripPlannerException && exception.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    exception is com.example.bbltripplanner.common.entity.TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
+                    exception is com.example.bbltripplanner.common.entity.TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
+                    else -> Constants.ErrorType.SERVER_ERROR
+                }
                 _userTripsStatus.value = _userTripsStatus.value.copy(
                     isLoading = false,
-                    error = e.message
+                    error = errorMsg
                 )
             }
         }
@@ -46,18 +58,27 @@ class UserTripsViewModel(private val vaultUseCase: VaultUseCase) : BaseMVIVViewM
     private fun deleteTrip(tripId: String) {
         viewModelScope.launch {
             _deleteTripStatus.emit(UserTripsViewModelIntent.DeleteViewEffect.DeleteTripLoading)
-            try {
+            val result = SafeIOUtil.safeCall {
                 vaultUseCase.deleteTrip(tripId)
+            }
+            result.onSuccess {
                 _deleteTripStatus.emit(UserTripsViewModelIntent.DeleteViewEffect.DeleteTripSuccess)
-
                 val currentList = _userTripsStatus.value.data
                 if (currentList != null) {
                     _userTripsStatus.value = _userTripsStatus.value.copy(
                         data = currentList.filter { it.tripId != tripId }
                     )
                 }
-            } catch (e: Exception) {
-                _deleteTripStatus.emit(UserTripsViewModelIntent.DeleteViewEffect.DeleteTripError(e.message ?: "Failed to delete trip"))
+            }
+            result.onFailure { exception ->
+                val errorMsg = when {
+                    exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    exception is com.example.bbltripplanner.common.entity.TripPlannerException && exception.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    exception is com.example.bbltripplanner.common.entity.TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
+                    exception is com.example.bbltripplanner.common.entity.TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
+                    else -> Constants.ErrorType.SERVER_ERROR
+                }
+                _deleteTripStatus.emit(UserTripsViewModelIntent.DeleteViewEffect.DeleteTripError(errorMsg))
             }
         }
     }

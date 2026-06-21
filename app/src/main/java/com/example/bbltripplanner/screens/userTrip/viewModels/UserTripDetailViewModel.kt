@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.viewModels
 
 import androidx.lifecycle.viewModelScope
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
 import com.example.bbltripplanner.common.utils.SafeIOUtil
@@ -64,11 +65,11 @@ class UserTripDetailViewModel(
             }
             tripDetailResult.onFailure {
                 val errorMsg = when {
-                    it is java.io.IOException -> "NETWORK_ERROR"
-                    it is com.example.bbltripplanner.common.entity.TripPlannerException && it.errorCode == 404 -> "NOT_FOUND"
-                    it is com.example.bbltripplanner.common.entity.TripPlannerException && it.errorCode in 500..599 -> "SERVER_ERROR"
-                    it is com.example.bbltripplanner.common.entity.TripPlannerException -> it.message
-                    else -> "SERVER_ERROR"
+                    it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    it is com.example.bbltripplanner.common.entity.TripPlannerException && it.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is com.example.bbltripplanner.common.entity.TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
+                    it is com.example.bbltripplanner.common.entity.TripPlannerException -> it.message ?: Constants.ErrorType.SERVER_ERROR
+                    else -> Constants.ErrorType.SERVER_ERROR
                 }
                 _userTripDetailFetchStatus.value = userTripDetailFetchStatus.value.copy(isLoading = false, error = errorMsg)
             }

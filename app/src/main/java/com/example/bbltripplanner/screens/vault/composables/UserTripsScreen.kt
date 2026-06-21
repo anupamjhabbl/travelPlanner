@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
@@ -74,6 +76,10 @@ fun UserTripsScreen() {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val shareMessage = stringResource(R.string.share_message)
+    val serverErrorMsg = stringResource(R.string.server_error)
+    val networkErrorMsg = stringResource(R.string.no_internet_connection)
+    val nothingToShow = stringResource(R.string.nothing_to_show)
+
 
     var tripToDelete by remember { mutableStateOf<TripData?>(null) }
     var isDeleting by remember { mutableStateOf(false) }
@@ -82,7 +88,13 @@ fun UserTripsScreen() {
         when (effect) {
             is UserTripsViewModelIntent.DeleteViewEffect.DeleteTripError -> {
                 isDeleting = false
-                ComposeViewUtils.showToast(context, effect.message)
+                val errorText = when (effect.message) {
+                    Constants.ErrorType.NETWORK_ERROR -> networkErrorMsg
+                    Constants.ErrorType.SERVER_ERROR -> serverErrorMsg
+                    Constants.ErrorType.NOT_FOUND -> nothingToShow
+                    else -> effect.message
+                }
+                ComposeViewUtils.showToast(context, errorText)
             }
             UserTripsViewModelIntent.DeleteViewEffect.DeleteTripLoading -> {
                 isDeleting = true
@@ -134,18 +146,34 @@ fun UserTripsScreen() {
                     }
 
                     tripsStatus.error != null -> {
-                        ComposeTextView.TextView(
-                            text = tripsStatus.error ?: stringResource(R.string.generic_error),
-                            modifier = Modifier.align(Alignment.Center)
+                        val errorStrings = when (tripsStatus.error) {
+                            Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
+                            Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
+                            Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
+                            else -> Pair(stringResource(R.string.server_error), tripsStatus.error ?: stringResource(R.string.server_error_subtitle))
+                        }
+                        ComposeViewUtils.FullScreenErrorComposable(
+                            errorStrings = errorStrings,
+                            isActionButton = true,
+                            onActionButtonClick = {
+                                viewModel.getUserTrips()
+                            }
                         )
                     }
 
                     tripsStatus.data != null -> {
                         val trips = tripsStatus.data!!
                         if (trips.isEmpty()) {
-                            ComposeTextView.TextView(
-                                text = stringResource(R.string.no_trips),
-                                modifier = Modifier.align(Alignment.Center)
+                            UserTripsEmptyState(
+                                onCreateTripClick = {
+                                    scope.launch {
+                                        CommonNavigationChannel.navigateTo(
+                                            NavigationAction.Navigate(
+                                                AppNavigationScreen.AddScreen.route
+                                            )
+                                        )
+                                    }
+                                }
                             )
                         } else {
                             LazyColumn(
@@ -456,6 +484,76 @@ fun OverlappingAvatars(members: List<User>, modifier: Modifier = Modifier) {
                     fontWeight = FontWeight.Bold
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun UserTripsEmptyState(onCreateTripClick: () -> Unit) {
+    val customColors = LocalCustomColors.current
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .background(customColors.secondaryBackground.copy(alpha = 0.1f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Map,
+                contentDescription = null,
+                tint = customColors.secondaryBackground,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        ComposeTextView.TitleTextView(
+            text = stringResource(R.string.no_trips),
+            fontSize = 20.sp,
+            textColor = customColors.titleTextColor,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        ComposeTextView.TextView(
+            text = stringResource(R.string.noting_to_show_subtitle),
+            fontSize = 14.sp,
+            textColor = customColors.hintTextColor,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(30.dp))
+                .background(customColors.secondaryBackground)
+                .clickable { onCreateTripClick() }
+                .padding(horizontal = 24.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+                tint = customColors.primaryBackground,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            ComposeTextView.TextView(
+                text = stringResource(R.string.start_your_jorney),
+                textColor = customColors.primaryBackground,
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp
+            )
         }
     }
 }

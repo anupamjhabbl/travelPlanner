@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.userTrip.viewModels
 
 import androidx.lifecycle.viewModelScope
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
@@ -44,11 +45,11 @@ class ItineraryViewModel(
             }
             result.onFailure { error ->
                 val errorMsg = when {
-                    error is java.io.IOException -> "NETWORK_ERROR"
-                    error is TripPlannerException && error.errorCode == 404 -> "NOT_FOUND"
-                    error is TripPlannerException && error.errorCode in 500..599 -> "SERVER_ERROR"
+                    error is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    error is TripPlannerException && error.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    error is TripPlannerException && error.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     error is TripPlannerException -> error.message
-                    else -> "SERVER_ERROR"
+                    else -> Constants.ErrorType.SERVER_ERROR
                 }
                 _itineraryStatus.value = RequestResponseStatus(error = errorMsg)
             }
@@ -66,11 +67,11 @@ class ItineraryViewModel(
             }
             result.onFailure { error ->
                 val errorMsg = when {
-                    error is java.io.IOException -> "NETWORK_ERROR"
-                    error is TripPlannerException && error.errorCode == 404 -> "NOT_FOUND"
-                    error is TripPlannerException && error.errorCode in 500..599 -> "SERVER_ERROR"
+                    error is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    error is TripPlannerException && error.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    error is TripPlannerException && error.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     error is TripPlannerException -> error.message
-                    else -> "SERVER_ERROR"
+                    else -> Constants.ErrorType.SERVER_ERROR
                 }
                 _itineraryStatus.value = RequestResponseStatus(error = errorMsg)
             }

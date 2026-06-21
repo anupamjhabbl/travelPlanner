@@ -2,6 +2,7 @@ package com.example.bbltripplanner.screens.userTrip.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,11 +16,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
@@ -32,6 +35,8 @@ fun LocationBottomSheet (
     locationList: List<Location>,
     searchQuery: String,
     isLocationLoading: Boolean,
+    isLocationError: Boolean = false,
+    errorMessage: String? = null,
     onQueryChanged: (query: String) -> Unit,
     updateLocation: (user: Location) -> Unit
 ) {
@@ -76,6 +81,19 @@ fun LocationBottomSheet (
                     strokeWidth = 3.dp
                 )
             }
+        } else if (isLocationError) {
+            Column(
+                modifier = Modifier.height(150.dp).fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                ComposeTextView.TextView(
+                    text = errorMessage ?: "Failed to load locations",
+                    fontSize = 16.sp,
+                    textColor = LocalCustomColors.current.textColor,
+                    textAlign = TextAlign.Center
+                )
+            }
         } else if (locationList.isEmpty()) {
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -84,17 +102,18 @@ fun LocationBottomSheet (
                 contentAlignment = Alignment.Center
             ) {
                 ComposeTextView.TitleTextView(
-                    text = stringResource(R.string.no_result_found)
+                    text = if (searchQuery.isEmpty()) "Type to search locations..." else stringResource(R.string.no_result_found)
                 )
             }
         } else {
+            val filteredList = remember(locationList) {
+                locationList.filter { it.displayName != null }
+            }
             LazyColumn {
-                itemsIndexed(
-                    locationList.filter { it.displayName != null }
-                ) { index, location ->
+                itemsIndexed(filteredList) { index, location ->
                     val shape = when (index) {
                         0 -> RoundedCornerShape(12.dp, 12.dp, 2.dp, 2.dp)
-                        locationList.size - 1 -> RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
+                        filteredList.size - 1 -> RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
                         else -> RoundedCornerShape(2.dp, 2.dp, 2.dp, 2.dp)
                     }
 

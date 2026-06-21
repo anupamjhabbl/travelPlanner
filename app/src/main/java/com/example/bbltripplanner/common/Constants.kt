@@ -121,6 +121,13 @@ object Constants {
         const val GROUP = "Group"
     }
 
+    object ErrorType {
+        const val NETWORK_ERROR = "NETWORK_ERROR"
+        const val NOT_FOUND = "NOT_FOUND"
+        const val SERVER_ERROR = "SERVER_ERROR"
+        const val NO_LOCATION_AVAILABLE = "NO_LOCATION_AVAILABLE"
+    }
+
     const val CONTACT_EMAIL = "anupamimpbbl@gmail.com"
     const val TRIP_PLANNER_DEEPLINK = "https://www.tripplanner.com"
 }

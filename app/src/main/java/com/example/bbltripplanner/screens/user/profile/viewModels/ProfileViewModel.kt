@@ -133,11 +133,11 @@ class ProfileViewModel(
             }
             userDataRequest.onFailure { exception ->
                 val errorMsg = when {
-                    exception is java.io.IOException -> "NETWORK_ERROR"
-                    exception is TripPlannerException && exception.errorCode == 404 -> "NOT_FOUND"
-                    exception is TripPlannerException && exception.errorCode in 500..599 -> "SERVER_ERROR"
+                    exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    exception is TripPlannerException && exception.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    exception is TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     exception is TripPlannerException -> exception.message
-                    else -> "SERVER_ERROR"
+                    else -> Constants.ErrorType.SERVER_ERROR
                 }
                 _userData.value = RequestStatus.Error(errorMsg)
             }

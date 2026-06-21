@@ -1,5 +1,6 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -64,6 +65,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
@@ -110,6 +112,12 @@ fun PostingInitScreen() {
     var locationList by remember {
         mutableStateOf(emptyList<Location>())
     }
+    var isLocationError by remember {
+        mutableStateOf(false)
+    }
+    var locationErrorMessage by remember {
+        mutableStateOf<String?>(null)
+    }
     val userList = viewModel.inviteList.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val genericMessage = stringResource(R.string.generic_error)
@@ -146,10 +154,15 @@ fun PostingInitScreen() {
                     showSuccessPopup = true
                 }
 
-                PostingInitIntent.ViewEffect.ShowError -> ComposeViewUtils.showToast(context, genericMessage)
+                is PostingInitIntent.ViewEffect.ShowError -> {
+                    val message = getMessage(context, viewEffect.errorMessage) ?: genericMessage
+                    ComposeViewUtils.showToast(context, message)
+                }
 
                 is PostingInitIntent.ViewEffect.ShowSuggestions -> {
                     locationList = viewEffect.suggestions
+                    isLocationError = viewEffect.isError
+                    locationErrorMessage = getMessage(context, viewEffect.errorMessage)
                 }
 
                 is PostingInitIntent.ViewEffect.ShowFullScreenError -> {
@@ -237,8 +250,10 @@ fun PostingInitScreen() {
                 containerColor = LocalCustomColors.current.primaryBackground
             ) {
                 InviteBottomSheet(
-                    userList.value?.followers ?: emptyList(),
-                    isFollowersLoading
+                    userList = userList.value?.followers ?: emptyList(),
+                    isFollowersLoading = isFollowersLoading,
+                    isError = userList.value?.isError ?: false,
+                    errorMessage = getMessage(context, userList.value?.errorMessage)
                 ) { user ->
                     showBottomSheet = null
                     viewModel.processEvent(PostingInitIntent.ViewEvent.AddTripMates(user))
@@ -255,11 +270,14 @@ fun PostingInitScreen() {
                 containerColor = LocalCustomColors.current.primaryBackground
             ) {
                 LocationBottomSheet(
-                    locationList,
-                    queryString,
-                    isLocationLoading,
-                    {
-                        viewModel.processEvent(PostingInitIntent.ViewEvent.OnQueryChanged(it))
+                    locationList = locationList,
+                    searchQuery = queryString,
+                    isLocationLoading = isLocationLoading,
+                    isLocationError = isLocationError,
+                    errorMessage = locationErrorMessage,
+                    onQueryChanged = { query ->
+                        isLocationError = false
+                        viewModel.processEvent(PostingInitIntent.ViewEvent.OnQueryChanged(query))
                     }
                 ) { location ->
                     viewModel.processEvent(PostingInitIntent.ViewEvent.UpdateTripLocation(location))
@@ -441,9 +459,23 @@ fun PostingInitScreen() {
         ) {
             val tripNameMessage = stringResource(R.string.trip_name_please)
             val whereToMessage = stringResource(R.string.trip_location_please)
+            val startDateMessage = stringResource(R.string.trip_start_date_please)
+            val endDateMessage = stringResource(R.string.trip_end_date_please)
             BottomSaveButton {
                 if (
-                        isValidTripName(
+                        isValidStartDate(
+                            postingFormData.startDate,
+                            {
+                                ComposeViewUtils.showToast(context, startDateMessage)
+                            }
+                        )
+                        && isValidEndDate(
+                            postingFormData.endDate,
+                            {
+                                ComposeViewUtils.showToast(context, endDateMessage)
+                            }
+                        )
+                        && isValidTripName(
                             postingFormData.tripName,
                             {
                                 ComposeViewUtils.showToast(context, tripNameMessage)
@@ -459,6 +491,43 @@ fun PostingInitScreen() {
                 }
             }
         }
+    }
+}
+
+fun getMessage(
+    context: Context,
+    errorMessage: String?
+): String? {
+    if (errorMessage == null) return null
+    return when (errorMessage) {
+        Constants.ErrorType.NETWORK_ERROR -> context.getString(R.string.no_internet_connection)
+        Constants.ErrorType.SERVER_ERROR -> context.getString(R.string.something_went_wrong)
+        Constants.ErrorType.NO_LOCATION_AVAILABLE -> context.getString(R.string.no_location_availaible)
+        else -> errorMessage
+    }
+}
+
+fun isValidStartDate(
+    startDate: Long?,
+    onFail: () -> Unit
+): Boolean {
+    if (startDate == null) {
+        onFail()
+        return false
+    } else {
+        return true
+    }
+}
+
+fun isValidEndDate(
+    endDate: Long?,
+    onFail: () -> Unit
+): Boolean {
+    if (endDate == null) {
+        onFail()
+        return false
+    } else {
+        return true
     }
 }
 
@@ -720,7 +789,6 @@ fun UnifiedTripDatePickerCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Start Date Section
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -751,7 +819,6 @@ fun UnifiedTripDatePickerCard(
                 }
             }
 
-            // Arrow/Duration Badge Section in the middle
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -781,7 +848,6 @@ fun UnifiedTripDatePickerCard(
                 )
             }
 
-            // End Date Section
             Column(
                 modifier = Modifier
                     .weight(1f)

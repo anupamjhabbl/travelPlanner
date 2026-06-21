@@ -123,6 +123,8 @@
     <string name="no_result_found">No results found</string>
     <string name="trip_name_please">Please enter your trip name.</string>
     <string name="trip_location_please">Please select a trip location.</string>
+    <string name="trip_start_date_please">Please select a start date.</string>
+    <string name="trip_end_date_please">Please select an end date.</string>
     <string name="trip_accept_success">You have successfully acepted the invitation.</string>
     <string name="share_message">Your friend has invited you for this trip.</string>
     <string name="budget">Budget: %1$s %2$s</string>
@@ -317,4 +319,8 @@
     <string name="trip_deleted_success">Trip deleted successfully</string>
     <string name="delete_trip_description">Your trip will be permanently deleted.</string>
     <string name="map_directions_failure">Failed to load directions. Please try again.</string>
+    <string name="no_location_availaible">No Location available with this name. Kindly check your spelling.</string>
+    <string name="no_followers_left">You have no friend left to add.</string>
+    <string name="no_matching_friend">There is no friend with this name.</string>
+    <string name="something_went_wrong">Oops! Something went wrong. We are working on it.</string>
 </resources>

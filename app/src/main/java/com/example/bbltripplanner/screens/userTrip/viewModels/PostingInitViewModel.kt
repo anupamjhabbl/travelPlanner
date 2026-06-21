@@ -2,7 +2,9 @@ package com.example.bbltripplanner.screens.userTrip.viewModels
 
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.BuildConfig
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
+import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 @OptIn(FlowPreview::class)
 class PostingInitViewModel(
@@ -94,7 +97,8 @@ class PostingInitViewModel(
         newList.add(user)
         _tripFormData.value = tripFormData.value.copy(invitedMembers = newList)
         _inviteList.value = inviteList.value?.copy(
-            followers = inviteList.value?.followers?.filter { it.id != user.id } ?: emptyList()
+            followers = inviteList.value?.followers?.filter { it.id != user.id } ?: emptyList(),
+            isError = false
         )
     }
 
@@ -113,6 +117,12 @@ class PostingInitViewModel(
             is PostingInitIntent.ViewEvent.AddTripMates -> addTripMates(viewEvent.user)
             is PostingInitIntent.ViewEvent.RemoveTripMates -> removeTripMates(viewEvent.user)
             is PostingInitIntent.ViewEvent.GetTripDetails -> getTripDetails(viewEvent.tripId)
+            PostingInitIntent.ViewEvent.RetryLocationSearch -> {
+                val query = _searchQuery.value
+                if (query.isNotBlank()) {
+                    getLocationSuggestions(query)
+                }
+            }
         }
     }
 
@@ -130,7 +140,7 @@ class PostingInitViewModel(
                 }
                 postTripResult.onFailure {
                     _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
-                    _viewEffects.emit(PostingInitIntent.ViewEffect.ShowError)
+                    _viewEffects.emit(PostingInitIntent.ViewEffect.ShowError(getFriendlyErrorMessage(it)))
                 }
             }
         }
@@ -181,8 +191,19 @@ class PostingInitViewModel(
             invitedMembers = tripFormData.value.invitedMembers.filter { it.id != user.id }
         )
         _inviteList.value = inviteList.value?.copy(
-            newInviteList
+            followers = newInviteList,
+            isError = false
         )
+    }
+
+    private fun getFriendlyErrorMessage(throwable: Throwable): String {
+        return when {
+            throwable is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+            throwable is TripPlannerException && throwable.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
+            throwable is HttpException && throwable.code() == 404 -> Constants.ErrorType.NO_LOCATION_AVAILABLE
+            throwable is HttpException && throwable.code() in 500..599 -> Constants.ErrorType.SERVER_ERROR
+            else -> throwable.message ?: Constants.DEFAULT_ERROR_MESSAGE
+        }
     }
 
     private fun getLocationSuggestions(query: String) {
@@ -193,17 +214,23 @@ class PostingInitViewModel(
             }
             locationSuggestionsResult.onSuccess {
                 _viewEffects.emit(PostingInitIntent.ViewEffect.HideLocationLoading)
-                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowSuggestions(it))
+                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowSuggestions(it, isError = false))
             }
             locationSuggestionsResult.onFailure {
                 _viewEffects.emit(PostingInitIntent.ViewEffect.HideLocationLoading)
-                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowSuggestions(emptyList()))
+                _viewEffects.emit(
+                    PostingInitIntent.ViewEffect.ShowSuggestions(
+                        emptyList(),
+                        isError = true,
+                        errorMessage = getFriendlyErrorMessage(it)
+                    )
+                )
             }
         }
     }
 
     private fun getInviteList() {
-        if (_inviteList.value != null) {
+        if (_inviteList.value != null && !_inviteList.value!!.isError) {
             val memberIds = _tripFormData.value.invitedMembers.map { it.id }.toSet()
             _inviteList.value = _inviteList.value?.copy(
                 followers = _inviteList.value?.followers?.filter { it.id !in memberIds } ?: emptyList()
@@ -220,11 +247,11 @@ class PostingInitViewModel(
                     _viewEffects.emit(PostingInitIntent.ViewEffect.HideFollowersLoading)
                     val memberIds = _tripFormData.value.invitedMembers.map { it.id }.toSet()
                     val filteredFollowers = followersData?.followers?.filter { it.id !in memberIds } ?: emptyList()
-                    _inviteList.value = ProfileFollowersData(filteredFollowers)
+                    _inviteList.value = ProfileFollowersData(filteredFollowers, isError = false)
                 }
                 followersList.onFailure {
                     _viewEffects.emit(PostingInitIntent.ViewEffect.HideFollowersLoading)
-                    _inviteList.value = ProfileFollowersData(emptyList())
+                    _inviteList.value = ProfileFollowersData(emptyList(), isError = true, errorMessage = getFriendlyErrorMessage(it))
                 }
             }
         }
@@ -242,7 +269,7 @@ class PostingInitViewModel(
             }
             postTripResult.onFailure {
                 _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
-                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowError)
+                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowError(getFriendlyErrorMessage(it)))
             }
         }
     }
