@@ -573,7 +573,7 @@ private suspend fun takeAction(
             Constants.TripDetailScreen.ATTACHMENTS -> {
                 navigateToIfAllowed(
                     AppNavigationScreen.TripGalleryNavEntry.createRoute(trip.tripId),
-                    !trip.acceptanceNeeded,
+                    !trip.acceptanceNeeded && trip.role != UserRole.PUBLIC,
                     acceptToSeePrompt
                 )
             }
@@ -589,7 +589,7 @@ private suspend fun takeAction(
             Constants.TripDetailScreen.ITINERARY -> {
                 navigateToIfAllowed(
                     AppNavigationScreen.ItineraryListView.createRoute(trip.tripId),
-                    !trip.acceptanceNeeded,
+                    !trip.acceptanceNeeded && trip.role != UserRole.PUBLIC,
                     acceptToSeePrompt
                 )
             }
@@ -597,7 +597,7 @@ private suspend fun takeAction(
             Constants.TripDetailScreen.EXPENSES -> {
                 navigateToIfAllowed(
                     AppNavigationScreen.ExpenseScreen.createRoute(trip.tripId),
-                    !trip.acceptanceNeeded,
+                    !trip.acceptanceNeeded && trip.role != UserRole.PUBLIC,
                     acceptToSeePrompt
                 )
             }
