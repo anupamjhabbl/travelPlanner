@@ -65,12 +65,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bbltripplanner.R
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.utils.DateUtils
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -235,7 +235,8 @@ fun PostingInitScreen() {
     }
 
     if (showFullScreenError != null) {
-        ComposeViewUtils.FullScreenErrorComposable(Pair(stringResource(R.string.generic_error), showFullScreenError!!))
+        val errorStrings = ErrorUtils.getErrorStrings(context, showFullScreenError)
+        ComposeViewUtils.FullScreenErrorComposable(errorStrings = errorStrings)
         return
     }
 
@@ -498,15 +499,7 @@ fun getMessage(
     context: Context,
     errorMessage: String?
 ): String? {
-    if (errorMessage == null) return null
-    return when (errorMessage) {
-        Constants.ErrorType.NETWORK_ERROR -> context.getString(R.string.no_internet_connection)
-        Constants.ErrorType.SERVER_ERROR -> context.getString(R.string.something_went_wrong)
-        Constants.ErrorType.NOT_FOUND -> context.getString(R.string.nothing_to_show)
-        Constants.ErrorType.NOT_AUTHORIZED -> context.getString(R.string.not_authorized_subtitle)
-        Constants.ErrorType.NO_LOCATION_AVAILABLE -> context.getString(R.string.no_location_availaible)
-        else -> errorMessage
-    }
+    return ErrorUtils.getMessage(context, errorMessage)
 }
 
 fun isValidStartDate(

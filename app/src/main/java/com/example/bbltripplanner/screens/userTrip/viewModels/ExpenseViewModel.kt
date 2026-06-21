@@ -5,6 +5,7 @@ import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.AddExpenseRequest
 import com.example.bbltripplanner.screens.userTrip.entity.Currency
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 
 class ExpenseViewModel(
     private val tripId: String?,
@@ -69,14 +69,7 @@ class ExpenseViewModel(
             }.onSuccess {
                 _expenseStatus.value = RequestResponseStatus(data = it?.toTripExpenseDetail())
             }.onFailure {
-                val errorMsg = when {
-                    it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    it is HttpException && it.code() == 404 -> Constants.ErrorType.NOT_FOUND
-                    it is HttpException && it.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-                    it is TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
-                    it is TripPlannerException -> it.message
-                    else -> Constants.ErrorType.SERVER_ERROR
-                }
+                val errorMsg = ErrorUtils.toErrorType(it)
                 _expenseStatus.value = RequestResponseStatus(error = errorMsg)
             }
         }
@@ -90,14 +83,7 @@ class ExpenseViewModel(
             }.onSuccess {
                 _expenseStatus.value = RequestResponseStatus(data = it?.toTripExpenseDetail())
             }.onFailure {
-                val errorMsg = when {
-                    it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    it is HttpException && it.code() == 404 -> Constants.ErrorType.NOT_FOUND
-                    it is HttpException && it.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-                    it is TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
-                    it is TripPlannerException -> it.message
-                    else -> Constants.ErrorType.SERVER_ERROR
-                }
+                val errorMsg = ErrorUtils.toErrorType(it)
                 _expenseStatus.value = RequestResponseStatus(error = errorMsg)
             }
         }
@@ -199,14 +185,7 @@ class ExpenseViewModel(
             }.onSuccess {
                 _tripData.value = RequestResponseStatus(data = it)
             }.onFailure {
-                val errorMsg = when {
-                    it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    it is HttpException && it.code() == 404 -> Constants.ErrorType.NOT_FOUND
-                    it is HttpException && it.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-                    it is TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
-                    it is TripPlannerException -> it.message
-                    else -> Constants.ErrorType.SERVER_ERROR
-                }
+                val errorMsg = ErrorUtils.toErrorType(it)
                 _tripData.value = RequestResponseStatus(error = errorMsg)
             }
         }

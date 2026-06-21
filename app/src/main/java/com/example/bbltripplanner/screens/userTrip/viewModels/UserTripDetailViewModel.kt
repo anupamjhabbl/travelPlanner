@@ -1,9 +1,9 @@
 package com.example.bbltripplanner.screens.userTrip.viewModels
 
 import androidx.lifecycle.viewModelScope
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 
 class UserTripDetailViewModel(
     val tripId: String?,
@@ -65,14 +64,7 @@ class UserTripDetailViewModel(
                 _userTripDetailFetchStatus.value =  userTripDetailFetchStatus.value.copy(isLoading = false, data = tripData)
             }
             tripDetailResult.onFailure {
-                val errorMsg = when {
-                    it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    it is HttpException && it.code() == 404 -> Constants.ErrorType.NOT_FOUND
-                    it is HttpException && it.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-                    it is com.example.bbltripplanner.common.entity.TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
-                    it is com.example.bbltripplanner.common.entity.TripPlannerException -> it.message ?: Constants.ErrorType.SERVER_ERROR
-                    else -> Constants.ErrorType.SERVER_ERROR
-                }
+                val errorMsg = ErrorUtils.toErrorType(it)
                 _userTripDetailFetchStatus.value = userTripDetailFetchStatus.value.copy(isLoading = false, error = errorMsg)
             }
         }

@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,10 +42,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.bbltripplanner.R
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -64,17 +65,12 @@ fun ProfileFollowersPage(
     val emptyContent = stringResource(R.string.followers_empty_content)
     val uiState by viewModel.userList.collectAsStateWithLifecycle()
     val isSelf = viewModel.isSelfProfile()
+    val context = LocalContext.current
 
     if (uiState.isLoading) {
         ComposeViewUtils.FullScreenLoading()
     } else if (uiState.data == null || uiState.error != null) {
-        val errorStrings = when (uiState.error) {
-            Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
-            Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-            Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
-            Constants.ErrorType.NOT_AUTHORIZED -> Pair(stringResource(R.string.not_authorized_title), stringResource(R.string.not_authorized_subtitle))
-            else -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-        }
+        val errorStrings = ErrorUtils.getErrorStrings(context, uiState.error)
         ComposeViewUtils.FullScreenErrorComposable(
             errorStrings = errorStrings
         )
@@ -134,17 +130,12 @@ fun ProfileFollowingPage(
     val emptyContent = stringResource(R.string.following_empty_content)
     val uiState by viewModel.userList.collectAsStateWithLifecycle()
     val isSelf = viewModel.isSelfProfile()
+    val context = LocalContext.current
 
     if (uiState.isLoading) {
         ComposeViewUtils.FullScreenLoading()
     } else if (uiState.data == null || uiState.error != null) {
-        val errorStrings = when (uiState.error) {
-            Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
-            Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-            Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
-            Constants.ErrorType.NOT_AUTHORIZED -> Pair(stringResource(R.string.not_authorized_title), stringResource(R.string.not_authorized_subtitle))
-            else -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-        }
+        val errorStrings = ErrorUtils.getErrorStrings(context, uiState.error)
         ComposeViewUtils.FullScreenErrorComposable(
             errorStrings = errorStrings
         )

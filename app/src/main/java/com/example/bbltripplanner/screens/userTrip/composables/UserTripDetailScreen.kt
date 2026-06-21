@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
@@ -199,13 +200,8 @@ fun UserTripDetailScreen(
 
 @Composable
 private fun FullScreenError(error: String?) {
-    val errorStrings = when (error) {
-        Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
-        Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-        Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
-        Constants.ErrorType.NOT_AUTHORIZED -> Pair(stringResource(R.string.not_authorized_title), stringResource(R.string.not_authorized_subtitle))
-        else -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-    }
+    val context = LocalContext.current
+    val errorStrings = ErrorUtils.getErrorStrings(context, error)
     ComposeViewUtils.FullScreenErrorComposable(errorStrings)
 }
 

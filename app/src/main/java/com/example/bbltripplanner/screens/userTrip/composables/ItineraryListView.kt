@@ -37,17 +37,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bbltripplanner.R
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.utils.DateTimeUtils
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -67,6 +68,7 @@ fun ItineraryListView(
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
     val itineraryStatus by viewModel.itineraryStatus.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     var addItineraryDialogVisibility by remember { mutableStateOf(false) }
 
     LaunchedEffect(itineraryStatus) {
@@ -131,13 +133,7 @@ fun ItineraryListView(
                 CircularProgressIndicator(color = customColors.secondaryBackground)
             }
         } else if (itineraryStatus.error != null) {
-            val errorStrings = when (itineraryStatus.error) {
-                Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
-                Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-                Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
-                Constants.ErrorType.NOT_AUTHORIZED -> Pair(stringResource(R.string.not_authorized_title), stringResource(R.string.not_authorized_subtitle))
-                else -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-            }
+            val errorStrings = ErrorUtils.getErrorStrings(context, itineraryStatus.error)
             ComposeViewUtils.FullScreenErrorComposable(errorStrings)
         } else {
             val itinerary = itineraryStatus.data

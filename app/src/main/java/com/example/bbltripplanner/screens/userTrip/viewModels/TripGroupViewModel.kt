@@ -1,10 +1,9 @@
 package com.example.bbltripplanner.screens.userTrip.viewModels
 
 import androidx.lifecycle.viewModelScope
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
-import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileRelationUsecase
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 
 class TripGroupViewModel(
     private val tripId: String,
@@ -58,14 +56,7 @@ class TripGroupViewModel(
                 _viewState.update { it.copy(isLoading = false, tripMembers = members, error = null) }
             }
             result.onFailure { exception ->
-                val errorMsg = when {
-                    exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    exception is HttpException && exception.code() == 404 -> Constants.ErrorType.NOT_FOUND
-                    exception is HttpException && exception.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-                    exception is TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
-                    exception is TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
-                    else -> Constants.ErrorType.SERVER_ERROR
-                }
+                val errorMsg = ErrorUtils.toErrorType(exception)
                 _viewState.update { it.copy(isLoading = false, error = errorMsg) }
             }
         }
@@ -103,14 +94,7 @@ class TripGroupViewModel(
                 }
             }
             result.onFailure { exception ->
-                val errorMsg = when {
-                    exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    exception is HttpException && exception.code() == 404 -> Constants.ErrorType.NOT_FOUND
-                    exception is HttpException && exception.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-                    exception is TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
-                    exception is TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
-                    else -> Constants.ErrorType.SERVER_ERROR
-                }
+                val errorMsg = ErrorUtils.toErrorType(exception)
                 _viewState.update { 
                     it.copy(
                         isFollowersLoading = false, 
@@ -139,14 +123,7 @@ class TripGroupViewModel(
             }
             result.onFailure { exception ->
                 _viewState.update { it.copy(isLoading = false) }
-                val errorMsg = when {
-                    exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    exception is HttpException && exception.code() == 404 -> Constants.ErrorType.NOT_FOUND
-                    exception is HttpException && exception.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-                    exception is TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
-                    exception is TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
-                    else -> Constants.ErrorType.SERVER_ERROR
-                }
+                val errorMsg = ErrorUtils.toErrorType(exception)
                 _viewEffect.emit(TripGroupIntent.ViewEffect.ShowError(errorMsg))
             }
         }

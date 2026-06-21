@@ -48,7 +48,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
@@ -56,6 +55,7 @@ import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.MenuItems
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.DateUtils
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.shareDeepLinkOfTrip
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
@@ -76,11 +76,6 @@ fun UserTripsScreen() {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val shareMessage = stringResource(R.string.share_message)
-    val serverErrorMsg = stringResource(R.string.server_error)
-    val networkErrorMsg = stringResource(R.string.no_internet_connection)
-    val nothingToShow = stringResource(R.string.nothing_to_show)
-    val notAuthorizedMessage = stringResource(R.string.not_authorized_subtitle)
-
 
     var tripToDelete by remember { mutableStateOf<TripData?>(null) }
     var isDeleting by remember { mutableStateOf(false) }
@@ -89,13 +84,7 @@ fun UserTripsScreen() {
         when (effect) {
             is UserTripsViewModelIntent.DeleteViewEffect.DeleteTripError -> {
                 isDeleting = false
-                val errorText = when (effect.message) {
-                    Constants.ErrorType.NETWORK_ERROR -> networkErrorMsg
-                    Constants.ErrorType.SERVER_ERROR -> serverErrorMsg
-                    Constants.ErrorType.NOT_FOUND -> nothingToShow
-                    Constants.ErrorType.NOT_AUTHORIZED -> notAuthorizedMessage
-                    else -> effect.message
-                }
+                val errorText = ErrorUtils.getMessage(context, effect.message) ?: effect.message
                 ComposeViewUtils.showToast(context, errorText)
             }
             UserTripsViewModelIntent.DeleteViewEffect.DeleteTripLoading -> {
@@ -148,13 +137,7 @@ fun UserTripsScreen() {
                     }
 
                     tripsStatus.error != null -> {
-                        val errorStrings = when (tripsStatus.error) {
-                            Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
-                            Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-                            Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
-                            Constants.ErrorType.NOT_AUTHORIZED -> Pair(stringResource(R.string.not_authorized_title), stringResource(R.string.not_authorized_subtitle))
-                            else -> Pair(stringResource(R.string.server_error), tripsStatus.error ?: stringResource(R.string.server_error_subtitle))
-                        }
+                        val errorStrings = ErrorUtils.getErrorStrings(context, tripsStatus.error)
                         ComposeViewUtils.FullScreenErrorComposable(
                             errorStrings = errorStrings,
                             isActionButton = true,

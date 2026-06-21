@@ -2,10 +2,9 @@ package com.example.bbltripplanner.screens.user.profile.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
-import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileFollow
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 
 class ProfileFollowingViewModel(
     private val profileRelationUsecase: ProfileRelationUsecase,
@@ -46,14 +44,7 @@ class ProfileFollowingViewModel(
                     )
                 }
                 result.onFailure { exception ->
-                    val errorMsg = when {
-                        exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                        exception is HttpException && exception.code() == 404 -> Constants.ErrorType.NOT_FOUND
-                        exception is HttpException && exception.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-                        exception is TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
-                        exception is TripPlannerException -> exception.message
-                        else -> Constants.ErrorType.SERVER_ERROR
-                    }
+                    val errorMsg = ErrorUtils.toErrorType(exception)
                     _userList.value = _userList.value.copy(isLoading = false, error = errorMsg)
                 }
             }

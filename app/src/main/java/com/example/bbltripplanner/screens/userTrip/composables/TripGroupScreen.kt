@@ -45,11 +45,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -79,7 +79,7 @@ fun TripGroupScreen(
     CommonLifecycleAwareLaunchedEffect(viewModel.viewEffect) { effect ->
         when (effect) {
             is TripGroupIntent.ViewEffect.ShowError -> {
-                val message = getMessage(context, effect.message) ?: effect.message
+                val message = ErrorUtils.getMessage(context, effect.message) ?: effect.message
                 ComposeViewUtils.showToast(context, message)
             }
             TripGroupIntent.ViewEffect.ShowSuccess -> {
@@ -102,13 +102,7 @@ fun TripGroupScreen(
             if (viewState.isLoading) {
                 ComposeViewUtils.FullScreenLoading()
             } else if (viewState.error != null) {
-                val errorStrings = when (viewState.error) {
-                    Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
-                    Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-                    Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
-                    Constants.ErrorType.NOT_AUTHORIZED -> Pair(stringResource(R.string.not_authorized_title), stringResource(R.string.not_authorized_subtitle))
-                    else -> Pair(stringResource(R.string.server_error), viewState.error ?: stringResource(R.string.server_error_subtitle))
-                }
+                val errorStrings = ErrorUtils.getErrorStrings(context, viewState.error)
                 ComposeViewUtils.FullScreenErrorComposable(
                     errorStrings = errorStrings,
                     isActionButton = true,
@@ -232,7 +226,7 @@ fun TripGroupScreen(
                 userList = viewState.inviteList,
                 isFollowersLoading = viewState.isFollowersLoading,
                 isError = viewState.isFollowersError,
-                errorMessage = getMessage(context, viewState.followersErrorMessage),
+                errorMessage = ErrorUtils.getMessage(context, viewState.followersErrorMessage),
                 addUser = { user ->
                     viewModel.processEvent(TripGroupIntent.ViewEvent.AddMember(user))
                     showInviteSheet = false

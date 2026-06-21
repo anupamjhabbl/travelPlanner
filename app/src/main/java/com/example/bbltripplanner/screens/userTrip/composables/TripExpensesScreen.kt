@@ -65,13 +65,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bbltripplanner.R
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.utils.DateUtils.toFormattedDateString
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -254,13 +254,7 @@ fun TripExpensesScreen(
                 ComposeViewUtils.FullScreenLoading()
             }
         } else if (tripExpenses.data == null || tripExpenses.error != null) {
-            val errorStrings = when (tripExpenses.error) {
-                Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
-                Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-                Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
-                Constants.ErrorType.NOT_AUTHORIZED -> Pair(stringResource(R.string.not_authorized_title), stringResource(R.string.not_authorized_subtitle))
-                else -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
-            }
+            val errorStrings = ErrorUtils.getErrorStrings(context, tripExpenses.error)
             ComposeViewUtils.FullScreenErrorComposable(errorStrings)
         } else {
             Column(

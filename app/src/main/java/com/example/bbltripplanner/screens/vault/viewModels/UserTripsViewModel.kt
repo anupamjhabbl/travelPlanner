@@ -1,9 +1,9 @@
 package com.example.bbltripplanner.screens.vault.viewModels
 
 import androidx.lifecycle.viewModelScope
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.vault.usecases.VaultUseCase
@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 
 class UserTripsViewModel(private val vaultUseCase: VaultUseCase) : BaseMVIVViewModel<UserTripsViewModelIntent.ViewEvent>() {
     private val _userTripsStatus = MutableStateFlow(RequestResponseStatus<List<TripData>>())
@@ -41,14 +40,7 @@ class UserTripsViewModel(private val vaultUseCase: VaultUseCase) : BaseMVIVViewM
                 )
             }
             result.onFailure { exception ->
-                val errorMsg = when {
-                    exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    exception is HttpException && exception.code() == 404 -> Constants.ErrorType.NOT_FOUND
-                    exception is HttpException && exception.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-                    exception is com.example.bbltripplanner.common.entity.TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
-                    exception is com.example.bbltripplanner.common.entity.TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
-                    else -> Constants.ErrorType.SERVER_ERROR
-                }
+                val errorMsg = ErrorUtils.toErrorType(exception)
                 _userTripsStatus.value = _userTripsStatus.value.copy(
                     isLoading = false,
                     error = errorMsg
@@ -73,14 +65,7 @@ class UserTripsViewModel(private val vaultUseCase: VaultUseCase) : BaseMVIVViewM
                 }
             }
             result.onFailure { exception ->
-                val errorMsg = when {
-                    exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    exception is HttpException && exception.code() == 404 -> Constants.ErrorType.NOT_FOUND
-                    exception is HttpException && exception.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-                    exception is com.example.bbltripplanner.common.entity.TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
-                    exception is com.example.bbltripplanner.common.entity.TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
-                    else -> Constants.ErrorType.SERVER_ERROR
-                }
+                val errorMsg = ErrorUtils.toErrorType(exception)
                 _deleteTripStatus.emit(UserTripsViewModelIntent.DeleteViewEffect.DeleteTripError(errorMsg))
             }
         }

@@ -178,7 +178,7 @@ class PostingInitViewModel(
             }
             tripDetailResult.onFailure {
                 _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
-                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowFullScreenError(it.message ?: ""))
+                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowFullScreenError(getFriendlyErrorMessage(it)))
             }
         }
     }

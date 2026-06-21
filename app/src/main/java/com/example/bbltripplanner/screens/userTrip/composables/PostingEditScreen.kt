@@ -55,6 +55,7 @@ import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.utils.DateUtils
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.screens.userTrip.entity.Location
 import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.PostingInitViewModel
@@ -183,7 +184,8 @@ fun PostingEditScreen(
     }
 
     if (showFullScreenError != null) {
-        ComposeViewUtils.FullScreenErrorComposable(Pair(stringResource(R.string.generic_error), showFullScreenError!!))
+        val errorStrings = ErrorUtils.getErrorStrings(context, showFullScreenError)
+        ComposeViewUtils.FullScreenErrorComposable(errorStrings = errorStrings)
         return
     }
 
