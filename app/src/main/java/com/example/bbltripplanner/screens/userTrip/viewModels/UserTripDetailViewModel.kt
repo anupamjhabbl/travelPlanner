@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
 import com.example.bbltripplanner.common.utils.SafeIOUtil
-import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
 import kotlinx.coroutines.channels.Channel
@@ -16,8 +15,7 @@ import kotlinx.coroutines.launch
 
 class UserTripDetailViewModel(
     val tripId: String?,
-    private val userTripDetailUseCase: UserTripDetailUseCase,
-    private val authPreferencesUseCase: AuthPreferencesUseCase
+    private val userTripDetailUseCase: UserTripDetailUseCase
 ): BaseMVIVViewModel<UserTripDetailIntent.ViewEvent>() {
     private val _userTripDetailFetchStatus: MutableStateFlow<RequestResponseStatus<TripData>> = MutableStateFlow(RequestResponseStatus())
     val userTripDetailFetchStatus: StateFlow<RequestResponseStatus<TripData>> = _userTripDetailFetchStatus.asStateFlow()
@@ -65,12 +63,16 @@ class UserTripDetailViewModel(
                 _userTripDetailFetchStatus.value =  userTripDetailFetchStatus.value.copy(isLoading = false, data = tripData)
             }
             tripDetailResult.onFailure {
-                _userTripDetailFetchStatus.value = userTripDetailFetchStatus.value.copy(isLoading = false, error = it.message)
+                val errorMsg = when {
+                    it is java.io.IOException -> "NETWORK_ERROR"
+                    it is com.example.bbltripplanner.common.entity.TripPlannerException && it.errorCode == 404 -> "NOT_FOUND"
+                    it is com.example.bbltripplanner.common.entity.TripPlannerException && it.errorCode in 500..599 -> "SERVER_ERROR"
+                    it is com.example.bbltripplanner.common.entity.TripPlannerException -> it.message
+                    else -> "SERVER_ERROR"
+                }
+                _userTripDetailFetchStatus.value = userTripDetailFetchStatus.value.copy(isLoading = false, error = errorMsg)
             }
         }
     }
 
-    fun getUserId(): String? {
-        return authPreferencesUseCase.getUserIdLogged()
-    }
 }

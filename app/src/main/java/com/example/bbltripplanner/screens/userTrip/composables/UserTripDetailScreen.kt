@@ -199,8 +199,13 @@ fun UserTripDetailScreen(
 
 @Composable
 private fun FullScreenError(error: String?) {
-    val errorHeading = stringResource(R.string.generic_error)
-    ComposeViewUtils.FullScreenErrorComposable(Pair(errorHeading, error ?: ""))
+    val errorStrings = when (error) {
+        "NETWORK_ERROR" -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
+        "SERVER_ERROR" -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
+        "NOT_FOUND" -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
+        else -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
+    }
+    ComposeViewUtils.FullScreenErrorComposable(errorStrings)
 }
 
 @Composable

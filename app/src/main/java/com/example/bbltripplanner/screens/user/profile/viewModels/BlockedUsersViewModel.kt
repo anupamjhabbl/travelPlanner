@@ -9,8 +9,11 @@ import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.profile.clients.UserClient
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -19,6 +22,9 @@ class BlockedUsersViewModel(
 ): ViewModel() {
     private val _blockedUsers: MutableStateFlow<RequestResponseStatus<List<User>>> = MutableStateFlow(RequestResponseStatus(isLoading = true))
     val blockedUsers: StateFlow<RequestResponseStatus<List<User>>> = _blockedUsers.asStateFlow()
+
+    private val _unblockErrorFlow = MutableSharedFlow<String>()
+    val unblockErrorFlow: SharedFlow<String> = _unblockErrorFlow.asSharedFlow()
 
     init {
         fetchBlockedUsers()
@@ -52,6 +58,10 @@ class BlockedUsersViewModel(
                 val currentList = _blockedUsers.value.data?.toMutableList()
                 currentList?.removeAll { it.id == userId }
                 _blockedUsers.value = _blockedUsers.value.copy(data = currentList)
+            }
+            result.onFailure { exception ->
+                val errorMessage = if (exception is TripPlannerException) exception.message else Constants.DEFAULT_ERROR
+                _unblockErrorFlow.emit(errorMessage ?: Constants.DEFAULT_ERROR)
             }
         }
     }

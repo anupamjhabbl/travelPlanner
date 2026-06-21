@@ -16,10 +16,12 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,15 +35,24 @@ import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.profile.viewModels.BlockedUsersViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BlockedUsersScreen() {
     val customColors = LocalCustomColors.current
+    val context = LocalContext.current
     val viewModel: BlockedUsersViewModel = koinViewModel()
     val uiState by viewModel.blockedUsers.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val blockError = stringResource(R.string.block_failure)
+
+    LaunchedEffect(Unit) {
+        viewModel.unblockErrorFlow.collectLatest {
+            ComposeViewUtils.showToast(context, blockError)
+        }
+    }
 
     Column(
         modifier = Modifier

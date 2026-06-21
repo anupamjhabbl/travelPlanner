@@ -78,7 +78,6 @@ fun ItineraryDetailView(
     val activitiesStatus by viewModel.activitiesStatus.collectAsState()
     val actionStatus by viewModel.actionStatus.collectAsState()
     val fillTheFieldsMessage = stringResource(R.string.fill_the_fields)
-    val errorMessage = stringResource(R.string.generic_error)
     val endTimeErrorMessage = stringResource(R.string.end_time_must_be_after_start_time)
 
     var showActivityDialog by remember { mutableStateOf(false) }
@@ -111,12 +110,13 @@ fun ItineraryDetailView(
                 CircularProgressIndicator(color = customColors.secondaryBackground)
             }
         } else if (activitiesStatus.error != null) {
-            ComposeViewUtils.FullScreenErrorComposable(
-                Pair(
-                    errorMessage,
-                    activitiesStatus.error ?: ""
-                )
-            )
+            val errorStrings = when (activitiesStatus.error) {
+                "NETWORK_ERROR" -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
+                "SERVER_ERROR" -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
+                "NOT_FOUND" -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
+                else -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
+            }
+            ComposeViewUtils.FullScreenErrorComposable(errorStrings)
         } else {
             Column(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(

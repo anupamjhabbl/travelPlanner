@@ -3,6 +3,7 @@ package com.example.bbltripplanner.screens.userTrip.viewModels
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
+import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.Itinerary
 import com.example.bbltripplanner.screens.userTrip.usecases.ItineraryUseCase
@@ -42,7 +43,14 @@ class ItineraryViewModel(
                 _itineraryStatus.value = RequestResponseStatus(data = itinerary)
             }
             result.onFailure { error ->
-                _itineraryStatus.value = RequestResponseStatus(error = error.message)
+                val errorMsg = when {
+                    error is java.io.IOException -> "NETWORK_ERROR"
+                    error is TripPlannerException && error.errorCode == 404 -> "NOT_FOUND"
+                    error is TripPlannerException && error.errorCode in 500..599 -> "SERVER_ERROR"
+                    error is TripPlannerException -> error.message
+                    else -> "SERVER_ERROR"
+                }
+                _itineraryStatus.value = RequestResponseStatus(error = errorMsg)
             }
         }
     }
@@ -57,7 +65,14 @@ class ItineraryViewModel(
                 _itineraryStatus.value = RequestResponseStatus(data = itinerary)
             }
             result.onFailure { error ->
-                _itineraryStatus.value = RequestResponseStatus(error = error.message)
+                val errorMsg = when {
+                    error is java.io.IOException -> "NETWORK_ERROR"
+                    error is TripPlannerException && error.errorCode == 404 -> "NOT_FOUND"
+                    error is TripPlannerException && error.errorCode in 500..599 -> "SERVER_ERROR"
+                    error is TripPlannerException -> error.message
+                    else -> "SERVER_ERROR"
+                }
+                _itineraryStatus.value = RequestResponseStatus(error = errorMsg)
             }
         }
     }

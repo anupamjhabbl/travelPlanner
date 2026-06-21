@@ -118,6 +118,7 @@ fun ItineraryMapView(
     
     var addSpotsDialogVisibility by remember { mutableStateOf(false) }
     var showAddSpotForm by remember { mutableStateOf(false) }
+    val mapDirectionFailureMsg = stringResource(R.string.map_directions_failure)
     
     var placeName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -342,10 +343,14 @@ fun ItineraryMapView(
                         if (routeGeometry != null) {
                             routeSourceState.data = GeoJSONData(LineString.fromPolyline(routeGeometry, 6))
                         }
+                    } else {
+                        ComposeViewUtils.showToast(context, mapDirectionFailureMsg)
                     }
                 }
 
-                override fun onFailure(call: Call<DirectionsResponse>, t: Throwable) {}
+                override fun onFailure(call: Call<DirectionsResponse>, t: Throwable) {
+                    ComposeViewUtils.showToast(context, mapDirectionFailureMsg)
+                }
             })
         }
     }

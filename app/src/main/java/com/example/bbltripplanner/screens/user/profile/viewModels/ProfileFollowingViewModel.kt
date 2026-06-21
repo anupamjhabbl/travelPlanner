@@ -2,7 +2,6 @@ package com.example.bbltripplanner.screens.user.profile.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.entity.User
@@ -45,11 +44,14 @@ class ProfileFollowingViewModel(
                     )
                 }
                 result.onFailure { exception ->
-                    if (exception is TripPlannerException) {
-                        _userList.value = _userList.value.copy(isLoading = false, error = exception.message)
-                    } else {
-                        _userList.value = _userList.value.copy(isLoading = false, error = Constants.DEFAULT_ERROR)
+                    val errorMsg = when {
+                        exception is java.io.IOException -> "NETWORK_ERROR"
+                        exception is TripPlannerException && exception.errorCode == 404 -> "NOT_FOUND"
+                        exception is TripPlannerException && exception.errorCode in 500..599 -> "SERVER_ERROR"
+                        exception is TripPlannerException -> exception.message
+                        else -> "SERVER_ERROR"
                     }
+                    _userList.value = _userList.value.copy(isLoading = false, error = errorMsg)
                 }
             }
         }

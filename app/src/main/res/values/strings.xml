@@ -316,4 +316,5 @@
     <string name="confirm">Confirm</string>
     <string name="trip_deleted_success">Trip deleted successfully</string>
     <string name="delete_trip_description">Your trip will be permanently deleted.</string>
+    <string name="map_directions_failure">Failed to load directions. Please try again.</string>
 </resources>

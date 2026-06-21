@@ -76,8 +76,8 @@ fun ProfileSocialScreen(
     val followersState by followersViewModel.userList.collectAsStateWithLifecycle()
     val followingState by followingViewModel.userList.collectAsStateWithLifecycle()
 
-    val followerCount = followersState.data?.size
-    val followingCount = followingState.data?.size
+    val followerCount = followersState.data?.size ?: 0
+    val followingCount = followingState.data?.size ?: 0
 
     var searchQuery by remember { mutableStateOf("") }
 

@@ -130,7 +130,7 @@ val appModule = module {
     single<UserTripDetailRepository> { UseTripDetailNetwork(get()) }
     single<UserTripDetailClient> { Network.createWithAuth(UserTripDetailClient::class.java, get(), get(), androidContext()) }
     viewModel { (tripId: String?) -> PostingInitViewModel(tripId, get(), get(), get(), get(), get()) }
-    viewModel { (tripId: String?) -> UserTripDetailViewModel(tripId, get(), get()) }
+    viewModel { (tripId: String?) -> UserTripDetailViewModel(tripId, get()) }
     viewModel { (tripId: String) -> TripGroupViewModel(tripId, get(), get(), get()) }
 
     // Itinerary

@@ -47,7 +47,14 @@ class ItineraryDetailViewModel(
                 _activitiesStatus.value = RequestResponseStatus(data = activities)
             }
             result.onFailure { error ->
-                _activitiesStatus.value = RequestResponseStatus(error = error.message)
+                val errorMsg = when {
+                    error is java.io.IOException -> "NETWORK_ERROR"
+                    error is TripPlannerException && error.errorCode == 404 -> "NOT_FOUND"
+                    error is TripPlannerException && error.errorCode in 500..599 -> "SERVER_ERROR"
+                    error is TripPlannerException -> error.message
+                    else -> "SERVER_ERROR"
+                }
+                _activitiesStatus.value = RequestResponseStatus(error = errorMsg)
             }
         }
     }

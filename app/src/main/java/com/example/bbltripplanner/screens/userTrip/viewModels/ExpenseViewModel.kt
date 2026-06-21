@@ -68,11 +68,14 @@ class ExpenseViewModel(
             }.onSuccess {
                 _expenseStatus.value = RequestResponseStatus(data = it?.toTripExpenseDetail())
             }.onFailure {
-                if (it is TripPlannerException) {
-                    _expenseStatus.value = RequestResponseStatus(error = it.message)
-                } else {
-                    _expenseStatus.value = RequestResponseStatus(error = Constants.DEFAULT_ERROR)
+                val errorMsg = when {
+                    it is java.io.IOException -> "NETWORK_ERROR"
+                    it is TripPlannerException && it.errorCode == 404 -> "NOT_FOUND"
+                    it is TripPlannerException && it.errorCode in 500..599 -> "SERVER_ERROR"
+                    it is TripPlannerException -> it.message
+                    else -> "SERVER_ERROR"
                 }
+                _expenseStatus.value = RequestResponseStatus(error = errorMsg)
             }
         }
     }
@@ -85,11 +88,14 @@ class ExpenseViewModel(
             }.onSuccess {
                 _expenseStatus.value = RequestResponseStatus(data = it?.toTripExpenseDetail())
             }.onFailure {
-                if (it is TripPlannerException) {
-                    _expenseStatus.value = RequestResponseStatus(error = it.message)
-                } else {
-                    _expenseStatus.value = RequestResponseStatus(error = Constants.DEFAULT_ERROR)
+                val errorMsg = when {
+                    it is java.io.IOException -> "NETWORK_ERROR"
+                    it is TripPlannerException && it.errorCode == 404 -> "NOT_FOUND"
+                    it is TripPlannerException && it.errorCode in 500..599 -> "SERVER_ERROR"
+                    it is TripPlannerException -> it.message
+                    else -> "SERVER_ERROR"
                 }
+                _expenseStatus.value = RequestResponseStatus(error = errorMsg)
             }
         }
     }
@@ -190,11 +196,14 @@ class ExpenseViewModel(
             }.onSuccess {
                 _tripData.value = RequestResponseStatus(data = it)
             }.onFailure {
-                if (it is TripPlannerException) {
-                    _tripData.value = RequestResponseStatus(error = it.message)
-                } else {
-                    _tripData.value = RequestResponseStatus(error = Constants.DEFAULT_ERROR)
+                val errorMsg = when {
+                    it is java.io.IOException -> "NETWORK_ERROR"
+                    it is TripPlannerException && it.errorCode == 404 -> "NOT_FOUND"
+                    it is TripPlannerException && it.errorCode in 500..599 -> "SERVER_ERROR"
+                    it is TripPlannerException -> it.message
+                    else -> "SERVER_ERROR"
                 }
+                _tripData.value = RequestResponseStatus(error = errorMsg)
             }
         }
     }

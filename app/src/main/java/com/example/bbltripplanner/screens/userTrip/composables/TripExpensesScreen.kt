@@ -90,7 +90,6 @@ fun TripExpensesScreen(
     val context = LocalContext.current
     val message = stringResource(R.string.min_budget_message)
     val tripExpenses by viewModel.expenseStatus.collectAsStateWithLifecycle()
-    val errorMessage = stringResource(R.string.generic_error)
     var tripInitializationPopup by remember {
         mutableStateOf(false)
     }
@@ -254,12 +253,13 @@ fun TripExpensesScreen(
                 ComposeViewUtils.FullScreenLoading()
             }
         } else if (tripExpenses.data == null || tripExpenses.error != null) {
-            ComposeViewUtils.FullScreenErrorComposable(
-                Pair(
-                    errorMessage,
-                    tripExpenses.error ?: ""
-                )
-            )
+            val errorStrings = when (tripExpenses.error) {
+                "NETWORK_ERROR" -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
+                "SERVER_ERROR" -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
+                "NOT_FOUND" -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
+                else -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
+            }
+            ComposeViewUtils.FullScreenErrorComposable(errorStrings)
         } else {
             Column(
                 modifier = Modifier.fillMaxSize()

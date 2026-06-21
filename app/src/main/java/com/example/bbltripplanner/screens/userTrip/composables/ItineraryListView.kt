@@ -66,7 +66,6 @@ fun ItineraryListView(
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
     val itineraryStatus by viewModel.itineraryStatus.collectAsStateWithLifecycle()
-    val errorMessage = stringResource(R.string.generic_error)
     var addItineraryDialogVisibility by remember { mutableStateOf(false) }
 
     LaunchedEffect(itineraryStatus) {
@@ -131,7 +130,13 @@ fun ItineraryListView(
                 CircularProgressIndicator(color = customColors.secondaryBackground)
             }
         } else if (itineraryStatus.error != null) {
-            ComposeViewUtils.FullScreenErrorComposable(Pair(errorMessage, itineraryStatus.error ?: ""))
+            val errorStrings = when (itineraryStatus.error) {
+                "NETWORK_ERROR" -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
+                "SERVER_ERROR" -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
+                "NOT_FOUND" -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
+                else -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
+            }
+            ComposeViewUtils.FullScreenErrorComposable(errorStrings)
         } else {
             val itinerary = itineraryStatus.data
             val itineraryDays = itinerary?.itineraryList ?: emptyList()
