@@ -19,9 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
@@ -277,9 +279,22 @@ fun HomeNavigationComposable(
             PostingEditScreen(tripId)
         }
 
-        composable(route = AppNavigationScreen.TripGroupScreen.route) { navBackStackEntry ->
+        composable(
+            route = AppNavigationScreen.TripGroupScreen.route,
+            arguments = listOf(
+                navArgument(Constants.NavigationArgs.TRIP_ID) {
+                    type = NavType.StringType
+                },
+                navArgument(Constants.NavigationArgs.IS_ADMIN) {
+                    type = NavType.BoolType
+                }
+            )
+        ) { navBackStackEntry ->
             val tripId = navBackStackEntry.arguments?.getString(Constants.NavigationArgs.TRIP_ID)
-            tripId?.let { TripGroupScreen(it) }
+            val isAdmin = navBackStackEntry.arguments?.getBoolean(Constants.NavigationArgs.IS_ADMIN) ?: false
+            tripId?.let {
+                TripGroupScreen(it, isAdmin)
+            }
         }
 
         navigation(

@@ -80,8 +80,11 @@ sealed class AppNavigationScreen(
     data object ItineraryDetailView: AppNavigationScreen(route = "${Constants.NavigationScreen.ITINERARY_DETAIL_VIEW}/{${Constants.NavigationArgs.ITINERARY_PLACE_ID}}", isFullScreen = true) {
         fun createRoute(placeId: String) = "${Constants.NavigationScreen.ITINERARY_DETAIL_VIEW}/$placeId"
     }
-    data object TripGroupScreen: AppNavigationScreen(route = "${Constants.NavigationScreen.TRIP_GROUP_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}") {
-        fun createRoute(tripId: String) = "${Constants.NavigationScreen.TRIP_GROUP_SCREEN}/$tripId"
+    data object TripGroupScreen : AppNavigationScreen(
+        route = "${Constants.NavigationScreen.TRIP_GROUP_SCREEN}/{${Constants.NavigationArgs.TRIP_ID}}/{${Constants.NavigationArgs.IS_ADMIN}}"
+    ) {
+        fun createRoute(tripId: String, isAdmin: Boolean) =
+            "${Constants.NavigationScreen.TRIP_GROUP_SCREEN}/$tripId/$isAdmin"
     }
 
     // Trip Gallery Screens

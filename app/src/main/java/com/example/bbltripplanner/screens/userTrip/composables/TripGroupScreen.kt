@@ -63,7 +63,10 @@ import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TripGroupScreen(tripId: String) {
+fun TripGroupScreen(
+    tripId: String,
+    isAdmin: Boolean
+) {
     val viewModel: TripGroupViewModel = koinViewModel(parameters = { parametersOf(tripId) })
     val viewState by viewModel.viewState.collectAsState()
     val context = LocalContext.current
@@ -161,40 +164,41 @@ fun TripGroupScreen(tripId: String) {
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(88.dp)) // Avoid overlap with FAB
+                        Spacer(modifier = Modifier.height(88.dp))
                     }
                 }
 
-                // Redesigned FAB - Pill shaped extended FAB
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(24.dp)
-                ) {
-                    Row(
+                if (isAdmin) {
+                    Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(30.dp))
-                            .background(LocalCustomColors.current.secondaryBackground)
-                            .clickable {
-                                viewModel.processEvent(TripGroupIntent.ViewEvent.GetInviteList)
-                                showInviteSheet = true
-                            }
-                            .padding(horizontal = 20.dp, vertical = 14.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .align(Alignment.BottomEnd)
+                            .padding(24.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Invite Tripmates",
-                            tint = LocalCustomColors.current.primaryBackground,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        ComposeTextView.TextView(
-                            text = stringResource(R.string.invite_tripmates),
-                            textColor = LocalCustomColors.current.primaryBackground,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(30.dp))
+                                .background(LocalCustomColors.current.secondaryBackground)
+                                .clickable {
+                                    viewModel.processEvent(TripGroupIntent.ViewEvent.GetInviteList)
+                                    showInviteSheet = true
+                                }
+                                .padding(horizontal = 20.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Invite Tripmates",
+                                tint = LocalCustomColors.current.primaryBackground,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            ComposeTextView.TextView(
+                                text = stringResource(R.string.invite_tripmates),
+                                textColor = LocalCustomColors.current.primaryBackground,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        }
                     }
                 }
             }

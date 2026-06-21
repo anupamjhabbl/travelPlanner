@@ -154,7 +154,7 @@ class PostingInitViewModel(
             val tripMembersResult = tripMembersDeferred.await()
 
             tripDetailResult.onSuccess { tripData ->
-                val members = tripMembersResult.getOrNull()?.map { it.user } ?: tripData.invitedMembers
+                val members = (tripMembersResult.getOrNull()?.map { it.user } ?: tripData.invitedMembers).filter { it.id != authPreferencesUseCase.getUserIdLogged() }
                 _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
                 _tripFormData.value = tripData.copy(invitedMembers = members)
 

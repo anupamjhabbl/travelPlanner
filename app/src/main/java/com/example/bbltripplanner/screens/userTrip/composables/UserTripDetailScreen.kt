@@ -580,7 +580,7 @@ private suspend fun takeAction(
 
             Constants.TripDetailScreen.GROUP -> {
                 navigateToIfAllowed(
-                    AppNavigationScreen.TripGroupScreen.createRoute(trip.tripId),
+                    AppNavigationScreen.TripGroupScreen.createRoute(trip.tripId, trip.role == UserRole.ADMIN),
                     true,
                     acceptToSeePrompt
                 )

@@ -98,6 +98,7 @@ object Constants {
         const val ITINERARY_PLACE_ID = "itinerary_place_id"
         const val ITINERARY_ID = "itinerary_id"
         const val PHOTO_ID = "photo_id"
+        const val IS_ADMIN = "is_admin"
     }
 
     object Origin {
