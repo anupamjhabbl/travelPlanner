@@ -16,6 +16,7 @@ import com.example.bbltripplanner.screens.userTrip.usecases.LocationSearchUseCas
 import com.example.bbltripplanner.screens.userTrip.usecases.PostingUseCase
 import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -29,7 +30,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(FlowPreview::class)
 class PostingInitViewModel(
-    private val tripId: String?,
+    tripId: String?,
     private val postingUseCase: PostingUseCase,
     private val locationSearchUseCase: LocationSearchUseCase,
     private val profileRelationUseCase: ProfileRelationUsecase,
@@ -138,12 +139,31 @@ class PostingInitViewModel(
     private fun getTripDetails(tripId: String) {
         viewModelScope.launch {
             _viewEffects.emit(PostingInitIntent.ViewEffect.ShowLoading)
-            val tripDetailResult = SafeIOUtil.safeCall {
-                userTripDetailUseCase.getUserTripDetail(tripId)
+            val tripDetailDeferred = async {
+                SafeIOUtil.safeCall {
+                    userTripDetailUseCase.getUserTripDetail(tripId)
+                }
             }
+            val tripMembersDeferred = async {
+                SafeIOUtil.safeCall {
+                    userTripDetailUseCase.getTripMembers(tripId)
+                }
+            }
+
+            val tripDetailResult = tripDetailDeferred.await()
+            val tripMembersResult = tripMembersDeferred.await()
+
             tripDetailResult.onSuccess { tripData ->
+                val members = tripMembersResult.getOrNull()?.map { it.user } ?: tripData.invitedMembers
                 _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
-                _tripFormData.value = tripData
+                _tripFormData.value = tripData.copy(invitedMembers = members)
+
+                _inviteList.value?.let { currentInviteList ->
+                    val memberIds = members.map { it.id }.toSet()
+                    _inviteList.value = currentInviteList.copy(
+                        followers = currentInviteList.followers.filter { it.id !in memberIds }
+                    )
+                }
                 _viewEffects.emit(PostingInitIntent.ViewEffect.ShowSuccess)
             }
             tripDetailResult.onFailure {
@@ -184,6 +204,10 @@ class PostingInitViewModel(
 
     private fun getInviteList() {
         if (_inviteList.value != null) {
+            val memberIds = _tripFormData.value.invitedMembers.map { it.id }.toSet()
+            _inviteList.value = _inviteList.value?.copy(
+                followers = _inviteList.value?.followers?.filter { it.id !in memberIds } ?: emptyList()
+            )
             return
         }
         authPreferencesUseCase.getUserIdLogged()?.let { userId ->
@@ -192,9 +216,11 @@ class PostingInitViewModel(
                 val followersList = SafeIOUtil.safeCall {
                     profileRelationUseCase.getFollowers(userId)
                 }
-                followersList.onSuccess { followers ->
+                followersList.onSuccess { followersData ->
                     _viewEffects.emit(PostingInitIntent.ViewEffect.HideFollowersLoading)
-                    _inviteList.value = followers
+                    val memberIds = _tripFormData.value.invitedMembers.map { it.id }.toSet()
+                    val filteredFollowers = followersData?.followers?.filter { it.id !in memberIds } ?: emptyList()
+                    _inviteList.value = ProfileFollowersData(filteredFollowers)
                 }
                 followersList.onFailure {
                     _viewEffects.emit(PostingInitIntent.ViewEffect.HideFollowersLoading)
