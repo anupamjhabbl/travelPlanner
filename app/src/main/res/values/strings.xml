@@ -323,4 +323,6 @@
     <string name="no_followers_left">You have no friend left to add.</string>
     <string name="no_matching_friend">There is no friend with this name.</string>
     <string name="something_went_wrong">Oops! Something went wrong. We are working on it.</string>
+    <string name="not_authorized_subtitle">You don\'t have permission for accessing this feature. Kindly ask the admin of the trip.</string>
+    <string name="not_authorized_title">Permission Required</string>
 </resources>

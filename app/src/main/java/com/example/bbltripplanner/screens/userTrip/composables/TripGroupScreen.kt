@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
@@ -78,7 +79,8 @@ fun TripGroupScreen(
     CommonLifecycleAwareLaunchedEffect(viewModel.viewEffect) { effect ->
         when (effect) {
             is TripGroupIntent.ViewEffect.ShowError -> {
-                ComposeViewUtils.showToast(context, effect.message)
+                val message = getMessage(context, effect.message) ?: effect.message
+                ComposeViewUtils.showToast(context, message)
             }
             TripGroupIntent.ViewEffect.ShowSuccess -> {
                 ComposeViewUtils.showToast(context, successMessage)
@@ -99,6 +101,21 @@ fun TripGroupScreen(
         Box(modifier = Modifier.weight(1f)) {
             if (viewState.isLoading) {
                 ComposeViewUtils.FullScreenLoading()
+            } else if (viewState.error != null) {
+                val errorStrings = when (viewState.error) {
+                    Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
+                    Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
+                    Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
+                    Constants.ErrorType.NOT_AUTHORIZED -> Pair(stringResource(R.string.not_authorized_title), stringResource(R.string.not_authorized_subtitle))
+                    else -> Pair(stringResource(R.string.server_error), viewState.error ?: stringResource(R.string.server_error_subtitle))
+                }
+                ComposeViewUtils.FullScreenErrorComposable(
+                    errorStrings = errorStrings,
+                    isActionButton = true,
+                    onActionButtonClick = {
+                        viewModel.processEvent(TripGroupIntent.ViewEvent.GetTripMembers)
+                    }
+                )
             } else if (viewState.tripMembers.isEmpty()) {
                 TripGroupEmptyState(
                     onInviteClick = {
@@ -214,6 +231,8 @@ fun TripGroupScreen(
             InviteBottomSheet(
                 userList = viewState.inviteList,
                 isFollowersLoading = viewState.isFollowersLoading,
+                isError = viewState.isFollowersError,
+                errorMessage = getMessage(context, viewState.followersErrorMessage),
                 addUser = { user ->
                     viewModel.processEvent(TripGroupIntent.ViewEvent.AddMember(user))
                     showInviteSheet = false

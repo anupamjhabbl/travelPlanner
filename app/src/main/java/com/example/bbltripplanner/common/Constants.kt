@@ -126,6 +126,7 @@ object Constants {
         const val NOT_FOUND = "NOT_FOUND"
         const val SERVER_ERROR = "SERVER_ERROR"
         const val NO_LOCATION_AVAILABLE = "NO_LOCATION_AVAILABLE"
+        const val NOT_AUTHORIZED = "NOT_AUTHORIZED"
     }
 
     const val CONTACT_EMAIL = "anupamimpbbl@gmail.com"

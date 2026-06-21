@@ -1,7 +1,9 @@
 package com.example.bbltripplanner.screens.userTrip.viewModels
 
 import androidx.lifecycle.viewModelScope
+import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
+import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class TripGroupViewModel(
     private val tripId: String,
@@ -47,16 +50,23 @@ class TripGroupViewModel(
 
     private fun getTripMembers() {
         viewModelScope.launch {
-            _viewState.update { it.copy(isLoading = true) }
+            _viewState.update { it.copy(isLoading = true, error = null) }
             val result = SafeIOUtil.safeCall {
                 userTripDetailUseCase.getTripMembers(tripId)
             }
             result.onSuccess { members ->
-                _viewState.update { it.copy(isLoading = false, tripMembers = members) }
+                _viewState.update { it.copy(isLoading = false, tripMembers = members, error = null) }
             }
-            result.onFailure { error ->
-                _viewState.update { it.copy(isLoading = false, error = error.message) }
-                _viewEffect.emit(TripGroupIntent.ViewEffect.ShowError(error.message ?: "Failed to fetch members"))
+            result.onFailure { exception ->
+                val errorMsg = when {
+                    exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    exception is HttpException && exception.code() == 404 -> Constants.ErrorType.NOT_FOUND
+                    exception is HttpException && exception.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
+                    exception is TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
+                    exception is TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
+                    else -> Constants.ErrorType.SERVER_ERROR
+                }
+                _viewState.update { it.copy(isLoading = false, error = errorMsg) }
             }
         }
     }
@@ -67,14 +77,14 @@ class TripGroupViewModel(
         cachedFollowers?.let { followers ->
             val existingUserIds = _viewState.value.tripMembers.map { it.user.id }.toSet()
             val inviteList = followers.filter { it.id !in existingUserIds }
-            _viewState.update { it.copy(inviteList = inviteList) }
+            _viewState.update { it.copy(inviteList = inviteList, isFollowersError = false, followersErrorMessage = null) }
             return
         }
 
         if (_viewState.value.isFollowersLoading) return
 
         viewModelScope.launch {
-            _viewState.update { it.copy(isFollowersLoading = true) }
+            _viewState.update { it.copy(isFollowersLoading = true, isFollowersError = false, followersErrorMessage = null) }
             val result = SafeIOUtil.safeCall {
                 profileRelationUseCase.getFollowers(currentUserId)
             }
@@ -83,10 +93,31 @@ class TripGroupViewModel(
                 cachedFollowers = followers
                 val existingUserIds = _viewState.value.tripMembers.map { it.user.id }.toSet()
                 val inviteList = followers.filter { it.id !in existingUserIds }
-                _viewState.update { it.copy(isFollowersLoading = false, inviteList = inviteList) }
+                _viewState.update { 
+                    it.copy(
+                        isFollowersLoading = false, 
+                        inviteList = inviteList, 
+                        isFollowersError = false, 
+                        followersErrorMessage = null
+                    ) 
+                }
             }
-            result.onFailure {
-                _viewState.update { it.copy(isFollowersLoading = false) }
+            result.onFailure { exception ->
+                val errorMsg = when {
+                    exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    exception is HttpException && exception.code() == 404 -> Constants.ErrorType.NOT_FOUND
+                    exception is HttpException && exception.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
+                    exception is TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
+                    exception is TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
+                    else -> Constants.ErrorType.SERVER_ERROR
+                }
+                _viewState.update { 
+                    it.copy(
+                        isFollowersLoading = false, 
+                        isFollowersError = true, 
+                        followersErrorMessage = errorMsg
+                    ) 
+                }
             }
         }
     }
@@ -106,9 +137,17 @@ class TripGroupViewModel(
                 }
                 _viewEffect.emit(TripGroupIntent.ViewEffect.ShowSuccess)
             }
-            result.onFailure {
+            result.onFailure { exception ->
                 _viewState.update { it.copy(isLoading = false) }
-                _viewEffect.emit(TripGroupIntent.ViewEffect.ShowError(it.message ?: "Failed to add member"))
+                val errorMsg = when {
+                    exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+                    exception is HttpException && exception.code() == 404 -> Constants.ErrorType.NOT_FOUND
+                    exception is HttpException && exception.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
+                    exception is TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
+                    exception is TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
+                    else -> Constants.ErrorType.SERVER_ERROR
+                }
+                _viewEffect.emit(TripGroupIntent.ViewEffect.ShowError(errorMsg))
             }
         }
     }

@@ -502,6 +502,8 @@ fun getMessage(
     return when (errorMessage) {
         Constants.ErrorType.NETWORK_ERROR -> context.getString(R.string.no_internet_connection)
         Constants.ErrorType.SERVER_ERROR -> context.getString(R.string.something_went_wrong)
+        Constants.ErrorType.NOT_FOUND -> context.getString(R.string.nothing_to_show)
+        Constants.ErrorType.NOT_AUTHORIZED -> context.getString(R.string.not_authorized_subtitle)
         Constants.ErrorType.NO_LOCATION_AVAILABLE -> context.getString(R.string.no_location_availaible)
         else -> errorMessage
     }

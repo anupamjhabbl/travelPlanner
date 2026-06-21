@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class UserTripDetailViewModel(
     val tripId: String?,
@@ -66,7 +67,8 @@ class UserTripDetailViewModel(
             tripDetailResult.onFailure {
                 val errorMsg = when {
                     it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    it is com.example.bbltripplanner.common.entity.TripPlannerException && it.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is HttpException && it.code() == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is HttpException && it.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
                     it is com.example.bbltripplanner.common.entity.TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     it is com.example.bbltripplanner.common.entity.TripPlannerException -> it.message ?: Constants.ErrorType.SERVER_ERROR
                     else -> Constants.ErrorType.SERVER_ERROR

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class ItineraryViewModel(
     tripId: String?,
@@ -46,7 +47,8 @@ class ItineraryViewModel(
             result.onFailure { error ->
                 val errorMsg = when {
                     error is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    error is TripPlannerException && error.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    error is HttpException && error.code() == 404 -> Constants.ErrorType.NOT_FOUND
+                    error is HttpException && error.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
                     error is TripPlannerException && error.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     error is TripPlannerException -> error.message
                     else -> Constants.ErrorType.SERVER_ERROR
@@ -68,7 +70,8 @@ class ItineraryViewModel(
             result.onFailure { error ->
                 val errorMsg = when {
                     error is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    error is TripPlannerException && error.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    error is HttpException && error.code() == 404 -> Constants.ErrorType.NOT_FOUND
+                    error is HttpException && error.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
                     error is TripPlannerException && error.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     error is TripPlannerException -> error.message
                     else -> Constants.ErrorType.SERVER_ERROR

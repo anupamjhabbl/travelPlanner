@@ -79,6 +79,7 @@ fun UserTripsScreen() {
     val serverErrorMsg = stringResource(R.string.server_error)
     val networkErrorMsg = stringResource(R.string.no_internet_connection)
     val nothingToShow = stringResource(R.string.nothing_to_show)
+    val notAuthorizedMessage = stringResource(R.string.not_authorized_subtitle)
 
 
     var tripToDelete by remember { mutableStateOf<TripData?>(null) }
@@ -92,6 +93,7 @@ fun UserTripsScreen() {
                     Constants.ErrorType.NETWORK_ERROR -> networkErrorMsg
                     Constants.ErrorType.SERVER_ERROR -> serverErrorMsg
                     Constants.ErrorType.NOT_FOUND -> nothingToShow
+                    Constants.ErrorType.NOT_AUTHORIZED -> notAuthorizedMessage
                     else -> effect.message
                 }
                 ComposeViewUtils.showToast(context, errorText)
@@ -150,6 +152,7 @@ fun UserTripsScreen() {
                             Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
                             Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
                             Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
+                            Constants.ErrorType.NOT_AUTHORIZED -> Pair(stringResource(R.string.not_authorized_title), stringResource(R.string.not_authorized_subtitle))
                             else -> Pair(stringResource(R.string.server_error), tripsStatus.error ?: stringResource(R.string.server_error_subtitle))
                         }
                         ComposeViewUtils.FullScreenErrorComposable(

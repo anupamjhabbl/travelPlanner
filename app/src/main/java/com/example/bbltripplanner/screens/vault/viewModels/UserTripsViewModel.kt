@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class UserTripsViewModel(private val vaultUseCase: VaultUseCase) : BaseMVIVViewModel<UserTripsViewModelIntent.ViewEvent>() {
     private val _userTripsStatus = MutableStateFlow(RequestResponseStatus<List<TripData>>())
@@ -42,7 +43,8 @@ class UserTripsViewModel(private val vaultUseCase: VaultUseCase) : BaseMVIVViewM
             result.onFailure { exception ->
                 val errorMsg = when {
                     exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    exception is com.example.bbltripplanner.common.entity.TripPlannerException && exception.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    exception is HttpException && exception.code() == 404 -> Constants.ErrorType.NOT_FOUND
+                    exception is HttpException && exception.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
                     exception is com.example.bbltripplanner.common.entity.TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     exception is com.example.bbltripplanner.common.entity.TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
                     else -> Constants.ErrorType.SERVER_ERROR
@@ -73,7 +75,8 @@ class UserTripsViewModel(private val vaultUseCase: VaultUseCase) : BaseMVIVViewM
             result.onFailure { exception ->
                 val errorMsg = when {
                     exception is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    exception is com.example.bbltripplanner.common.entity.TripPlannerException && exception.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    exception is HttpException && exception.code() == 404 -> Constants.ErrorType.NOT_FOUND
+                    exception is HttpException && exception.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
                     exception is com.example.bbltripplanner.common.entity.TripPlannerException && exception.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     exception is com.example.bbltripplanner.common.entity.TripPlannerException -> exception.message ?: Constants.ErrorType.SERVER_ERROR
                     else -> Constants.ErrorType.SERVER_ERROR

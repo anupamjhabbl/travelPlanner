@@ -20,6 +20,8 @@ class TripGroupIntent {
         val tripMembers: List<TripMember> = emptyList(),
         val inviteList: List<User> = emptyList(),
         val isFollowersLoading: Boolean = false,
+        val isFollowersError: Boolean = false,
+        val followersErrorMessage: String? = null,
         val error: String? = null
     )
 }

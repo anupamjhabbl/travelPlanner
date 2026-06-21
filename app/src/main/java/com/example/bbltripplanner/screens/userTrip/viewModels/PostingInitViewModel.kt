@@ -199,7 +199,9 @@ class PostingInitViewModel(
     private fun getFriendlyErrorMessage(throwable: Throwable): String {
         return when {
             throwable is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
+            throwable is TripPlannerException && throwable.errorCode == 403 -> Constants.ErrorType.NOT_AUTHORIZED
             throwable is TripPlannerException && throwable.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
+            throwable is HttpException && throwable.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
             throwable is HttpException && throwable.code() == 404 -> Constants.ErrorType.NO_LOCATION_AVAILABLE
             throwable is HttpException && throwable.code() in 500..599 -> Constants.ErrorType.SERVER_ERROR
             else -> throwable.message ?: Constants.DEFAULT_ERROR_MESSAGE

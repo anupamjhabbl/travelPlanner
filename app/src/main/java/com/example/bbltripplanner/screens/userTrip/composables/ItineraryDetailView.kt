@@ -115,6 +115,7 @@ fun ItineraryDetailView(
                 Constants.ErrorType.NETWORK_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
                 Constants.ErrorType.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
                 Constants.ErrorType.NOT_FOUND -> Pair(stringResource(R.string.nothing_to_show), stringResource(R.string.noting_to_show_subtitle))
+                Constants.ErrorType.NOT_AUTHORIZED -> Pair(stringResource(R.string.not_authorized_title), stringResource(R.string.not_authorized_subtitle))
                 else -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
             }
             ComposeViewUtils.FullScreenErrorComposable(errorStrings)

@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class ExpenseViewModel(
     private val tripId: String?,
@@ -70,7 +71,8 @@ class ExpenseViewModel(
             }.onFailure {
                 val errorMsg = when {
                     it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    it is TripPlannerException && it.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is HttpException && it.code() == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is HttpException && it.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
                     it is TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     it is TripPlannerException -> it.message
                     else -> Constants.ErrorType.SERVER_ERROR
@@ -90,7 +92,8 @@ class ExpenseViewModel(
             }.onFailure {
                 val errorMsg = when {
                     it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    it is TripPlannerException && it.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is HttpException && it.code() == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is HttpException && it.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
                     it is TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     it is TripPlannerException -> it.message
                     else -> Constants.ErrorType.SERVER_ERROR
@@ -198,7 +201,8 @@ class ExpenseViewModel(
             }.onFailure {
                 val errorMsg = when {
                     it is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-                    it is TripPlannerException && it.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is HttpException && it.code() == 404 -> Constants.ErrorType.NOT_FOUND
+                    it is HttpException && it.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
                     it is TripPlannerException && it.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
                     it is TripPlannerException -> it.message
                     else -> Constants.ErrorType.SERVER_ERROR
