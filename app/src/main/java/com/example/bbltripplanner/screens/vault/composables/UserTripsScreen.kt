@@ -140,7 +140,7 @@ fun UserTripsScreen() {
                         val errorStrings = ErrorUtils.getErrorStrings(context, tripsStatus.error)
                         ComposeViewUtils.FullScreenErrorComposable(
                             errorStrings = errorStrings,
-                            isActionButton = true,
+                            isActionButton = ErrorUtils.isRetryableError(tripsStatus.error),
                             onActionButtonClick = {
                                 viewModel.getUserTrips()
                             }

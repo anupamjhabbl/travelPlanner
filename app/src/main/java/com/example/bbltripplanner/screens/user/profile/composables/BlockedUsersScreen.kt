@@ -30,6 +30,7 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -68,8 +69,13 @@ fun BlockedUsersScreen() {
         if (uiState.isLoading) {
             ComposeViewUtils.FullScreenLoading()
         } else if (uiState.error != null) {
+            val errorStrings = ErrorUtils.getErrorStrings(context, uiState.error)
             ComposeViewUtils.FullScreenErrorComposable(
-                errorStrings = Pair(stringResource(R.string.server_error), uiState.error ?: "")
+                errorStrings = errorStrings,
+                isActionButton = ErrorUtils.isRetryableError(uiState.error),
+                onActionButtonClick = {
+                    viewModel.fetchBlockedUsers()
+                }
             )
         } else {
             if (uiState.data.isNullOrEmpty()) {

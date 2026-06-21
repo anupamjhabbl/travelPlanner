@@ -159,15 +159,10 @@ class ExpenseViewModel(
                 }.onSuccess {
                     _settlementStatus.value = RequestResponseStatus(data = it)
                 }.onFailure {
-                    if (it is TripPlannerException) {
-                        if (it.errorCode == SETTLEMENT_ERROR_CODE) {
-                            _settlementStatus.value = RequestResponseStatus(error = SETTLEMENT_PENDING_ERROR)
-                        } else {
-                            _settlementStatus.value = RequestResponseStatus(error = it.message)
-                        }
+                    if (it is TripPlannerException && it.errorCode == SETTLEMENT_ERROR_CODE) {
+                        _settlementStatus.value = RequestResponseStatus(error = SETTLEMENT_PENDING_ERROR)
                     } else {
-                        _settlementStatus.value =
-                            RequestResponseStatus(error = Constants.DEFAULT_ERROR)
+                        _settlementStatus.value = RequestResponseStatus(error = ErrorUtils.toErrorType(it))
                     }
                 }
             } ?: run {

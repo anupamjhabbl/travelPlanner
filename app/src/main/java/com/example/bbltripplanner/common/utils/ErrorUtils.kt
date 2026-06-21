@@ -55,4 +55,8 @@ object ErrorUtils {
             else -> errorType
         }
     }
+
+    fun isRetryableError(errorType: String?): Boolean {
+        return errorType == Constants.ErrorType.NETWORK_ERROR || errorType == Constants.ErrorType.SERVER_ERROR
+    }
 }

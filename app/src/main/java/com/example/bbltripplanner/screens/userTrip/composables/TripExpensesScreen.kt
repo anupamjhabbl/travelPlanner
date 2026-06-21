@@ -255,7 +255,15 @@ fun TripExpensesScreen(
             }
         } else if (tripExpenses.data == null || tripExpenses.error != null) {
             val errorStrings = ErrorUtils.getErrorStrings(context, tripExpenses.error)
-            ComposeViewUtils.FullScreenErrorComposable(errorStrings)
+            ComposeViewUtils.FullScreenErrorComposable(
+                errorStrings = errorStrings,
+                isActionButton = ErrorUtils.isRetryableError(tripExpenses.error),
+                onActionButtonClick = {
+                    tripId?.let {
+                        viewModel.processEvent(ExpenseIntent.ViewEvent.FetchExpenses(it))
+                    }
+                }
+            )
         } else {
             Column(
                 modifier = Modifier.fillMaxSize()

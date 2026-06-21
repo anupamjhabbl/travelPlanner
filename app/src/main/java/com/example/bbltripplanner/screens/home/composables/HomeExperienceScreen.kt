@@ -218,5 +218,6 @@ fun ShowCxeResponseErrorComposable(
         CxeResponseError.INTERNET_ERROR -> Pair(stringResource(R.string.no_internet_connection), stringResource(R.string.no_internet_connection_subtitle))
         CxeResponseError.SERVER_ERROR -> Pair(stringResource(R.string.server_error), stringResource(R.string.server_error_subtitle))
     }
-    FullScreenErrorComposable(errorStrings, true, onRetryClick)
+    val isRetryable = error == CxeResponseError.INTERNET_ERROR || error == CxeResponseError.SERVER_ERROR
+    FullScreenErrorComposable(errorStrings, isRetryable, onRetryClick)
 }

@@ -49,7 +49,7 @@ class UserTripDetailViewModel(
             }
             tripDetailResult.onFailure {
                 _userTripDetailFetchStatus.value = userTripDetailFetchStatus.value.copy(isLoading = false)
-                _viewEffect.send(UserTripDetailIntent.ViewEffect.ShowMessage(false, it.message))
+                _viewEffect.send(UserTripDetailIntent.ViewEffect.ShowMessage(false, ErrorUtils.toErrorType(it)))
             }
         }
     }

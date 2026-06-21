@@ -185,7 +185,15 @@ fun PostingEditScreen(
 
     if (showFullScreenError != null) {
         val errorStrings = ErrorUtils.getErrorStrings(context, showFullScreenError)
-        ComposeViewUtils.FullScreenErrorComposable(errorStrings = errorStrings)
+        ComposeViewUtils.FullScreenErrorComposable(
+            errorStrings = errorStrings,
+            isActionButton = ErrorUtils.isRetryableError(showFullScreenError),
+            onActionButtonClick = {
+                tripId?.let {
+                    viewModel.processEvent(PostingInitIntent.ViewEvent.GetTripDetails(it))
+                }
+            }
+        )
         return
     }
 

@@ -72,7 +72,11 @@ fun ProfileFollowersPage(
     } else if (uiState.data == null || uiState.error != null) {
         val errorStrings = ErrorUtils.getErrorStrings(context, uiState.error)
         ComposeViewUtils.FullScreenErrorComposable(
-            errorStrings = errorStrings
+            errorStrings = errorStrings,
+            isActionButton = ErrorUtils.isRetryableError(uiState.error),
+            onActionButtonClick = {
+                viewModel.fetchFollowers()
+            }
         )
     } else {
         val filteredUsers = remember(uiState.data, searchQuery) {
@@ -137,7 +141,11 @@ fun ProfileFollowingPage(
     } else if (uiState.data == null || uiState.error != null) {
         val errorStrings = ErrorUtils.getErrorStrings(context, uiState.error)
         ComposeViewUtils.FullScreenErrorComposable(
-            errorStrings = errorStrings
+            errorStrings = errorStrings,
+            isActionButton = ErrorUtils.isRetryableError(uiState.error),
+            onActionButtonClick = {
+                viewModel.fetchFollowing()
+            }
         )
     } else {
         val filteredUsers = remember(uiState.data, searchQuery) {

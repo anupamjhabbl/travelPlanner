@@ -112,7 +112,15 @@ fun ItineraryDetailView(
             }
         } else if (activitiesStatus.error != null) {
             val errorStrings = ErrorUtils.getErrorStrings(context, activitiesStatus.error)
-            ComposeViewUtils.FullScreenErrorComposable(errorStrings)
+            ComposeViewUtils.FullScreenErrorComposable(
+                errorStrings = errorStrings,
+                isActionButton = ErrorUtils.isRetryableError(activitiesStatus.error),
+                onActionButtonClick = {
+                    placeId?.let {
+                        viewModel.processEvent(ItineraryDetailIntent.ViewEvent.FetchActivities(it))
+                    }
+                }
+            )
         } else {
             Column(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(

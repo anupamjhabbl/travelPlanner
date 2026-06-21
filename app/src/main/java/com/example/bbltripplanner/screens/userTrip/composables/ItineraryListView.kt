@@ -134,7 +134,15 @@ fun ItineraryListView(
             }
         } else if (itineraryStatus.error != null) {
             val errorStrings = ErrorUtils.getErrorStrings(context, itineraryStatus.error)
-            ComposeViewUtils.FullScreenErrorComposable(errorStrings)
+            ComposeViewUtils.FullScreenErrorComposable(
+                errorStrings = errorStrings,
+                isActionButton = ErrorUtils.isRetryableError(itineraryStatus.error),
+                onActionButtonClick = {
+                    tripId?.let {
+                        viewModel.processEvent(ItineraryIntent.ViewEvent.FetchItinerary(it))
+                    }
+                }
+            )
         } else {
             val itinerary = itineraryStatus.data
             val itineraryDays = itinerary?.itineraryList ?: emptyList()

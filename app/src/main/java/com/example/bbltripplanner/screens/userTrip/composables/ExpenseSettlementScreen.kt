@@ -45,7 +45,9 @@ import com.example.bbltripplanner.screens.userTrip.entity.SettlementResponseType
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import kotlinx.coroutines.launch
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun ExpenseSettlementScreen(
@@ -53,7 +55,7 @@ fun ExpenseSettlementScreen(
 ) {
     val settlements by viewModel.settlementStatus.collectAsStateWithLifecycle()
     val tripExpenses by viewModel.expenseStatus.collectAsStateWithLifecycle()
-    val errorMessage = stringResource(R.string.generic_error)
+    val context = LocalContext.current
     val currency = tripExpenses.data?.currency ?: Currency.INR
     val customColors = LocalCustomColors.current
     val scope = rememberCoroutineScope()
@@ -94,11 +96,13 @@ fun ExpenseSettlementScreen(
                         imageId = R.drawable.ic_expenses
                     )
                 } else {
+                    val errorStrings = ErrorUtils.getErrorStrings(context, error)
                     ComposeViewUtils.FullScreenErrorComposable(
-                        Pair(
-                            errorMessage,
-                            error
-                        )
+                        errorStrings = errorStrings,
+                        isActionButton = ErrorUtils.isRetryableError(error),
+                        onActionButtonClick = {
+                            viewModel.processEvent(ExpenseIntent.ViewEvent.FetchSettlements)
+                        }
                     )
                 }
             } else {

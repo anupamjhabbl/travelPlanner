@@ -8,7 +8,7 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
-import com.example.bbltripplanner.common.entity.TripPlannerException
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.ImageActionUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.PhotoUploadStatus
@@ -160,7 +160,7 @@ class TripGalleryViewModel(
             }.onSuccess {
                 _photosStatus.value = RequestResponseStatus(data = it)
             }.onFailure {
-                val errorMessage = if (it is TripPlannerException) it.message ?: Constants.DEFAULT_ERROR else Constants.DEFAULT_ERROR
+                val errorMessage = ErrorUtils.toErrorType(it)
                 _photosStatus.value = RequestResponseStatus(error = errorMessage)
             }
         }
@@ -174,11 +174,8 @@ class TripGalleryViewModel(
             }.onSuccess {
                 _tripData.value = RequestResponseStatus(data = it)
             }.onFailure {
-                if (it is TripPlannerException) {
-                    _tripData.value = RequestResponseStatus(error = it.message)
-                } else {
-                    _tripData.value = RequestResponseStatus(error = Constants.DEFAULT_ERROR)
-                }
+                val errorMessage = ErrorUtils.toErrorType(it)
+                _tripData.value = RequestResponseStatus(error = errorMessage)
             }
         }
     }

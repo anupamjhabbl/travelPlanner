@@ -52,6 +52,7 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.FileUtils
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
@@ -138,8 +139,15 @@ fun TripGalleryScreen(
                         CircularProgressIndicator(color = LocalCustomColors.current.secondaryBackground)
                     }
                 } else if ((photosStatus.error != null && photos.isEmpty())) {
+                    val errorStrings = ErrorUtils.getErrorStrings(context, photosStatus.error)
                     ComposeViewUtils.FullScreenErrorComposable(
-                        Pair(stringResource(R.string.server_error), photosStatus.error ?: "")
+                        errorStrings = errorStrings,
+                        isActionButton = ErrorUtils.isRetryableError(photosStatus.error),
+                        onActionButtonClick = {
+                            viewModel.tripId?.let {
+                                viewModel.processEvent(TripGalleryIntent.ViewEvent.FetchPhotos(it))
+                            }
+                        }
                     )
                 } else if (photos.isEmpty()) {
                     ComposeViewUtils.FullScreenErrorComposable(

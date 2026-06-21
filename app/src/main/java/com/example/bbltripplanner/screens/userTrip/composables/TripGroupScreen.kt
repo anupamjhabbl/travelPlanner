@@ -105,7 +105,7 @@ fun TripGroupScreen(
                 val errorStrings = ErrorUtils.getErrorStrings(context, viewState.error)
                 ComposeViewUtils.FullScreenErrorComposable(
                     errorStrings = errorStrings,
-                    isActionButton = true,
+                    isActionButton = ErrorUtils.isRetryableError(viewState.error),
                     onActionButtonClick = {
                         viewModel.processEvent(TripGroupIntent.ViewEvent.GetTripMembers)
                     }

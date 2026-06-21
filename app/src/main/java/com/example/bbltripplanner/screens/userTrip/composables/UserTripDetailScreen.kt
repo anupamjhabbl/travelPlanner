@@ -96,7 +96,7 @@ fun UserTripDetailScreen(
                     acceptButtonVisibility = false
                     ComposeViewUtils.showToast(context, successMessage)
                 } else {
-                    ComposeViewUtils.showToast(context, viewEffect.message ?: "")
+                    ComposeViewUtils.showToast(context, ErrorUtils.getMessage(context, viewEffect.message) ?: "")
                 }
             }
         }
@@ -105,7 +105,11 @@ fun UserTripDetailScreen(
     if (tripDataStatus.value.isLoading) {
         FullScreenLoading()
     } else if(tripDataStatus.value.data == null ||  tripDataStatus.value.error != null) {
-        FullScreenError(tripDataStatus.value.error)
+        FullScreenError(tripDataStatus.value.error) {
+            tripId?.let {
+                viewModel.processEvent(UserTripDetailIntent.ViewEvent.FetchTripDetail(it))
+            }
+        }
     } else {
         Box(
             modifier = Modifier
@@ -199,10 +203,14 @@ fun UserTripDetailScreen(
 }
 
 @Composable
-private fun FullScreenError(error: String?) {
+private fun FullScreenError(error: String?, onRetry: () -> Unit) {
     val context = LocalContext.current
     val errorStrings = ErrorUtils.getErrorStrings(context, error)
-    ComposeViewUtils.FullScreenErrorComposable(errorStrings)
+    ComposeViewUtils.FullScreenErrorComposable(
+        errorStrings = errorStrings,
+        isActionButton = ErrorUtils.isRetryableError(error),
+        onActionButtonClick = onRetry
+    )
 }
 
 @Composable

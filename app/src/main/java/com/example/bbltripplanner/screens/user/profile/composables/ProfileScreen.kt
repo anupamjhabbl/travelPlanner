@@ -134,8 +134,17 @@ fun ProfileScreen (
                 }
 
                 is RequestStatus.Error -> {
-                    val errorStrings = ErrorUtils.getErrorStrings(context, (userData as RequestStatus.Error).message)
-                    ComposeViewUtils.FullScreenErrorComposable(errorStrings)
+                    val error = (userData as RequestStatus.Error).message
+                    val errorStrings = ErrorUtils.getErrorStrings(context, error)
+                    ComposeViewUtils.FullScreenErrorComposable(
+                        errorStrings = errorStrings,
+                        isActionButton = ErrorUtils.isRetryableError(error),
+                        onActionButtonClick = {
+                            userId?.let {
+                                profileViewModel.processEvent(ProfileIntent.ViewEvent.SetUp(it))
+                            }
+                        }
+                    )
                 }
             }
         }

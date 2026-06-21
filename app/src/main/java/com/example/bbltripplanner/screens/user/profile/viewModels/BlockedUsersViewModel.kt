@@ -30,7 +30,7 @@ class BlockedUsersViewModel(
         fetchBlockedUsers()
     }
 
-    private fun fetchBlockedUsers() {
+    fun fetchBlockedUsers() {
         viewModelScope.launch {
             _blockedUsers.value = _blockedUsers.value.copy(isLoading = true)
             val result = SafeIOUtil.safeCall {
