@@ -222,8 +222,11 @@ fun TripGroupScreen(
             sheetState = sheetState,
             containerColor = LocalCustomColors.current.primaryBackground
         ) {
+            val unselectedFollowers = viewState.inviteList.filter { follower ->
+                viewState.tripMembers.none { member -> member.user.id == follower.id }
+            }
             InviteBottomSheet(
-                userList = viewState.inviteList,
+                userList = unselectedFollowers,
                 isFollowersLoading = viewState.isFollowersLoading,
                 isError = viewState.isFollowersError,
                 errorMessage = ErrorUtils.getMessage(context, viewState.followersErrorMessage),

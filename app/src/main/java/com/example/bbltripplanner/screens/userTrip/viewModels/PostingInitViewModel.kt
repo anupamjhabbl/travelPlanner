@@ -2,10 +2,9 @@ package com.example.bbltripplanner.screens.userTrip.viewModels
 
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.BuildConfig
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
-import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.profile.entity.ProfileFollowersData
@@ -29,7 +28,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 
 @OptIn(FlowPreview::class)
 class PostingInitViewModel(
@@ -140,7 +138,7 @@ class PostingInitViewModel(
                 }
                 postTripResult.onFailure {
                     _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
-                    _viewEffects.emit(PostingInitIntent.ViewEffect.ShowError(getFriendlyErrorMessage(it)))
+                    _viewEffects.emit(PostingInitIntent.ViewEffect.ShowError(ErrorUtils.toErrorType(it)))
                 }
             }
         }
@@ -178,7 +176,7 @@ class PostingInitViewModel(
             }
             tripDetailResult.onFailure {
                 _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
-                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowFullScreenError(getFriendlyErrorMessage(it)))
+                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowFullScreenError(ErrorUtils.toErrorType(it)))
             }
         }
     }
@@ -194,18 +192,6 @@ class PostingInitViewModel(
             followers = newInviteList,
             isError = false
         )
-    }
-
-    private fun getFriendlyErrorMessage(throwable: Throwable): String {
-        return when {
-            throwable is java.io.IOException -> Constants.ErrorType.NETWORK_ERROR
-            throwable is TripPlannerException && throwable.errorCode == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-            throwable is TripPlannerException && throwable.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
-            throwable is HttpException && throwable.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
-            throwable is HttpException && throwable.code() == 404 -> Constants.ErrorType.NO_LOCATION_AVAILABLE
-            throwable is HttpException && throwable.code() in 500..599 -> Constants.ErrorType.SERVER_ERROR
-            else -> throwable.message ?: Constants.DEFAULT_ERROR_MESSAGE
-        }
     }
 
     private fun getLocationSuggestions(query: String) {
@@ -224,7 +210,7 @@ class PostingInitViewModel(
                     PostingInitIntent.ViewEffect.ShowSuggestions(
                         emptyList(),
                         isError = true,
-                        errorMessage = getFriendlyErrorMessage(it)
+                        errorMessage = ErrorUtils.toErrorType(it)
                     )
                 )
             }
@@ -253,7 +239,7 @@ class PostingInitViewModel(
                 }
                 followersList.onFailure {
                     _viewEffects.emit(PostingInitIntent.ViewEffect.HideFollowersLoading)
-                    _inviteList.value = ProfileFollowersData(emptyList(), isError = true, errorMessage = getFriendlyErrorMessage(it))
+                    _inviteList.value = ProfileFollowersData(emptyList(), isError = true, errorMessage = ErrorUtils.toErrorType(it))
                 }
             }
         }
@@ -271,7 +257,7 @@ class PostingInitViewModel(
             }
             postTripResult.onFailure {
                 _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
-                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowError(getFriendlyErrorMessage(it)))
+                _viewEffects.emit(PostingInitIntent.ViewEffect.ShowError(ErrorUtils.toErrorType(it)))
             }
         }
     }

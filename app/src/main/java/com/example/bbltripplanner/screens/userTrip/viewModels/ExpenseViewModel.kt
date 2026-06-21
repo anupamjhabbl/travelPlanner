@@ -84,7 +84,8 @@ class ExpenseViewModel(
                 _expenseStatus.value = RequestResponseStatus(data = it?.toTripExpenseDetail())
             }.onFailure {
                 val errorMsg = ErrorUtils.toErrorType(it)
-                _expenseStatus.value = RequestResponseStatus(error = errorMsg)
+                _expenseStatus.value = RequestResponseStatus(isLoading = false)
+                _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseError(errorMsg))
             }
         }
     }
@@ -107,14 +108,10 @@ class ExpenseViewModel(
                         )
                     }
                 } else {
-                    _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseError(Constants.DEFAULT_ERROR))
+                    _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseError(Constants.ErrorType.SERVER_ERROR))
                 }
             }.onFailure {
-                if (it is TripPlannerException) {
-                    _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseError(it.message ?: Constants.DEFAULT_ERROR))
-                } else {
-                    _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseError(Constants.DEFAULT_ERROR))
-                }
+                _addExpenseStatus.send(ExpenseIntent.AddViewEffect.AddExpenseError(ErrorUtils.toErrorType(it)))
             }
         }
     }
@@ -137,15 +134,7 @@ class ExpenseViewModel(
                     }
                 )
             }.onFailure {
-                if (it is TripPlannerException) {
-                    _deleteExpenseStatus.send(
-                        ExpenseIntent.DeleteViewEffect.DeleteExpenseError(
-                            it.message ?: Constants.DEFAULT_ERROR
-                        )
-                    )
-                } else {
-                    _deleteExpenseStatus.send(ExpenseIntent.DeleteViewEffect.DeleteExpenseError(Constants.DEFAULT_ERROR))
-                }
+                _deleteExpenseStatus.send(ExpenseIntent.DeleteViewEffect.DeleteExpenseError(ErrorUtils.toErrorType(it)))
             }
         }
     }

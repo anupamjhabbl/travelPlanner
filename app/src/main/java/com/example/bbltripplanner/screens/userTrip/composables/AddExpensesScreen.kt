@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -74,6 +75,7 @@ import com.example.bbltripplanner.screens.userTrip.entity.ExpenseType
 import com.example.bbltripplanner.screens.userTrip.entity.SplitType
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.ExpenseViewModel
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
 
@@ -117,7 +119,8 @@ fun AddExpensesScreen(
         when (viewEffect) {
             is ExpenseIntent.AddViewEffect.AddExpenseError -> {
                 isLoading = false
-                ComposeViewUtils.showToast(context, viewEffect.message)
+                val errorMsg = ErrorUtils.getMessage(context, viewEffect.message) ?: viewEffect.message
+                ComposeViewUtils.showToast(context, errorMsg)
             }
             ExpenseIntent.AddViewEffect.AddExpenseLoading -> {
                 isLoading = true
@@ -179,7 +182,10 @@ fun AddExpensesScreen(
                     }
                 }
                 ExpenseBottomSheetType.USER_SELECTION -> {
-                    InviteBottomSheet(invitedMembers, false) { user ->
+                    val unselectedMembers = invitedMembers.filter { member ->
+                        selectedSplitUsers.none { selected -> selected.id == member.id }
+                    }
+                    InviteBottomSheet(unselectedMembers, false) { user ->
                         if (!selectedSplitUsers.contains(user)) selectedSplitUsers.add(user)
                         showBottomSheet = null
                     }
@@ -195,11 +201,16 @@ fun AddExpensesScreen(
         }
 
         Column(modifier = Modifier.padding(16.dp).verticalScroll(scrollState).weight(1f)) {
-            // Paid By Dropdown
             Box(modifier = Modifier.align(Alignment.End)) {
                 ComposeViewUtils.ExposedDropDownMenu(
-                    invitedMembers.map { it.name },
-                    selectedPaidBy?.name ?: stringResource(R.string.paid_by)
+                    itemList = invitedMembers.map { it.name },
+                    selected = selectedPaidBy?.name ?: stringResource(R.string.paid_by),
+                    modifier = Modifier.background(color = LocalCustomColors.current.secondaryBackground, RoundedCornerShape(50))
+                            .height(45.dp)
+                            .padding(horizontal = 16.dp)
+                            .widthIn(min = 120.dp),
+                    imageList = invitedMembers.map { it.profilePicture },
+                    selectedImage = selectedPaidBy?.let { it.profilePicture ?: "" }
                 ) { name ->
                     selectedPaidBy = invitedMembers.find { it.name == name }
                 }
@@ -338,6 +349,8 @@ fun AddExpensesScreen(
                     ComposeViewUtils.showToast(context, provideAllDetailMessage)
                 }
             }
+
+            Spacer(Modifier.height(8.dp))
         }
     }
 }

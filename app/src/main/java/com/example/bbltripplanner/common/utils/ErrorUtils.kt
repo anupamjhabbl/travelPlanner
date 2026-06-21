@@ -25,7 +25,7 @@ object ErrorUtils {
                 context.getString(R.string.no_internet_connection),
                 context.getString(R.string.no_internet_connection_subtitle)
             )
-            Constants.ErrorType.SERVER_ERROR -> Pair(
+            Constants.ErrorType.SERVER_ERROR, Constants.DEFAULT_ERROR -> Pair(
                 context.getString(R.string.server_error),
                 context.getString(R.string.server_error_subtitle)
             )
@@ -48,7 +48,7 @@ object ErrorUtils {
         if (errorType == null) return null
         return when (errorType) {
             Constants.ErrorType.NETWORK_ERROR -> context.getString(R.string.no_internet_connection)
-            Constants.ErrorType.SERVER_ERROR -> context.getString(R.string.something_went_wrong)
+            Constants.ErrorType.SERVER_ERROR, Constants.DEFAULT_ERROR -> context.getString(R.string.something_went_wrong)
             Constants.ErrorType.NOT_FOUND -> context.getString(R.string.nothing_to_show)
             Constants.ErrorType.NOT_AUTHORIZED -> context.getString(R.string.not_authorized_subtitle)
             Constants.ErrorType.NO_LOCATION_AVAILABLE -> context.getString(R.string.no_location_availaible)

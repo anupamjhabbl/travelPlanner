@@ -320,6 +320,8 @@ object ComposeViewUtils {
         textColor: Color = LocalCustomColors.current.primaryBackground,
         itemIcons: List<androidx.compose.ui.graphics.vector.ImageVector?>? = null,
         selectedIcon: androidx.compose.ui.graphics.vector.ImageVector? = null,
+        imageList: List<String?>? = null,
+        selectedImage: String? = null,
         onChange: (String) -> Unit,
     ) {
         var expanded by remember {
@@ -356,17 +358,23 @@ object ComposeViewUtils {
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
+                        } else if (selectedImage != null) {
+                            ComposeImageView.CircularImageView(
+                                imageURI = selectedImage,
+                                diameter = 32.dp
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
                         }
                         ComposeTextView.TitleTextView(
                             selected,
-                            fontSize = 14.sp,
+                            fontSize = 15.sp,
                             textColor = textColor
                         )
                     }
 
                     Icon(
                         Icons.Default.ArrowDropDown,
-                        modifier = Modifier.size(24.dp),
+                        modifier = Modifier.size(32.dp),
                         contentDescription = "DropDown",
                         tint = textColor
                     )
@@ -382,6 +390,7 @@ object ComposeViewUtils {
             ) {
                 itemList.forEachIndexed { index, item ->
                     val icon = itemIcons?.getOrNull(index)
+                    val image = imageList?.getOrNull(index)
                     DropdownMenuItem(
                         text = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -393,10 +402,16 @@ object ComposeViewUtils {
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
+                                } else if (imageList != null) {
+                                    ComposeImageView.CircularImageView(
+                                        imageURI = image ?: "",
+                                        diameter = 32.dp
+                                    )
+                                    Spacer(modifier = Modifier.width(12.dp))
                                 }
                                 ComposeTextView.TextView(
                                     text = item,
-                                    fontSize = 14.sp,
+                                    fontSize = 15.sp,
                                     fontWeight = FontWeight.Medium,
                                     textColor = customColors.titleTextColor
                                 )

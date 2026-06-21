@@ -47,7 +47,6 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -99,17 +98,12 @@ fun TripExpensesScreen(
     var budgetInput by remember { mutableStateOf("") }
     var currency by remember { mutableStateOf(Currency.INR) }
 
-    LaunchedEffect(tripExpenses) {
-        if (!tripExpenses.isLoading && tripExpenses.error == null && tripExpenses.data == null) {
-            tripInitializationPopup = true
-        }
-    }
-
     CommonLifecycleAwareLaunchedEffect(viewModel.deleteExpenseStatus) { viewEffect ->
         when (viewEffect) {
             is ExpenseIntent.DeleteViewEffect.DeleteExpenseError -> {
                 isLoading = false
-                ComposeViewUtils.showToast(context, viewEffect.message)
+                val errorMsg = ErrorUtils.getMessage(context, viewEffect.message) ?: viewEffect.message
+                ComposeViewUtils.showToast(context, errorMsg)
             }
             ExpenseIntent.DeleteViewEffect.DeleteExpenseLoading -> {
                 isLoading = true
@@ -117,6 +111,22 @@ fun TripExpensesScreen(
             ExpenseIntent.DeleteViewEffect.DeleteExpenseSuccess -> {
                 isLoading = false
                 ComposeViewUtils.showToast(context, successMessage)
+            }
+        }
+    }
+
+    CommonLifecycleAwareLaunchedEffect(viewModel.addExpenseStatus) { viewEffect ->
+        when (viewEffect) {
+            is ExpenseIntent.AddViewEffect.AddExpenseError -> {
+                isLoading = false
+                val errorMsg = ErrorUtils.getMessage(context, viewEffect.message) ?: viewEffect.message
+                ComposeViewUtils.showToast(context, errorMsg)
+            }
+            ExpenseIntent.AddViewEffect.AddExpenseLoading -> {
+                isLoading = true
+            }
+            ExpenseIntent.AddViewEffect.AddExpenseSuccess -> {
+                isLoading = false
             }
         }
     }
@@ -253,7 +263,7 @@ fun TripExpensesScreen(
             ) {
                 ComposeViewUtils.FullScreenLoading()
             }
-        } else if (tripExpenses.data == null || tripExpenses.error != null) {
+        } else if (tripExpenses.error != null) {
             val errorStrings = ErrorUtils.getErrorStrings(context, tripExpenses.error)
             ComposeViewUtils.FullScreenErrorComposable(
                 errorStrings = errorStrings,
@@ -264,6 +274,52 @@ fun TripExpensesScreen(
                     }
                 }
             )
+        } else if (tripExpenses.data == null) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(LocalCustomColors.current.primaryBackground)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp, 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
+                                }
+                            }
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = LocalCustomColors.current.secondaryBackground,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+
+                        Spacer(Modifier.width(8.dp))
+
+                        ComposeTextView.TextView(
+                            text = stringResource(R.string.expenses),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.W600,
+                            textColor = LocalCustomColors.current.secondaryBackground
+                        )
+                    }
+                }
+
+                TripExpensesEmptyState(
+                    onInitiateClick = { tripInitializationPopup = true }
+                )
+            }
         } else {
             Column(
                 modifier = Modifier.fillMaxSize()
@@ -695,3 +751,68 @@ private fun ExpenseItem(item: ExpenseItem, currency: Currency) {
         }
     }
 }
+
+@Composable
+fun TripExpensesEmptyState(
+    onInitiateClick: () -> Unit
+) {
+    val customColors = LocalCustomColors.current
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .background(customColors.secondaryBackground.copy(alpha = 0.1f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Payment,
+                contentDescription = null,
+                tint = customColors.secondaryBackground,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        ComposeTextView.TitleTextView(
+            text = stringResource(R.string.initiate_expense_title),
+            fontSize = 20.sp,
+            textColor = customColors.titleTextColor,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        ComposeTextView.TextView(
+            text = stringResource(R.string.initiate_expense_message),
+            fontSize = 14.sp,
+            textColor = customColors.hintTextColor,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onInitiateClick,
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.7f)
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(customColors.secondaryBackground)
+        ) {
+            ComposeTextView.TitleTextView(
+                text = stringResource(R.string.initiate_expense_title),
+                textColor = customColors.primaryBackground,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+
