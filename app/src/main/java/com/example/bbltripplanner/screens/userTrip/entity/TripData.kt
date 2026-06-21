@@ -21,7 +21,8 @@ data class TripData(
     @SerializedName(value = "tripVisibility", alternate = ["trip_visibility"])
     val visibility: TripVisibility = TripVisibility.PRIVATE,
     @SerializedName(value = "acceptanceNeeded", alternate = ["acceptance_needed"])
-    val acceptanceNeeded: Boolean = false
+    val acceptanceNeeded: Boolean = false,
+    val role: UserRole = UserRole.PUBLIC
 )
 
 data class TripDataRequestModel(
@@ -54,4 +55,13 @@ enum class TripVisibility(val value: String) {
             } ?: PRIVATE
         }
     }
+}
+
+enum class UserRole {
+    @SerializedName("ADMIN")
+    ADMIN,
+    @SerializedName("MEMBER")
+    MEMBER,
+    @SerializedName("PUBLIC")
+    PUBLIC
 }

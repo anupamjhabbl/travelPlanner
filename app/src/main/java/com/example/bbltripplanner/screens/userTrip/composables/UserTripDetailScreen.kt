@@ -64,6 +64,7 @@ import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.TripActionItem
 import com.example.bbltripplanner.screens.userTrip.entity.TripActionResourceMapper
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
+import com.example.bbltripplanner.screens.userTrip.entity.UserRole
 import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.UserTripDetailViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -334,28 +335,33 @@ private fun TripSummarySection(
                     )
                 }
 
-                Box(
-                    modifier = Modifier
-                        .background(customColors.secondaryBackground.copy(alpha = 0.12f), RoundedCornerShape(12.dp))
-                        .clickable {
-                            scope.launch {
-                                userTripData.tripId?.let {
-                                    CommonNavigationChannel.navigateTo(
-                                        NavigationAction.Navigate(
-                                            AppNavigationScreen.EditTripScreen.createRoute(it)
+                if (userTripData.role == UserRole.ADMIN) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                customColors.secondaryBackground.copy(alpha = 0.12f),
+                                RoundedCornerShape(12.dp)
+                            )
+                            .clickable {
+                                scope.launch {
+                                    userTripData.tripId?.let {
+                                        CommonNavigationChannel.navigateTo(
+                                            NavigationAction.Navigate(
+                                                AppNavigationScreen.EditTripScreen.createRoute(it)
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
-                        }
-                        .padding(14.dp, 8.dp)
-                ) {
-                    ComposeTextView.TextView(
-                        text = stringResource(R.string.edit_details),
-                        textColor = customColors.secondaryBackground,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                            .padding(14.dp, 8.dp)
+                    ) {
+                        ComposeTextView.TextView(
+                            text = stringResource(R.string.edit_details),
+                            textColor = customColors.secondaryBackground,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }

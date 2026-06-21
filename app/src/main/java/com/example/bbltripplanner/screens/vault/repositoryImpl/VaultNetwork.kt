@@ -10,4 +10,8 @@ class VaultNetwork(private val vaultClient: VaultClient) : VaultRepository {
     override suspend fun getUserTrips(): Response<BaseResponse<List<TripData>>> {
         return vaultClient.getUserTrips()
     }
+
+    override suspend fun deleteTrip(tripId: String): Response<BaseResponse<Unit>> {
+        return vaultClient.deleteTrip(tripId)
+    }
 }

@@ -21,15 +21,22 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
@@ -51,7 +59,9 @@ import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
+import com.example.bbltripplanner.screens.userTrip.entity.UserRole
 import com.example.bbltripplanner.screens.vault.viewModels.UserTripsViewModel
+import com.example.bbltripplanner.screens.vault.viewModels.UserTripsViewModelIntent
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -65,82 +75,169 @@ fun UserTripsScreen() {
     val context = LocalContext.current
     val shareMessage = stringResource(R.string.share_message)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(customColors.primaryBackground)
-    ) {
-        UserTripsToolbar()
+    var tripToDelete by remember { mutableStateOf<TripData?>(null) }
+    var isDeleting by remember { mutableStateOf(false) }
 
-        Box(
+    CommonLifecycleAwareLaunchedEffect(viewModel.deleteTripStatus) { effect ->
+        when (effect) {
+            is UserTripsViewModelIntent.DeleteViewEffect.DeleteTripError -> {
+                isDeleting = false
+                ComposeViewUtils.showToast(context, effect.message)
+            }
+            UserTripsViewModelIntent.DeleteViewEffect.DeleteTripLoading -> {
+                isDeleting = true
+            }
+            UserTripsViewModelIntent.DeleteViewEffect.DeleteTripSuccess -> {
+                isDeleting = false
+                ComposeViewUtils.showToast(context, "Trip deleted successfully")
+            }
+        }
+    }
+
+    if (tripToDelete != null) {
+        ComposeViewUtils.ConfirmationDialog(
+            title = stringResource(R.string.delete_trip),
+            message = stringResource(R.string.delete_trip_description),
+            confirmButtonText = stringResource(R.string.confirm),
+            dismissButtonText = stringResource(R.string.cancel),
+            isCancellable = true,
+            onConfirm = {
+                tripToDelete?.tripId?.let {
+                    viewModel.processEvent(UserTripsViewModelIntent.ViewEvent.DeleteTrip(it))
+                }
+                tripToDelete = null
+            },
+            onDismiss = {
+                tripToDelete = null
+            }
+        )
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(customColors.primaryBackground)
         ) {
-            when {
-                tripsStatus.isLoading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        color = customColors.secondaryBackground
-                    )
-                }
+            UserTripsToolbar()
 
-                tripsStatus.error != null -> {
-                    ComposeTextView.TextView(
-                        text = tripsStatus.error ?: stringResource(R.string.generic_error),
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                when {
+                    tripsStatus.isLoading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                            color = customColors.secondaryBackground
+                        )
+                    }
 
-                tripsStatus.data != null -> {
-                    val trips = tripsStatus.data!!
-                    if (trips.isEmpty()) {
+                    tripsStatus.error != null -> {
                         ComposeTextView.TextView(
-                            text = stringResource(R.string.no_trips),
+                            text = tripsStatus.error ?: stringResource(R.string.generic_error),
                             modifier = Modifier.align(Alignment.Center)
                         )
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            items(trips) { trip ->
-                                TripListItem(
-                                    trip = trip,
-                                    onCardClick = {
-                                        scope.launch {
-                                            CommonNavigationChannel.navigateTo(
-                                                NavigationAction.Navigate(
-                                                    AppNavigationScreen.UserTripDetailScreen.createRoute(
-                                                        trip.tripId ?: ""
-                                                    )
-                                                )
-                                            )
+                    }
+
+                    tripsStatus.data != null -> {
+                        val trips = tripsStatus.data!!
+                        if (trips.isEmpty()) {
+                            ComposeTextView.TextView(
+                                text = stringResource(R.string.no_trips),
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                items(trips, key = { it.tripId ?: "" }) { trip ->
+                                    val isSwipeEnabled = trip.role == UserRole.ADMIN
+
+                                    val dismissState = rememberSwipeToDismissBoxState(
+                                        confirmValueChange = { state ->
+                                            if (state == SwipeToDismissBoxValue.EndToStart && isSwipeEnabled) {
+                                                tripToDelete = trip
+                                                false
+                                            } else false
                                         }
-                                    },
-                                    onEditClick = {
-                                        scope.launch {
-                                            CommonNavigationChannel.navigateTo(
-                                                NavigationAction.Navigate(
-                                                    AppNavigationScreen.EditTripScreen.createRoute(
-                                                        trip.tripId ?: ""
+                                    )
+
+                                    SwipeToDismissBox(
+                                        state = dismissState,
+                                        enableDismissFromStartToEnd = false,
+                                        enableDismissFromEndToStart = isSwipeEnabled,
+                                        backgroundContent = {
+                                            if (isSwipeEnabled) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .padding(vertical = 2.dp)
+                                                        .clip(RoundedCornerShape(20.dp))
+                                                        .background(Color.Red),
+                                                    contentAlignment = Alignment.CenterEnd
+                                                ) {
+                                                    Icon(
+                                                        Icons.Default.Delete,
+                                                        contentDescription = "Delete",
+                                                        tint = Color.White,
+                                                        modifier = Modifier.padding(end = 24.dp)
                                                     )
-                                                )
-                                            )
+                                                }
+                                            }
                                         }
-                                    },
-                                    onShareClick = {
-                                        context.shareDeepLinkOfTrip(
-                                            shareMessage,
-                                            trip.tripId
+                                    ) {
+                                        TripListItem(
+                                            trip = trip,
+                                            onCardClick = {
+                                                scope.launch {
+                                                    CommonNavigationChannel.navigateTo(
+                                                        NavigationAction.Navigate(
+                                                            AppNavigationScreen.UserTripDetailScreen.createRoute(
+                                                                trip.tripId ?: ""
+                                                            )
+                                                        )
+                                                    )
+                                                }
+                                            },
+                                            onEditClick = {
+                                                scope.launch {
+                                                    CommonNavigationChannel.navigateTo(
+                                                        NavigationAction.Navigate(
+                                                            AppNavigationScreen.EditTripScreen.createRoute(
+                                                                trip.tripId ?: ""
+                                                            )
+                                                        )
+                                                    )
+                                                }
+                                            },
+                                            onShareClick = {
+                                                context.shareDeepLinkOfTrip(
+                                                    shareMessage,
+                                                    trip.tripId
+                                                )
+                                            }
                                         )
                                     }
-                                )
+                                }
                             }
                         }
                     }
                 }
+            }
+        }
+
+        if (isDeleting) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                ComposeViewUtils.FullScreenLoading()
             }
         }
     }
@@ -203,7 +300,7 @@ fun TripListItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(customColors.fadedBackground.copy(alpha = 0.35f))
+            .background(customColors.fadedBackground)
             .border(1.dp, customColors.defaultImageCardColor, RoundedCornerShape(20.dp))
             .clickable { onCardClick() }
             .padding(14.dp),

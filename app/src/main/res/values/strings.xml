@@ -311,4 +311,9 @@
     <string name="session_expired_title">Session Expired</string>
     <string name="session_expired_message">Your session has expired. Please login again to continue.</string>
     <string name="go_to_login">Go to Login</string>
+    <string name="delete_trip">Delete Trip</string>
+    <string name="delete_trip_message">Your trip will be permanently deleted.</string>
+    <string name="confirm">Confirm</string>
+    <string name="trip_deleted_success">Trip deleted successfully</string>
+    <string name="delete_trip_description">Your trip will be permanently deleted.</string>
 </resources>

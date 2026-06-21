@@ -10,4 +10,8 @@ class VaultUseCase(
     suspend fun getUserTrips(): List<TripData>? {
         return BaseResponse.processResponse { vaultRepository.getUserTrips() }
     }
+
+    suspend fun deleteTrip(tripId: String): Unit? {
+        return BaseResponse.processResponse { vaultRepository.deleteTrip(tripId) }
+    }
 }

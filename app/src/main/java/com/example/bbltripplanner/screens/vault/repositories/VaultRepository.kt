@@ -6,4 +6,5 @@ import retrofit2.Response
 
 interface VaultRepository {
     suspend fun getUserTrips(): Response<BaseResponse<List<TripData>>>
+    suspend fun deleteTrip(tripId: String): Response<BaseResponse<Unit>>
 }
