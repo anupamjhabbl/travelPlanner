@@ -13,6 +13,8 @@ object ErrorUtils {
             throwable is IOException -> Constants.ErrorType.NETWORK_ERROR
             throwable is HttpException && throwable.code() == 404 -> Constants.ErrorType.NOT_FOUND
             throwable is HttpException && throwable.code() == 403 -> Constants.ErrorType.NOT_AUTHORIZED
+            throwable is TripPlannerException && throwable.errorCode == 404 -> Constants.ErrorType.NOT_FOUND
+            throwable is TripPlannerException && throwable.errorCode == 403 -> Constants.ErrorType.NOT_AUTHORIZED
             throwable is TripPlannerException && throwable.errorCode in 500..599 -> Constants.ErrorType.SERVER_ERROR
             throwable is TripPlannerException -> throwable.message ?: Constants.ErrorType.SERVER_ERROR
             else -> Constants.ErrorType.SERVER_ERROR

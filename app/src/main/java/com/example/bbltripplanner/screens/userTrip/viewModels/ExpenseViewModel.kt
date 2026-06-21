@@ -195,6 +195,6 @@ class ExpenseViewModel(
 
     companion object {
         const val SETTLEMENT_PENDING_ERROR = "SETTLEMENT_PENDING_ERROR"
-        const val SETTLEMENT_ERROR_CODE = 403
+        const val SETTLEMENT_ERROR_CODE = 422
     }
 }
