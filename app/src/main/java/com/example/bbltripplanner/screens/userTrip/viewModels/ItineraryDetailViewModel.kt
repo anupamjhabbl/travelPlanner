@@ -3,7 +3,6 @@ package com.example.bbltripplanner.screens.userTrip.viewModels
 import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
-import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.AddActivityRequest
