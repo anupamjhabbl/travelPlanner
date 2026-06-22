@@ -602,7 +602,7 @@ fun PostingInitScreenToolbar(
             modifier = Modifier
                 .background(color = LocalCustomColors.current.secondaryBackground, RoundedCornerShape(50))
                 .height(38.dp)
-                .width(130.dp)
+                .width(140.dp)
                 .padding(horizontal = 16.dp),
             textColor = LocalCustomColors.current.primaryBackground,
             itemIcons = itemIcons,

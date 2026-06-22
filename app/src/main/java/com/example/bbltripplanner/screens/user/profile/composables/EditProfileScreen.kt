@@ -66,7 +66,6 @@ import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.FileUtils
 import com.example.bbltripplanner.common.utils.StringUtils
-import com.example.bbltripplanner.common.utils.StringUtils.isValidPhoneNumber
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
 import com.example.bbltripplanner.screens.user.profile.viewModels.EditProfileIntent
@@ -301,6 +300,7 @@ private fun UserFieldsSection(
     user: User,
     onUpdateClick: (user: User) -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -310,10 +310,21 @@ private fun UserFieldsSection(
         val maxBioLength = 100
         var username by remember { mutableStateOf(user.name) }
         var bio by remember { mutableStateOf(user.bio) }
-        var countryCode by remember { mutableStateOf(user.phone?.take(4) ?: "+91") }
-        var phoneNumber by remember { mutableStateOf(user.phone?.drop(4) ?: "") }
+        var countryCode by remember { mutableStateOf(user.phone?.take(3) ?: "+91") }
+        var phoneNumber by remember { mutableStateOf(user.phone?.drop(3) ?: "") }
         var hasPhoneFocused by remember { mutableStateOf(false) }
         var isPhoneFocused by remember { mutableStateOf(false) }
+
+        var hasNameFocused by remember { mutableStateOf(false) }
+        var isNameFocused by remember { mutableStateOf(false) }
+        var showValidationErrors by remember { mutableStateOf(false) }
+        val errorMessage = stringResource(R.string.fix_validation_errors)
+
+        val isNameValid = username.trim().isNotEmpty()
+        val isPhoneEmpty = phoneNumber.isEmpty()
+        val isCountryCodeValid = countryCode.matches(Regex("^\\+[0-9]{2}$"))
+        val isPhoneNumberValid = phoneNumber.matches(Regex("^[0-9]{10}$"))
+        val isPhoneValid = isPhoneEmpty || (isCountryCodeValid && isPhoneNumberValid)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -327,7 +338,13 @@ private fun UserFieldsSection(
                 )
             },
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        hasNameFocused = true
+                    }
+                    isNameFocused = focusState.isFocused
+                },
             placeholder = {
                 ComposeTextView.TextView(
                     text = stringResource(R.string.username_hint),
@@ -342,7 +359,16 @@ private fun UserFieldsSection(
                 focusedIndicatorColor = LocalCustomColors.current.secondaryBackground,
                 unfocusedTextColor = LocalCustomColors.current.textColor,
                 errorIndicatorColor = LocalCustomColors.current.error
-            )
+            ),
+            isError = !isNameValid && (showValidationErrors || (!isNameFocused && hasNameFocused)),
+            supportingText = {
+                if (!isNameValid && (showValidationErrors || (!isNameFocused && hasNameFocused))) {
+                    ComposeTextView.TextView(
+                        text = stringResource(R.string.name_empty_error),
+                        textColor = LocalCustomColors.current.error
+                    )
+                }
+            }
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -408,7 +434,7 @@ private fun UserFieldsSection(
                     )
                 },
                 modifier = Modifier
-                    .weight(0.2f)
+                    .weight(0.25f)
                     .onFocusChanged { focusState ->
                         if (focusState.isFocused) {
                             hasPhoneFocused = true
@@ -430,6 +456,7 @@ private fun UserFieldsSection(
                     unfocusedTextColor = LocalCustomColors.current.textColor,
                     errorIndicatorColor = LocalCustomColors.current.error
                 ),
+                isError = !isPhoneValid && (showValidationErrors || (!isPhoneFocused && hasPhoneFocused)),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.NumberPassword
                 )
@@ -469,11 +496,15 @@ private fun UserFieldsSection(
                     unfocusedTextColor = LocalCustomColors.current.textColor,
                     errorIndicatorColor = LocalCustomColors.current.error
                 ),
-                isError = !isPhoneFocused && !(countryCode + phoneNumber).isValidPhoneNumber() && hasPhoneFocused,
+                isError = !isPhoneValid && (showValidationErrors || (!isPhoneFocused && hasPhoneFocused)),
                 supportingText = {
-                    if (!isPhoneFocused && !(countryCode + phoneNumber).isValidPhoneNumber() && hasPhoneFocused) {
+                    if (!isPhoneValid && (showValidationErrors || (!isPhoneFocused && hasPhoneFocused))) {
                         ComposeTextView.TextView(
-                            text = stringResource(R.string.invalid_phone_alert),
+                            text = if (!isPhoneEmpty && !isCountryCodeValid) {
+                                stringResource(R.string.invalid_country_code_alert)
+                            } else {
+                                stringResource(R.string.invalid_phone_number_alert)
+                            },
                             textColor = LocalCustomColors.current.error
                         )
                     }
@@ -488,14 +519,19 @@ private fun UserFieldsSection(
 
         Button(
             onClick = {
-                val fullPhoneNumber = if (phoneNumber.isNotEmpty()) countryCode + phoneNumber else ""
-                onUpdateClick(
-                    user.copy(
-                        name = username,
-                        bio =  bio,
-                        phone = fullPhoneNumber
+                if (isNameValid && isPhoneValid) {
+                    val fullPhoneNumber = if (phoneNumber.isNotEmpty()) countryCode + phoneNumber else ""
+                    onUpdateClick(
+                        user.copy(
+                            name = username,
+                            bio = bio,
+                            phone = fullPhoneNumber
+                        )
                     )
-                )
+                } else {
+                    showValidationErrors = true
+                    ComposeViewUtils.showToast(context, errorMessage)
+                }
             },
             modifier = Modifier.fillMaxWidth(0.5f),
             colors = ButtonDefaults.buttonColors(

@@ -108,6 +108,10 @@
     <string name="phone_hint">Enter your phone</string>
     <string name="country_code_hint">+91</string>
     <string name="invalid_phone_alert">Please enter a valid phone number</string>
+    <string name="name_empty_error">Name cannot be empty</string>
+    <string name="invalid_country_code_alert">Country code must start with + followed by 2 digits</string>
+    <string name="invalid_phone_number_alert">Phone number must be 10 digits</string>
+    <string name="fix_validation_errors">Please correct the highlighted errors</string>
     <string name="code">Code</string>
     <string name="bio">Bio</string>
     <string name="camera_gallery_picker_message">Capture an image or Select from gallery</string>
