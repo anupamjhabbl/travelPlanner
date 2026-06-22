@@ -62,4 +62,8 @@ class AuthPreferencesUseCase(
         preferenceManager.clear()
         encryptedPreferenceManager.clear()
     }
+
+    override fun updateTripCount(change: Int) {
+        preferenceManager.updateTripCount(change)
+    }
 }

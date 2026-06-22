@@ -35,4 +35,11 @@ class PreferenceManager (
             gson.fromJson(userData, User::class.java)
         }
     }
+
+    fun updateTripCount(change: Int) {
+        getLocalUser()?.let { user ->
+            val updatedUser = user.copy(tripCount = (user.tripCount + change).coerceAtLeast(0))
+            saveLocalUser(updatedUser)
+        }
+    }
 }

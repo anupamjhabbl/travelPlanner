@@ -15,4 +15,5 @@ interface AuthPreferencesRepository {
     fun getAccessToken(): String
     fun saveAccessToken(accessToken: String)
     fun clearUserData()
+    fun updateTripCount(change: Int)
 }

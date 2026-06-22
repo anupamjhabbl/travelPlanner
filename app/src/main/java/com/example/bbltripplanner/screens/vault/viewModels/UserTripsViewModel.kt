@@ -7,6 +7,7 @@ import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.vault.usecases.VaultUseCase
+import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,7 +16,10 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class UserTripsViewModel(private val vaultUseCase: VaultUseCase) : BaseMVIVViewModel<UserTripsViewModelIntent.ViewEvent>() {
+class UserTripsViewModel(
+    private val vaultUseCase: VaultUseCase,
+    private val authPreferencesUseCase: AuthPreferencesUseCase
+) : BaseMVIVViewModel<UserTripsViewModelIntent.ViewEvent>() {
     private val _userTripsStatus = MutableStateFlow(RequestResponseStatus<List<TripData>>())
     val userTripsStatus: StateFlow<RequestResponseStatus<List<TripData>>> = _userTripsStatus.asStateFlow()
 
@@ -57,6 +61,7 @@ class UserTripsViewModel(private val vaultUseCase: VaultUseCase) : BaseMVIVViewM
             }
             result.onSuccess {
                 _deleteTripStatus.emit(UserTripsViewModelIntent.DeleteViewEffect.DeleteTripSuccess)
+                authPreferencesUseCase.updateTripCount(-1)
                 val currentList = _userTripsStatus.value.data
                 if (currentList != null) {
                     _userTripsStatus.value = _userTripsStatus.value.copy(

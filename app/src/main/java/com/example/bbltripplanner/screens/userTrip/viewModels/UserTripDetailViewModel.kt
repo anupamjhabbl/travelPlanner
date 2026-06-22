@@ -7,6 +7,7 @@ import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.TripData
 import com.example.bbltripplanner.screens.userTrip.usecases.UserTripDetailUseCase
+import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class UserTripDetailViewModel(
     val tripId: String?,
-    private val userTripDetailUseCase: UserTripDetailUseCase
+    private val userTripDetailUseCase: UserTripDetailUseCase,
+    private val authPreferencesUseCase: AuthPreferencesUseCase
 ): BaseMVIVViewModel<UserTripDetailIntent.ViewEvent>() {
     private val _userTripDetailFetchStatus: MutableStateFlow<RequestResponseStatus<TripData>> = MutableStateFlow(RequestResponseStatus())
     val userTripDetailFetchStatus: StateFlow<RequestResponseStatus<TripData>> = _userTripDetailFetchStatus.asStateFlow()
@@ -45,6 +47,7 @@ class UserTripDetailViewModel(
             }
             tripDetailResult.onSuccess {
                 _userTripDetailFetchStatus.value = userTripDetailFetchStatus.value.copy(isLoading = false)
+                authPreferencesUseCase.updateTripCount(1)
                 _viewEffect.send(UserTripDetailIntent.ViewEffect.ShowMessage(true))
             }
             tripDetailResult.onFailure {

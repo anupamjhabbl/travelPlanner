@@ -253,6 +253,7 @@ class PostingInitViewModel(
             }
             postTripResult.onSuccess {
                 _viewEffects.emit(PostingInitIntent.ViewEffect.HideLoading)
+                authPreferencesUseCase.updateTripCount(1)
                 _viewEffects.emit(PostingInitIntent.ViewEffect.GoNext(it))
             }
             postTripResult.onFailure {

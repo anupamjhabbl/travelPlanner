@@ -113,6 +113,7 @@ class ProfileViewModel(
                 if (user != null) {
                     currentUser = user
                     _userData.value = RequestStatus.Success(user)
+                    authPreferencesUseCase.saveLoggedUser(user)
                 }
             }
         }
