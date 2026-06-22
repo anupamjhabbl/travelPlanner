@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
@@ -47,6 +49,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bbltripplanner.R
@@ -87,7 +90,8 @@ fun ItineraryDetailView(
     CommonLifecycleAwareLaunchedEffect(viewModel.viewEffect) { effect ->
         when (effect) {
             is ItineraryDetailIntent.ViewEffect.ErrorInActivityCreation -> {
-                ComposeViewUtils.showToast(context, effect.message)
+                val errorMsg = ErrorUtils.getMessage(context, effect.message) ?: effect.message
+                ComposeViewUtils.showToast(context, errorMsg)
             }
         }
     }
@@ -122,15 +126,20 @@ fun ItineraryDetailView(
                 }
             )
         } else {
+            val activities = activitiesStatus.data?.itineraryActivities ?: emptyList()
             Column(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    item {
-                        PlaceHeader(imageUrl = "", name = activitiesStatus.data?.placeName ?: "", address = activitiesStatus.data?.location?.displayName ?: "")
-                    }
+                if (activities.isEmpty()) {
+                    PlaceHeader(
+                        imageUrl = "",
+                        name = activitiesStatus.data?.placeName ?: "",
+                        address = activitiesStatus.data?.location?.displayName ?: ""
+                    )
 
-                    item {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ) {
                         Column(
                             modifier = Modifier.padding(dimensionResource(id = R.dimen.module_16))
                         ) {
@@ -140,21 +149,78 @@ fun ItineraryDetailView(
                                 textColor = customColors.secondaryBackground
                             )
                         }
-                    }
 
-                    val activities = activitiesStatus.data?.itineraryActivities ?: emptyList()
-                    if (activities.isEmpty()) {
-                        item {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .padding(
+                                    bottom = 32.dp,
+                                    start = 24.dp,
+                                    top = 0.dp,
+                                    end = 24.dp
+                                ),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(32.dp),
+                                    .size(72.dp)
+                                    .background(customColors.secondaryBackground.copy(alpha = 0.1f), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-                                ComposeTextView.TextView(text = stringResource(R.string.no_activities))
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = null,
+                                    tint = customColors.secondaryBackground,
+                                    modifier = Modifier.size(36.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            ComposeTextView.TitleTextView(
+                                text = "No Activities",
+                                fontSize = 18.sp,
+                                textColor = customColors.titleTextColor,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            ComposeTextView.TextView(
+                                text = stringResource(R.string.no_activities),
+                                fontSize = 14.sp,
+                                textColor = customColors.hintTextColor,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        item {
+                            PlaceHeader(
+                                imageUrl = "",
+                                name = activitiesStatus.data?.placeName ?: "",
+                                address = activitiesStatus.data?.location?.displayName ?: ""
+                            )
+                        }
+
+                        item {
+                            Column(
+                                modifier = Modifier.padding(dimensionResource(id = R.dimen.module_16))
+                            ) {
+                                ComposeTextView.TitleTextView(
+                                    text = stringResource(R.string.activities),
+                                    fontSize = 18.sp,
+                                    textColor = customColors.secondaryBackground
+                                )
                             }
                         }
-                    } else {
+
                         items(activities) { activity ->
                             ActivityItem(
                                 activity = activity,
@@ -172,6 +238,7 @@ fun ItineraryDetailView(
                                     }
                                 }
                             )
+
                             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.module_16)))
                         }
                     }
@@ -467,6 +534,9 @@ fun PlaceHeader(
                         fontSize = 24.sp,
                         textColor = customColors.titleTextColor
                     )
+
+                    Spacer(Modifier.height(4.dp))
+
                     address?.let {
                         ComposeTextView.TextView(
                             text = it,

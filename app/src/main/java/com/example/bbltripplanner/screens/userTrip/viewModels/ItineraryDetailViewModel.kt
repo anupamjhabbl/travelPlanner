@@ -73,10 +73,9 @@ class ItineraryDetailViewModel(
                 _actionStatus.value = RequestResponseStatus(data = Unit)
             }
             result.onFailure { error ->
-                _actionStatus.value = RequestResponseStatus(data = Unit)
-                if (error is TripPlannerException) {
-                    _viewEffect.send(ItineraryDetailIntent.ViewEffect.ErrorInActivityCreation(error.message ?: ""))
-                }
+                val errorMsg = ErrorUtils.toErrorType(error)
+                _actionStatus.value = RequestResponseStatus(error = errorMsg)
+                _viewEffect.send(ItineraryDetailIntent.ViewEffect.ErrorInActivityCreation(errorMsg))
             }
         }
     }
@@ -106,10 +105,9 @@ class ItineraryDetailViewModel(
                 _actionStatus.value = RequestResponseStatus(data = Unit)
             }
             result.onFailure { error ->
-                _actionStatus.value = RequestResponseStatus(data = Unit)
-                if (error is TripPlannerException) {
-                    _viewEffect.send(ItineraryDetailIntent.ViewEffect.ErrorInActivityCreation(error.message ?: ""))
-                }
+                val errorMsg = ErrorUtils.toErrorType(error)
+                _actionStatus.value = RequestResponseStatus(error = errorMsg)
+                _viewEffect.send(ItineraryDetailIntent.ViewEffect.ErrorInActivityCreation(errorMsg))
             }
         }
     }
@@ -133,10 +131,9 @@ class ItineraryDetailViewModel(
                 _actionStatus.value = RequestResponseStatus(data = Unit)
             }
             result.onFailure { error ->
-                _actionStatus.value = RequestResponseStatus(data = Unit)
-                if (error is TripPlannerException) {
-                    _viewEffect.send(ItineraryDetailIntent.ViewEffect.ErrorInActivityCreation(error.message ?: ""))
-                }
+                val errorMsg = ErrorUtils.toErrorType(error)
+                _actionStatus.value = RequestResponseStatus(error = errorMsg)
+                _viewEffect.send(ItineraryDetailIntent.ViewEffect.ErrorInActivityCreation(errorMsg))
             }
         }
     }
