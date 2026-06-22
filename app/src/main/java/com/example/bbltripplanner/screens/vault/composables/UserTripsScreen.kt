@@ -32,6 +32,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -308,7 +309,14 @@ fun TripListItem(
     onShareClick: () -> Unit
 ) {
     val customColors = LocalCustomColors.current
-    val menuItems = listOf(MenuItems.MyProfileMenuItem.EDIT.value, MenuItems.MyProfileMenuItem.SHARE.value)
+    var menuItems by remember {
+        mutableStateOf(listOf(MenuItems.MyProfileMenuItem.SHARE.value))
+    }
+    LaunchedEffect(trip) {
+        if (trip.role == UserRole.ADMIN) {
+            menuItems = listOf(MenuItems.MyProfileMenuItem.EDIT.value).plus(menuItems.toMutableList())
+        }
+    }
 
     Row(
         modifier = Modifier
