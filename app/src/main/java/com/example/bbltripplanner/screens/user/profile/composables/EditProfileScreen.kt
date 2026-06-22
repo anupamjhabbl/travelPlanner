@@ -500,7 +500,7 @@ private fun UserFieldsSection(
                 supportingText = {
                     if (!isPhoneValid && (showValidationErrors || (!isPhoneFocused && hasPhoneFocused))) {
                         ComposeTextView.TextView(
-                            text = if (!isPhoneEmpty && !isCountryCodeValid) {
+                            text = if (!isCountryCodeValid) {
                                 stringResource(R.string.invalid_country_code_alert)
                             } else {
                                 stringResource(R.string.invalid_phone_number_alert)
