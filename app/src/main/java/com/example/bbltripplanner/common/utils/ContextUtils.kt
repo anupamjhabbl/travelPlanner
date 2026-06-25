@@ -2,12 +2,15 @@ package com.example.bbltripplanner.common.utils
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import com.example.bbltripplanner.common.Constants
+import androidx.core.net.toUri
 
 fun Context.openDeeplink(deeplink: String?) {
     if (deeplink?.isNotEmpty() == true) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deeplink))
+        val intent = Intent(Intent.ACTION_VIEW, deeplink.toUri())
         if (intent.resolveActivity(packageManager) != null) {
             this.startActivity(intent)
         }
@@ -29,4 +32,14 @@ fun getDeeplinkUrl(tripId: String?): String {
     } else {
         "${Constants.TRIP_PLANNER_DEEPLINK}/$tripId"
     }
+}
+
+fun Context.isNetworkAvailable(): Boolean {
+    val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+    if (connectivityManager != null) {
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+    return false
 }

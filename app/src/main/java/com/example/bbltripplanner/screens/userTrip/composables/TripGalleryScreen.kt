@@ -1,6 +1,8 @@
 package com.example.bbltripplanner.screens.userTrip.composables
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -27,6 +30,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.CameraEnhance
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -80,7 +85,8 @@ fun TripGalleryScreen(
         viewModel.galleryViewEffect.collect { effect ->
             when (effect) {
                 is TripGalleryIntent.GalleryViewEffect.UploadError -> {
-                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                    val errorMsg = ErrorUtils.getMessage(context, effect.message) ?: effect.message
+                    Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
                 }
                 is TripGalleryIntent.GalleryViewEffect.UploadSuccess -> {
                     Toast.makeText(context, messageSuccess, Toast.LENGTH_SHORT).show()
@@ -150,8 +156,10 @@ fun TripGalleryScreen(
                         }
                     )
                 } else if (photos.isEmpty()) {
-                    ComposeViewUtils.FullScreenErrorComposable(
-                        Pair(stringResource(R.string.no_photos_title), stringResource(R.string.no_photos))
+                    TripGalleryEmptyState(
+                        onInitiateClick = {
+                            openPhotoPicker(photoPickerLauncher)
+                        }
                     )
                 } else {
                     val uploadingCount =
@@ -189,39 +197,45 @@ fun TripGalleryScreen(
             }
         }
 
-        Box(
-            modifier = Modifier
-                .padding(24.dp)
-                .align(Alignment.BottomEnd)
-        ) {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    photoPickerLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                },
-                containerColor = LocalCustomColors.current.secondaryBackground,
-                contentColor = LocalCustomColors.current.primaryButtonText,
-                shape = RoundedCornerShape(24.dp),
-                modifier = Modifier.padding(bottom = 16.dp),
+        if (photos.isNotEmpty()) {
+            Box(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .align(Alignment.BottomEnd)
             ) {
-                Icon(
-                    imageVector = Icons.Default.CameraEnhance,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = LocalCustomColors.current.primaryButtonText
-                )
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        openPhotoPicker(photoPickerLauncher)
+                    },
+                    containerColor = LocalCustomColors.current.secondaryBackground,
+                    contentColor = LocalCustomColors.current.primaryButtonText,
+                    shape = RoundedCornerShape(24.dp),
+                    modifier = Modifier.padding(bottom = 16.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CameraEnhance,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = LocalCustomColors.current.primaryButtonText
+                    )
 
-                Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(8.dp))
 
-                ComposeTextView.TextView(
-                    text = stringResource(R.string.add_photos),
-                    textColor = LocalCustomColors.current.primaryButtonText,
-                    fontWeight = FontWeight.Bold
-                )
+                    ComposeTextView.TextView(
+                        text = stringResource(R.string.add_photos),
+                        textColor = LocalCustomColors.current.primaryButtonText,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }
+}
+
+private fun openPhotoPicker(photoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, List<@JvmSuppressWildcards Uri>>) {
+    photoPickerLauncher.launch(
+        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+    )
 }
 
 @Composable
@@ -229,7 +243,7 @@ fun GalleryTopBar(tripName: String, onBack: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onBack) {
@@ -332,6 +346,70 @@ fun PhotoGridItem(photo: TripPhoto, onClick: () -> Unit, onRetryUpload: () -> Un
                     else -> {}
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun TripGalleryEmptyState(
+    onInitiateClick: () -> Unit
+) {
+    val customColors = LocalCustomColors.current
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .background(customColors.secondaryBackground.copy(alpha = 0.1f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.CameraEnhance,
+                contentDescription = null,
+                tint = customColors.secondaryBackground,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        ComposeTextView.TitleTextView(
+            text = stringResource(R.string.no_photos_title),
+            fontSize = 20.sp,
+            textColor = customColors.titleTextColor,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        ComposeTextView.TextView(
+            text = stringResource(R.string.no_photos),
+            fontSize = 14.sp,
+            textColor = customColors.hintTextColor,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onInitiateClick,
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.7f)
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(customColors.secondaryBackground)
+        ) {
+            ComposeTextView.TitleTextView(
+                text = stringResource(R.string.add_photos),
+                textColor = customColors.primaryBackground,
+                fontSize = 14.sp
+            )
         }
     }
 }

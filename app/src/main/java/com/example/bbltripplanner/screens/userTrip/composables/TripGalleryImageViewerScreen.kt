@@ -38,6 +38,7 @@ import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.utils.DateUtils.toFormattedDateString
 import com.example.bbltripplanner.common.utils.ImageActionUtils
+import com.example.bbltripplanner.common.utils.isNetworkAvailable
 import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryIntent
 import com.example.bbltripplanner.screens.userTrip.viewModels.TripGalleryViewModel
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
@@ -56,6 +57,7 @@ fun TripGalleryImageViewerScreen(
     val scope = rememberCoroutineScope()
     val downloadImageMsg = stringResource(R.string.download_img_msg)
     val shareImageMsg = stringResource(R.string.share_img_msg)
+    val networkErrorMsg = stringResource(R.string.no_internet_connection)
 
     Box(
         modifier = Modifier
@@ -124,9 +126,14 @@ fun TripGalleryImageViewerScreen(
                         onClick = {
                             val url = photo.originalMediaUrl ?: photo.compressedMediaUrl
                             if (url != null) {
-                                val fileName = "TripImage_${photo.id}.jpg"
-                                viewModel.processEvent(TripGalleryIntent.ViewEvent.DownloadImage(context, url, fileName))
-                                Toast.makeText(context, downloadImageMsg, Toast.LENGTH_SHORT).show()
+                                val isRemote = url.startsWith("http://", ignoreCase = true) || url.startsWith("https://", ignoreCase = true)
+                                if (isRemote && !context.isNetworkAvailable()) {
+                                    Toast.makeText(context, networkErrorMsg, Toast.LENGTH_SHORT).show()
+                                } else {
+                                    val fileName = "TripImage_${photo.id}.jpg"
+                                    viewModel.processEvent(TripGalleryIntent.ViewEvent.DownloadImage(context, url, fileName))
+                                    Toast.makeText(context, downloadImageMsg, Toast.LENGTH_SHORT).show()
+                                }
                             }
                         },
                         modifier = Modifier
@@ -147,10 +154,15 @@ fun TripGalleryImageViewerScreen(
                     IconButton(
                         onClick = {
                             val url = photo.originalMediaUrl ?: photo.compressedMediaUrl
-                            url?.let {
-                                Toast.makeText(context, shareImageMsg, Toast.LENGTH_SHORT).show()
-                                scope.launch {
-                                    ImageActionUtils.shareImage(context, it)
+                            if (url != null) {
+                                val isRemote = url.startsWith("http://", ignoreCase = true) || url.startsWith("https://", ignoreCase = true)
+                                if (isRemote && !context.isNetworkAvailable()) {
+                                    Toast.makeText(context, networkErrorMsg, Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, shareImageMsg, Toast.LENGTH_SHORT).show()
+                                    scope.launch {
+                                        ImageActionUtils.shareImage(context, url)
+                                    }
                                 }
                             }
                         },

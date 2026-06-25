@@ -64,7 +64,7 @@ class UserTripDetailViewModel(
                 userTripDetailUseCase.getUserTripDetail(tripId)
             }
             tripDetailResult.onSuccess { tripData ->
-                _userTripDetailFetchStatus.value =  userTripDetailFetchStatus.value.copy(isLoading = false, data = tripData)
+                _userTripDetailFetchStatus.value =  userTripDetailFetchStatus.value.copy(isLoading = false, data = tripData, error = null)
             }
             tripDetailResult.onFailure {
                 val errorMsg = ErrorUtils.toErrorType(it)

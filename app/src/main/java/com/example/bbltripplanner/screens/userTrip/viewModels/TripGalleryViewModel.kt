@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.example.bbltripplanner.R
 import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
@@ -199,7 +198,7 @@ class TripGalleryViewModel(
                     _galleryViewEffect.send(TripGalleryIntent.GalleryViewEffect.SaveSuccess)
                 }
             } catch (e: Exception) {
-                _galleryViewEffect.send(TripGalleryIntent.GalleryViewEffect.UploadError(e.message ?: context.getString(R.string.photos_save_failed)))
+                _galleryViewEffect.send(TripGalleryIntent.GalleryViewEffect.UploadError(e.message ?: Constants.DEFAULT_ERROR_MESSAGE))
             }
         }
     }
