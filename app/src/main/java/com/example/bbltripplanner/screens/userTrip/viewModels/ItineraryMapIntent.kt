@@ -12,7 +12,7 @@ sealed class ItineraryMapIntent {
 
     sealed interface ViewEffect {
         data class ErrorInSpotCreation(val message: String): ViewEffect
-        data class ShowSuggestions(val suggestions: List<Location>) : ViewEffect
+        data class ShowSuggestions(val suggestions: List<Location>, val isError: Boolean = false, val errorMessage: String? = null) : ViewEffect
         object ShowLocationLoading : ViewEffect
         object HideLocationLoading : ViewEffect
     }

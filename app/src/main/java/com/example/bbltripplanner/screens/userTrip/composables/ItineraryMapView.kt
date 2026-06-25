@@ -2,6 +2,7 @@ package com.example.bbltripplanner.screens.userTrip.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -51,6 +53,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.example.bbltripplanner.R
+import com.example.bbltripplanner.common.utils.ErrorUtils
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButton
 import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunchedEffect
 import com.example.bbltripplanner.common.composables.ComposeButtonView
 import com.example.bbltripplanner.common.composables.ComposeImageView
@@ -111,12 +120,13 @@ fun ItineraryMapView(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var locationSuggestions by remember { mutableStateOf(emptyList<Location>()) }
     var isLocationLoading by remember { mutableStateOf(false) }
+    var isLocationError by remember { mutableStateOf(false) }
+    var locationErrorMessage by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
     val customColors = LocalCustomColors.current
     val searchQuery by itineraryMapViewModel.searchQuery.collectAsState()
     val accessToken = stringResource(id = R.string.mapbox_access_token)
     
-    var addSpotsDialogVisibility by remember { mutableStateOf(false) }
     var showAddSpotForm by remember { mutableStateOf(false) }
     val mapDirectionFailureMsg = stringResource(R.string.map_directions_failure)
     
@@ -124,16 +134,11 @@ fun ItineraryMapView(
     var description by remember { mutableStateOf("") }
     var selectedLocation: Location? by remember { mutableStateOf(null) }
 
-    LaunchedEffect(spotsStatus) {
-        if (!spotsStatus.isLoading && spotsStatus.data.isNullOrEmpty() && spotsStatus.error == null) {
-            addSpotsDialogVisibility = true
-        }
-    }
-
     CommonLifecycleAwareLaunchedEffect(itineraryMapViewModel.viewEffect) { viewEffect ->
         when (viewEffect) {
             is ItineraryMapIntent.ViewEffect.ErrorInSpotCreation -> {
-                ComposeViewUtils.showToast(context, viewEffect.message)
+                val errorMsg = ErrorUtils.getMessage(context, viewEffect.message) ?: viewEffect.message
+                ComposeViewUtils.showToast(context, errorMsg)
             }
             ItineraryMapIntent.ViewEffect.HideLocationLoading -> {
                 isLocationLoading = false
@@ -143,34 +148,10 @@ fun ItineraryMapView(
             }
             is ItineraryMapIntent.ViewEffect.ShowSuggestions -> {
                 locationSuggestions = viewEffect.suggestions
+                isLocationError = viewEffect.isError
+                locationErrorMessage = viewEffect.errorMessage
             }
         }
-    }
-
-    if (addSpotsDialogVisibility) {
-        AlertDialog(
-            onDismissRequest = { },
-            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
-            title = { ComposeTextView.TitleTextView(text = stringResource(R.string.add_spots_title)) },
-            text = { ComposeTextView.TextView(text = stringResource(R.string.add_spots_message), fontSize = 16.sp) },
-            confirmButton = {
-                ComposeButtonView.PrimaryButtonView(
-                    modifier = Modifier.width(60.dp),
-                    text = stringResource(R.string.ok),
-                    onClick = {
-                        addSpotsDialogVisibility = false
-                        showAddSpotForm = true
-                    }
-                )
-            },
-            dismissButton = {
-                ComposeButtonView.SecondaryButtonView(
-                    text = stringResource(R.string.cancel),
-                    onClick = { addSpotsDialogVisibility = false }
-                )
-            },
-            containerColor = customColors.primaryBackground
-        )
     }
 
     if (showAddSpotForm) {
@@ -266,6 +247,8 @@ fun ItineraryMapView(
                 locationList = locationSuggestions,
                 searchQuery = searchQuery,
                 isLocationLoading = isLocationLoading,
+                isLocationError = isLocationError,
+                errorMessage = ErrorUtils.getMessage(context, locationErrorMessage),
                 onQueryChanged = { itineraryMapViewModel.processEvent(ItineraryMapIntent.ViewEvent.OnQueryChanged(it)) },
                 updateLocation = {
                     selectedLocation = it
@@ -356,99 +339,185 @@ fun ItineraryMapView(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        MapboxMap(
-            Modifier.fillMaxSize(),
-            mapViewportState = mapViewportState,
-            scaleBar = {},
-            logo = {},
-            attribution = {},
-            compass = {},
-            style = {
-                MapStyle(style = "mapbox://styles/mapbox/satellite-streets-v12")
-            }
-        ) {
-            LineLayer(
-                sourceState = routeSourceState,
-                layerId = "route-layer"
+        if ((spotsStatus.isLoading && spotsStatus.data.isNullOrEmpty()) || actionStatus.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                lineColor = ColorValue(customColors.secondaryBackground)
-                lineWidth = DoubleValue(4.0)
-                lineDasharray = DoubleListValue(listOf(2.0, 2.0))
-                lineCap = LineCapValue.ROUND
-                lineJoin = LineJoinValue.ROUND
+                ComposeViewUtils.FullScreenLoading()
             }
-
-            places.forEachIndexed { index, place ->
-                val lat = place.location.lat?.toDoubleOrNull()
-                val lon = place.location.lon?.toDoubleOrNull()
-                if (lat != null && lon != null) {
-                    val point = Point.fromLngLat(lon, lat)
-                    ViewAnnotation(
-                        options = viewAnnotationOptions {
-                            geometry(point)
-                            allowOverlap(true)
-                        }
-                    ) {
-                        ViewAnnotationContent(index) {
-                            mapViewportState.flyTo(
-                                cameraOptions {
-                                    center(point)
-                                    zoom(15.0)
-                                }
-                            )
-                        }
+        } else if (spotsStatus.error != null) {
+            val errorStrings = ErrorUtils.getErrorStrings(context, spotsStatus.error)
+            ComposeViewUtils.FullScreenErrorComposable(
+                errorStrings = errorStrings,
+                isActionButton = ErrorUtils.isRetryableError(spotsStatus.error),
+                onActionButtonClick = {
+                    itineraryId?.let {
+                        itineraryMapViewModel.processEvent(ItineraryMapIntent.ViewEvent.FetchSpots(it))
                     }
                 }
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 60.dp, end = 24.dp)
-        ) {
-            Column(horizontalAlignment = Alignment.End) {
-                NewSpotButton {
-                    showAddSpotForm = true
-                }
-            }
-        }
-
-        if (places.isNotEmpty()) {
+            )
+        } else if (spotsStatus.data.isNullOrEmpty()) {
             Column(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = dimensionResource(id = R.dimen.module_24))
+                    .fillMaxSize()
+                    .background(customColors.primaryBackground)
+                    .statusBarsPadding()
             ) {
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = dimensionResource(id = R.dimen.module_16)),
-                    verticalAlignment = Alignment.CenterVertically,
-                    state = rememberLazyListState()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    itemsIndexed(places) { index, place ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            PlaceCard(place) {
-                                scope.launch {
-                                    CommonNavigationChannel.navigateTo(
-                                        NavigationAction.Navigate(
-                                            AppNavigationScreen.ItineraryDetailView.createRoute(place.placeId)
-                                        )
-                                    )
-                                }
-                            }
+                    IconButton(
+                        onClick = {
+                            scope.launch { CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp) }
+                        },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = customColors.secondaryBackground
+                        )
+                    }
 
-                            if (index < places.size - 1) {
-                                DottedArrowSeparator()
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    ComposeTextView.TitleTextView(
+                        text = stringResource(id = R.string.itinerary),
+                        fontSize = 24.sp
+                    )
+                }
+
+                ItineraryMapEmptyState(
+                    onInitiateClick = { showAddSpotForm = true }
+                )
+            }
+        } else {
+            MapboxMap(
+                Modifier.fillMaxSize(),
+                mapViewportState = mapViewportState,
+                scaleBar = {},
+                logo = {},
+                attribution = {},
+                compass = {},
+                style = {
+                    MapStyle(style = "mapbox://styles/mapbox/satellite-streets-v12")
+                }
+            ) {
+                LineLayer(
+                    sourceState = routeSourceState,
+                    layerId = "route-layer"
+                ) {
+                    lineColor = ColorValue(customColors.secondaryBackground)
+                    lineWidth = DoubleValue(4.0)
+                    lineDasharray = DoubleListValue(listOf(2.0, 2.0))
+                    lineCap = LineCapValue.ROUND
+                    lineJoin = LineJoinValue.ROUND
+                }
+
+                places.forEachIndexed { index, place ->
+                    val lat = place.location.lat?.toDoubleOrNull()
+                    val lon = place.location.lon?.toDoubleOrNull()
+                    if (lat != null && lon != null) {
+                        val point = Point.fromLngLat(lon, lat)
+                        ViewAnnotation(
+                            options = viewAnnotationOptions {
+                                geometry(point)
+                                allowOverlap(true)
+                            }
+                        ) {
+                            ViewAnnotationContent(index) {
+                                mapViewportState.flyTo(
+                                    cameraOptions {
+                                        center(point)
+                                        zoom(15.0)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.module_16))
+                    .size(dimensionResource(id = R.dimen.module_36))
+                    .align(Alignment.TopStart)
+                    .background(Color.White.copy(alpha = 0.6f), CircleShape)
+                    .clickable {
+                        scope.launch {
+                            CommonNavigationChannel.navigateTo(NavigationAction.NavigateUp)
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    modifier = Modifier.size(20.dp),
+                    tint = customColors.secondaryBackground
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 60.dp, end = 24.dp)
+            ) {
+                Column(horizontalAlignment = Alignment.End) {
+                    NewSpotButton {
+                        showAddSpotForm = true
+                    }
+                }
+            }
+
+            if (places.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = dimensionResource(id = R.dimen.module_24))
+                ) {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(horizontal = dimensionResource(id = R.dimen.module_16)),
+                        verticalAlignment = Alignment.CenterVertically,
+                        state = rememberLazyListState()
+                    ) {
+                        itemsIndexed(places) { index, place ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                PlaceCard(place) {
+                                    scope.launch {
+                                        CommonNavigationChannel.navigateTo(
+                                            NavigationAction.Navigate(
+                                                AppNavigationScreen.ItineraryDetailView.createRoute(place.placeId)
+                                            )
+                                        )
+                                    }
+                                }
+
+                                if (index < places.size - 1) {
+                                    DottedArrowSeparator()
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        
-        if (spotsStatus.isLoading || actionStatus.isLoading) {
-            ComposeViewUtils.FullScreenLoading()
+
+        if (spotsStatus.isLoading && !spotsStatus.data.isNullOrEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                ComposeViewUtils.FullScreenLoading()
+            }
         }
     }
 }
@@ -561,5 +630,69 @@ fun ViewAnnotationContent(
             fontSize = 16.sp,
             textColor = Color.White
         )
+    }
+}
+
+@Composable
+fun ItineraryMapEmptyState(
+    onInitiateClick: () -> Unit
+) {
+    val customColors = LocalCustomColors.current
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .background(customColors.secondaryBackground.copy(alpha = 0.1f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.LocationOn,
+                contentDescription = null,
+                tint = customColors.secondaryBackground,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        ComposeTextView.TitleTextView(
+            text = stringResource(R.string.add_spots_title),
+            fontSize = 20.sp,
+            textColor = customColors.titleTextColor,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        ComposeTextView.TextView(
+            text = stringResource(R.string.add_spots_message),
+            fontSize = 14.sp,
+            textColor = customColors.hintTextColor,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onInitiateClick,
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.7f)
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(customColors.secondaryBackground)
+        ) {
+            ComposeTextView.TitleTextView(
+                text = stringResource(R.string.add),
+                textColor = customColors.primaryBackground,
+                fontSize = 14.sp
+            )
+        }
     }
 }

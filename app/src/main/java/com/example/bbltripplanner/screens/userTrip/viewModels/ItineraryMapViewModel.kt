@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.BuildConfig
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestResponseStatus
-import com.example.bbltripplanner.common.entity.TripPlannerException
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.userTrip.entity.AddSpotRequest
 import com.example.bbltripplanner.screens.userTrip.entity.ItineraryPlace
@@ -75,11 +75,17 @@ class ItineraryMapViewModel(
             }
             result.onSuccess { suggestions ->
                 _viewEffect.send(ItineraryMapIntent.ViewEffect.HideLocationLoading)
-                _viewEffect.send(ItineraryMapIntent.ViewEffect.ShowSuggestions(suggestions))
+                _viewEffect.send(ItineraryMapIntent.ViewEffect.ShowSuggestions(suggestions, isError = false))
             }
-            result.onFailure {
+            result.onFailure { error ->
                 _viewEffect.send(ItineraryMapIntent.ViewEffect.HideLocationLoading)
-                _viewEffect.send(ItineraryMapIntent.ViewEffect.ShowSuggestions(emptyList()))
+                _viewEffect.send(
+                    ItineraryMapIntent.ViewEffect.ShowSuggestions(
+                        suggestions = emptyList(),
+                        isError = true,
+                        errorMessage = ErrorUtils.toErrorType(error)
+                    )
+                )
             }
         }
     }
@@ -99,10 +105,9 @@ class ItineraryMapViewModel(
                 _actionStatus.value = RequestResponseStatus(data = Unit)
             }
             result.onFailure { error ->
-                _actionStatus.value = RequestResponseStatus(data = Unit)
-                if (error is TripPlannerException) {
-                    _viewEffect.send(ItineraryMapIntent.ViewEffect.ErrorInSpotCreation(error.message ?: ""))
-                }
+                val errorMsg = ErrorUtils.toErrorType(error)
+                _actionStatus.value = RequestResponseStatus(error = errorMsg)
+                _viewEffect.send(ItineraryMapIntent.ViewEffect.ErrorInSpotCreation(errorMsg))
             }
         }
     }
@@ -117,7 +122,8 @@ class ItineraryMapViewModel(
                 _spotsStatus.value = RequestResponseStatus(data = spots)
             }
             result.onFailure { error ->
-                _spotsStatus.value = RequestResponseStatus(error = error.message)
+                val errorMsg = ErrorUtils.toErrorType(error)
+                _spotsStatus.value = RequestResponseStatus(error = errorMsg)
             }
         }
     }
