@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.user.myacount.entity
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FlightTakeoff
 import androidx.compose.material.icons.filled.Forum
@@ -41,6 +42,7 @@ object ProfileActionResourceMapper {
         return listOf(
             VaultMenuItem(Constants.TRIP_PAGE, Icons.Default.FlightTakeoff, R.string.vault_trip_title, R.string.vault_trip_sub_title),
             VaultMenuItem(Constants.FAVOURITES, Icons.Default.Favorite,R.string.vault_fav_title, R.string.vault_fav_sub_title),
+            VaultMenuItem(Constants.REVIEW_PAGES, Icons.Default.Book, R.string.review_title, R.string.review_sub_title),
             VaultMenuItem(Constants.BUZZ_PAGE, Icons.Default.Forum,R.string.vault_buzz_title, R.string.vault_buzz_sub_title)
         )
     }

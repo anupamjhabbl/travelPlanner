@@ -297,7 +297,7 @@
     <string name="welcome_vault">Welcome to your Vault</string>
     <string name="travel_stats">Your Travel Statistics</string>
     <string name="manage_journey">Manage your journeys</string>
-    <string name="vault_buzz_sub_title">Share experiences and read social threads from mates</string>
+    <string name="vault_buzz_sub_title">Share experiences and manage your buzz.</string>
     <string name="vault_buzz_title">Travel Buzz</string>
     <string name="vault_fav_title">Your Favourites</string>
     <string name="vault_trip_title">Your Trips</string>
@@ -329,4 +329,6 @@
     <string name="something_went_wrong">Oops! Something went wrong. We are working on it.</string>
     <string name="not_authorized_subtitle">You don\'t have permission for accessing this feature. Kindly ask the admin of the trip.</string>
     <string name="not_authorized_title">Permission Required</string>
+    <string name="review_sub_title">Revisit your shared threads and stories.</string>
+    <string name="review_title">Your Stories</string>
 </resources>

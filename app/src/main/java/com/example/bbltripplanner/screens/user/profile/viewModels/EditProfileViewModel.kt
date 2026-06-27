@@ -1,10 +1,8 @@
 package com.example.bbltripplanner.screens.user.profile.viewModels
 
 import androidx.lifecycle.viewModelScope
-import com.example.bbltripplanner.common.Constants
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.RequestStatus
-import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.entity.UpdateUserData
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.ErrorUtils
