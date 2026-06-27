@@ -49,6 +49,7 @@ import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionItem
 import com.example.bbltripplanner.screens.user.myacount.entity.ProfileActionResourceMapper
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountIntent
 import com.example.bbltripplanner.screens.user.myacount.viewModels.MyAccountViewModel
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.ui.theme.LocalCustomColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -69,9 +70,10 @@ fun MyAccountView() {
     LaunchedEffect(Unit) {
         viewModel.viewState.collectLatest { viewState ->
             when (viewState) {
-                MyAccountIntent.ViewState.LogoutFailure -> {
+                is MyAccountIntent.ViewState.LogoutFailure -> {
                     isLoading = false
-                    logoutFailure(context, message)
+                    val errorMsg = ErrorUtils.getMessage(context, viewState.errorType)
+                    logoutFailure(context, errorMsg ?: message)
                 }
                 MyAccountIntent.ViewState.LogoutSuccess -> {
                     isLoading = false

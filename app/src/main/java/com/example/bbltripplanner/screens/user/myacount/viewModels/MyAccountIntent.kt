@@ -4,7 +4,7 @@ class MyAccountIntent {
     sealed interface ViewState {
         data object Loading: ViewState
         data object LogoutSuccess: ViewState
-        data object LogoutFailure: ViewState
+        data class LogoutFailure(val errorType: String?): ViewState
     }
 
     sealed interface ViewEvent {

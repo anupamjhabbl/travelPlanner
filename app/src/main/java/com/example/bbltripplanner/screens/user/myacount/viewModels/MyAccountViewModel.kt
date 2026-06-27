@@ -6,6 +6,7 @@ import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -32,8 +33,9 @@ class MyAccountViewModel(
                 authPreferencesUseCase.clearUserData()
                 _viewState.emit(MyAccountIntent.ViewState.LogoutSuccess)
             }
-            logOutResult.onFailure {
-                _viewState.emit(MyAccountIntent.ViewState.LogoutFailure)
+            logOutResult.onFailure { exception ->
+                val errorMsg = ErrorUtils.toErrorType(exception)
+                _viewState.emit(MyAccountIntent.ViewState.LogoutFailure(errorMsg))
             }
         }
     }
