@@ -38,7 +38,7 @@ class ProfileFollowingViewModel(
                     profileRelationUsecase.getFollowings(it)
                 }
                 result.onSuccess { result ->
-                    _userList.value = _userList.value.copy(
+                    _userList.value = RequestResponseStatus(
                         isLoading = false,
                         data = result?.following
                     )

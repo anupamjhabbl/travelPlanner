@@ -128,7 +128,6 @@ fun ProfileScreen (
                             user.id
                         )
                     } else {
-                        // For other users, we show nothing in the section as requested
                         Spacer(Modifier.height(38.dp))
                     }
                 }

@@ -7,6 +7,7 @@ import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.common.entity.TripPlannerException
 import com.example.bbltripplanner.common.entity.UpdateUserData
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
@@ -61,11 +62,8 @@ class EditProfileViewModel(
                 _userUpdateStatus.emit(RequestStatus.Success("User updated successfully"))
             }
             userUpdateRequest.onFailure { exception ->
-                if (exception is TripPlannerException) {
-                    _userUpdateStatus.emit(RequestStatus.Error(exception.message))
-                } else {
-                    _userUpdateStatus.emit(RequestStatus.Error(Constants.DEFAULT_ERROR))
-                }
+                val errorMsg = ErrorUtils.toErrorType(exception)
+                _userUpdateStatus.emit(RequestStatus.Error(errorMsg))
             }
         }
     }

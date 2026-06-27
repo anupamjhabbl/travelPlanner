@@ -64,6 +64,7 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.RequestStatus
 import com.example.bbltripplanner.common.entity.User
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.common.utils.FileUtils
 import com.example.bbltripplanner.common.utils.StringUtils
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
@@ -119,11 +120,8 @@ fun EditProfileScreen() {
 
                 is RequestStatus.Error -> {
                     isLoading = false
-                    if (state.message == Constants.DEFAULT_ERROR) {
-                        ComposeViewUtils.showToast(context, defaultMessage)
-                    } else {
-                        ComposeViewUtils.showToast(context, state.message ?: "")
-                    }
+                    val errorMsg = ErrorUtils.getMessage(context, state.message)
+                    ComposeViewUtils.showToast(context, errorMsg ?: defaultMessage)
                 }
 
                 is RequestStatus.Success<String> -> {
@@ -466,7 +464,9 @@ private fun UserFieldsSection(
 
             OutlinedTextField(
                 value = phoneNumber,
-                onValueChange = { phoneNumber = it.filter { char -> char.isDigit() } },
+                onValueChange = {
+                    phoneNumber = it.filter { char -> char.isDigit() }.take(10)
+                },
                 label = {
                     ComposeTextView.TextView(
                         stringResource(R.string.phone),

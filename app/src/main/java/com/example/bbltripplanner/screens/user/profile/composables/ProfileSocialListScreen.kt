@@ -46,6 +46,7 @@ import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.ErrorUtils
+import com.example.bbltripplanner.common.utils.isNetworkAvailable
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -63,6 +64,7 @@ fun ProfileFollowersPage(
     val scope = rememberCoroutineScope()
     val emptyTitle = stringResource(R.string.followers_empty_heading)
     val emptyContent = stringResource(R.string.followers_empty_content)
+    val noInternetMsg = stringResource(R.string.no_internet_connection)
     val uiState by viewModel.userList.collectAsStateWithLifecycle()
     val isSelf = viewModel.isSelfProfile()
     val context = LocalContext.current
@@ -105,7 +107,11 @@ fun ProfileFollowersPage(
                         user = user,
                         actionLabel = if (isSelf && user.isFollowing == false) stringResource(R.string.follow) else null,
                         onActionClick = {
-                            onFollowClick(user)
+                            if (context.isNetworkAvailable()) {
+                                onFollowClick(user)
+                            } else {
+                                ComposeViewUtils.showToast(context, noInternetMsg)
+                            }
                         },
                         onUserClick = {
                             scope.launch {
@@ -132,6 +138,7 @@ fun ProfileFollowingPage(
     val scope = rememberCoroutineScope()
     val emptyTitle = stringResource(R.string.following_empty_heading)
     val emptyContent = stringResource(R.string.following_empty_content)
+    val noInternetMsg = stringResource(R.string.no_internet_connection)
     val uiState by viewModel.userList.collectAsStateWithLifecycle()
     val isSelf = viewModel.isSelfProfile()
     val context = LocalContext.current
@@ -174,7 +181,11 @@ fun ProfileFollowingPage(
                         user = user,
                         actionLabel = if (isSelf) stringResource(R.string.unfollow) else null,
                         onActionClick = {
-                            onUnfollowClick(user.id)
+                            if (context.isNetworkAvailable()) {
+                                onUnfollowClick(user.id)
+                            } else {
+                                ComposeViewUtils.showToast(context, noInternetMsg)
+                            }
                         },
                         onUserClick = {
                             scope.launch {
