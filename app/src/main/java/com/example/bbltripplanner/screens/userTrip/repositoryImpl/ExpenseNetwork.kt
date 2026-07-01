@@ -34,7 +34,7 @@ class ExpenseNetwork(
         return BaseResponse.processResponse { expenseClient.getSettlements(tripId) }!!
     }
 
-    override suspend fun deleteExpense(expenseId: String): String? {
-        return BaseResponse.processResponse { expenseClient.deleteExpense(expenseId) }
+    override suspend fun deleteExpense(tripId: String, expenseId: String): String? {
+        return BaseResponse.processResponse { expenseClient.deleteExpense(tripId, expenseId) }
     }
 }

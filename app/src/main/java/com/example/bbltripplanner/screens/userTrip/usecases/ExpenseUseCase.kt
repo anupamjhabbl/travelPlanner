@@ -24,7 +24,7 @@ class ExpenseUseCase(private val repository: ExpenseRepository) {
         return repository.getSettlements(tripId)
     }
 
-    suspend fun deleteExpense(expenseId: String): String? {
-        return repository.deleteExpense(expenseId)
+    suspend fun deleteExpense(tripId: String, expenseId: String): String? {
+        return repository.deleteExpense(tripId, expenseId)
     }
 }

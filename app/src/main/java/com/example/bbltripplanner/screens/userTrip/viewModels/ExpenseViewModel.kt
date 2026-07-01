@@ -57,7 +57,7 @@ class ExpenseViewModel(
             is ExpenseIntent.ViewEvent.InitiateBudget -> initiateBudget(viewEvent.tripId, viewEvent.budget, viewEvent.currency)
             is ExpenseIntent.ViewEvent.AddExpense -> addExpense(viewEvent.tripId, viewEvent.request)
             is ExpenseIntent.ViewEvent.FetchSettlements -> fetchSettlements()
-            is ExpenseIntent.ViewEvent.DeleteExpense -> deleteExpense(viewEvent.expenseId)
+            is ExpenseIntent.ViewEvent.DeleteExpense -> deleteExpense(viewEvent.tripId, viewEvent.expenseId)
         }
     }
 
@@ -116,11 +116,11 @@ class ExpenseViewModel(
         }
     }
 
-    private fun deleteExpense(expenseId: String) {
+    private fun deleteExpense(tripId: String, expenseId: String) {
         viewModelScope.launch {
             _deleteExpenseStatus.send(ExpenseIntent.DeleteViewEffect.DeleteExpenseLoading)
             SafeIOUtil.safeCall {
-                expenseUseCase.deleteExpense(expenseId)
+                expenseUseCase.deleteExpense(tripId, expenseId)
             }.onSuccess {
                 _deleteExpenseStatus.send(ExpenseIntent.DeleteViewEffect.DeleteExpenseSuccess)
                 _expenseStatus.value = expenseStatus.value.copy(

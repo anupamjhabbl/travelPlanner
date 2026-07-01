@@ -90,6 +90,7 @@ fun TripExpensesScreen(
     val context = LocalContext.current
     val message = stringResource(R.string.min_budget_message)
     val tripExpenses by viewModel.expenseStatus.collectAsStateWithLifecycle()
+    val tripData by viewModel.tripData.collectAsStateWithLifecycle()
     var tripInitializationPopup by remember {
         mutableStateOf(false)
     }
@@ -403,7 +404,8 @@ fun TripExpensesScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                ToolBoxRowView(tripId)
+                val isTripEnded = tripData.data?.endDate?.let { it < System.currentTimeMillis() } ?: false
+                ToolBoxRowView(tripId, isTripEnded)
 
                 Spacer(Modifier.height(16.dp))
 
@@ -418,6 +420,7 @@ fun TripExpensesScreen(
                                     tripId?.let {
                                         viewModel.processEvent(
                                             ExpenseIntent.ViewEvent.DeleteExpense(
+                                                it,
                                                 item.id
                                             )
                                         )
@@ -471,13 +474,15 @@ fun TripExpensesScreen(
 
 @Composable
 fun ColumnScope.ToolBoxRowView(
-    tripId: String?
+    tripId: String?,
+    isTripEnded: Boolean
 ) {
     val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier.align(Alignment.End)
     ) {
-        Button(
+        if (!isTripEnded) {
+            Button(
             modifier = Modifier.height(38.dp).wrapContentWidth(),
             shape = RoundedCornerShape(16.dp),
             onClick = {
@@ -513,7 +518,8 @@ fun ColumnScope.ToolBoxRowView(
             }
         }
 
-        Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(8.dp))
+        }
 
         Button(
             modifier = Modifier.height(38.dp).wrapContentWidth().padding(end = 16.dp),

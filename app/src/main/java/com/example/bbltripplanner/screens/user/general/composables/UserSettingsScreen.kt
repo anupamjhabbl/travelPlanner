@@ -213,6 +213,11 @@ fun UserSettingsScreen() {
         }
     }
 
+    if (isLoading) {
+        ComposeViewUtils.FullScreenLoading()
+        return
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -220,11 +225,6 @@ fun UserSettingsScreen() {
             .verticalScroll(rememberScrollState())
     ) {
         UserSettingsToolbar()
-
-        if (isLoading) {
-            ComposeViewUtils.FullScreenLoading()
-            return@Column
-        }
 
         Spacer(modifier = Modifier.height(8.dp))
 

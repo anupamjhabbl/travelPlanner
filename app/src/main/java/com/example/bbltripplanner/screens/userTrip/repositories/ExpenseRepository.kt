@@ -11,5 +11,5 @@ interface ExpenseRepository {
     suspend fun initiateExpense(tripId: String, budget: Double, currency: Currency): ExpenseSummary?
     suspend fun addExpense(tripId: String, request: AddExpenseRequest): ExpenseItem?
     suspend fun getSettlements(tripId: String): SettlementResponse?
-    suspend fun deleteExpense(expenseId: String): String?
+    suspend fun deleteExpense(tripId: String, expenseId: String): String?
 }

@@ -378,5 +378,5 @@
     <string name="pv_role_public_title">4. Public User</string>
     <string name="pv_role_public_body">Any authenticated user not part of the trip. Access is restricted to read-only views of trips explicitly marked as "Public". Cannot view itineraries, expenses, or media under any circumstances.</string>
     <string name="pv_profile_visibility_title">5. Profile Visibility</string>
-    <string name="pv_profile_visibility_body">Anyone can view your basic profile, including your total trips, followers, and following counts. However, the detailed lists of your trips, followers, and who you are following are only visible to users if you follow them back.</string>
+    <string name="pv_profile_visibility_body">Anyone can view your basic profile, including your total trips, followers, and following counts. However, the detailed lists of your trips, followers, and who you are following are only visible to users if you follow them back or your profile is public.</string>
 </resources>

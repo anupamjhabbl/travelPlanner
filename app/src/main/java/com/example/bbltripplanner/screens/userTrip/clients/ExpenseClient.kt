@@ -32,8 +32,9 @@ interface ExpenseClient {
     @GET("trips/{tripId}/settlements")
     suspend fun getSettlements(@Path("tripId") tripId: String): Response<BaseResponse<SettlementResponse>>
 
-    @DELETE("trips/expenses/{expenseId}")
+    @DELETE("trips/{tripId}/expenses/{expenseId}")
     suspend fun deleteExpense(
+        @Path("tripId") tripId: String,
         @Path("expenseId") expenseId: String
     ): Response<BaseResponse<String?>>
 }
