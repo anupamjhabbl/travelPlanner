@@ -53,6 +53,7 @@ sealed class AppNavigationScreen(
     data object BlockedUsersScreen: AppNavigationScreen(route = Constants.NavigationScreen.BLOCKED_USERS_SCREEN)
     data object TermsOfUseScreen: AppNavigationScreen(route = Constants.NavigationScreen.TERMS_OF_USE_SCREEN)
     data object PrivacyPolicyScreen: AppNavigationScreen(route = Constants.NavigationScreen.PRIVACY_POLICY_SCREEN)
+    data object PrivacyVisibilityScreen: AppNavigationScreen(route = Constants.NavigationScreen.PRIVACY_VISIBILITY_SCREEN)
 
     // User Trip And Posting Screens
     data object AddScreen: AppNavigationScreen(route = Constants.NavigationScreen.ADD_SCREEN)
@@ -126,6 +127,7 @@ fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
         route.startsWith(Constants.NavigationScreen.BLOCKED_USERS_SCREEN) -> AppNavigationScreen.BlockedUsersScreen
         route.startsWith(Constants.NavigationScreen.TERMS_OF_USE_SCREEN) -> AppNavigationScreen.TermsOfUseScreen
         route.startsWith(Constants.NavigationScreen.PRIVACY_POLICY_SCREEN) -> AppNavigationScreen.PrivacyPolicyScreen
+        route.startsWith(Constants.NavigationScreen.PRIVACY_VISIBILITY_SCREEN) -> AppNavigationScreen.PrivacyVisibilityScreen
 
         // Home Screens
         route.startsWith(Constants.NavigationScreen.HOME_NAV_GRAPH) -> AppNavigationScreen.HomeNavGraph

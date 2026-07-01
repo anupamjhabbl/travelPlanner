@@ -308,7 +308,11 @@ fun UserSettingsScreen() {
                 icon = Icons.Default.PrivacyTip,
                 title = stringResource(R.string.privacy_visbility_title),
                 subtitle = stringResource(R.string.privacy_visibility_description),
-                onClick = { /* Handle Click */ }
+                onClick = {
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(NavigationAction.Navigate(AppNavigationScreen.PrivacyVisibilityScreen.route))
+                    }
+                }
             )
             SettingsItem(
                 icon = Icons.Default.Group,

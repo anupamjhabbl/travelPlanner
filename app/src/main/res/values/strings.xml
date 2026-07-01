@@ -366,4 +366,17 @@
     <string name="privacy_your_rights_body">You have the right to access, update, or delete your personal information at any time. You can manage your account settings and preferences directly within the app.</string>
     <string name="privacy_changes_title">6. Changes to this Policy</string>
     <string name="privacy_changes_body">Our Privacy Policy may change from time to time. We will post any privacy policy changes on this page and, if the changes are significant, we will provide a more prominent notice.</string>
+
+    <!-- Privacy and Visibility -->
+    <string name="pv_last_updated">Last Updated: July 2026</string>
+    <string name="pv_role_admin_title">1. Admin (Creator)</string>
+    <string name="pv_role_admin_body">The user who created the trip. Has full control over all aspects of the trip, including editing details, deleting the trip, adding members, and managing all related data.</string>
+    <string name="pv_role_member_title">2. Accepted Member</string>
+    <string name="pv_role_member_body">A user who was invited to the trip and has accepted. They have elevated read/write access for collaborative features like expenses and media, but cannot modify core trip details.</string>
+    <string name="pv_role_pending_title">3. Pending Member</string>
+    <string name="pv_role_pending_body">A user who has been invited but has not yet accepted the invitation. They can view the basic trip invitation details, but cannot access sensitive trip data such as detailed itineraries, trip expenses, or shared media until they explicitly accept the invite.</string>
+    <string name="pv_role_public_title">4. Public User</string>
+    <string name="pv_role_public_body">Any authenticated user not part of the trip. Access is restricted to read-only views of trips explicitly marked as "Public". Cannot view itineraries, expenses, or media under any circumstances.</string>
+    <string name="pv_profile_visibility_title">5. Profile Visibility</string>
+    <string name="pv_profile_visibility_body">Anyone can view your basic profile, including your total trips, followers, and following counts. However, the detailed lists of your trips, followers, and who you are following are only visible to users if you follow them back.</string>
 </resources>

@@ -68,4 +68,14 @@ object ProfileActionResourceMapper {
             LegalSectionItem(R.string.privacy_changes_title, R.string.privacy_changes_body)
         )
     }
+
+    fun getPrivacyVisibilitySections(): List<LegalSectionItem> {
+        return listOf(
+            LegalSectionItem(R.string.pv_role_admin_title, R.string.pv_role_admin_body),
+            LegalSectionItem(R.string.pv_role_member_title, R.string.pv_role_member_body),
+            LegalSectionItem(R.string.pv_role_pending_title, R.string.pv_role_pending_body),
+            LegalSectionItem(R.string.pv_role_public_title, R.string.pv_role_public_body),
+            LegalSectionItem(R.string.pv_profile_visibility_title, R.string.pv_profile_visibility_body)
+        )
+    }
 }

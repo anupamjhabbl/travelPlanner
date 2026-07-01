@@ -75,6 +75,7 @@ object Constants {
         const val BLOCKED_USERS_SCREEN = "blocked_users_screen"
         const val TERMS_OF_USE_SCREEN = "terms_of_use_screen"
         const val PRIVACY_POLICY_SCREEN = "privacy_policy_screen"
+        const val PRIVACY_VISIBILITY_SCREEN = "privacy_visibility_screen"
 
         // Authentication
         const val AUTHENTICATION_FORM_SCREEN = "authentication_form_screen"

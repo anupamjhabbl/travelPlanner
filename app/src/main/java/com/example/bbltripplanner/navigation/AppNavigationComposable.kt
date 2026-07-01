@@ -45,6 +45,7 @@ import com.example.bbltripplanner.screens.user.general.composables.UserSettingsS
 import com.example.bbltripplanner.screens.user.myacount.composables.MyAccountView
 import com.example.bbltripplanner.screens.user.general.composables.TermsOfUseScreen
 import com.example.bbltripplanner.screens.user.general.composables.PrivacyPolicyScreen
+import com.example.bbltripplanner.screens.user.general.composables.PrivacyVisibilityScreen
 import com.example.bbltripplanner.screens.user.profile.composables.BlockedUsersScreen
 import com.example.bbltripplanner.screens.user.profile.composables.EditProfileScreen
 import com.example.bbltripplanner.screens.user.profile.composables.ProfileScreen
@@ -223,6 +224,10 @@ fun HomeNavigationComposable(
             
             composable(route = AppNavigationScreen.PrivacyPolicyScreen.route) {
                 PrivacyPolicyScreen()
+            }
+            
+            composable(route = AppNavigationScreen.PrivacyVisibilityScreen.route) {
+                PrivacyVisibilityScreen()
             }
         }
 
