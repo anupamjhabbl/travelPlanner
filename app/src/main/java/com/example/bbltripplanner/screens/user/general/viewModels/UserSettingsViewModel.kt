@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.bbltripplanner.common.baseClasses.BaseMVIVViewModel
 import com.example.bbltripplanner.common.entity.User
 import com.example.bbltripplanner.common.utils.SafeIOUtil
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,15 +49,18 @@ class UserSettingsViewModel(
                 authPreferencesUseCase.clearUserData()
                 _logOutResultState.emit(LogOutState.SUCCESS)
             }
-            logOutResult.onFailure {
-                _logOutResultState.emit(LogOutState.FAILURE)
+            logOutResult.onFailure { exception ->
+                val errorMsg = ErrorUtils.toErrorType(exception)
+                _logOutResultState.emit(LogOutState.FAILURE(errorMsg))
             }
         }
     }
 }
 
-enum class LogOutState {
-    LOADING, SUCCESS, FAILURE
+sealed interface LogOutState {
+    data object LOADING: LogOutState
+    data object SUCCESS: LogOutState
+    data class FAILURE(val errorType: String): LogOutState
 }
 
 class UserSettingsIntent {

@@ -70,6 +70,7 @@ import com.example.bbltripplanner.common.infra.PreferenceManager.ThemeType
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
+import com.example.bbltripplanner.common.utils.ErrorUtils
 import com.example.bbltripplanner.screens.user.general.viewModels.LogOutState
 import com.example.bbltripplanner.screens.user.general.viewModels.UserSettingsIntent
 import com.example.bbltripplanner.screens.user.general.viewModels.UserSettingsViewModel
@@ -112,9 +113,10 @@ fun UserSettingsScreen() {
                 isLoading = false
                 logoutSuccess()
             }
-            LogOutState.FAILURE -> {
+            is LogOutState.FAILURE -> {
                 isLoading = false
-                logoutFailure(context, message)
+                val errorMsg = ErrorUtils.getMessage(context, viewState.errorType)
+                logoutFailure(context, errorMsg ?: message)
             }
         }
     }
