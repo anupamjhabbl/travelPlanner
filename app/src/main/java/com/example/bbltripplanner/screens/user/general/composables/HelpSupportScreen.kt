@@ -299,9 +299,10 @@ fun HelpSupportScreen() {
                     )
                 }
 
-                item {
-                    ContactSupportBanner()
-                }
+//                When we will really have a support team
+//                item {
+//                    ContactSupportBanner()
+//                }
 
                 item {
                     ReportAProblemCard()
@@ -309,30 +310,31 @@ fun HelpSupportScreen() {
             }
         }
 
-        Surface(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 20.dp, end = 20.dp)
-                .clickable {
-                    ComposeViewUtils.showToast(context, workUnderProgress)
-                },
-            shape = CircleShape,
-            color = customColors.secondaryBackground,
-            shadowElevation = 4.dp
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.SmartToy,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
+//        When we really gave a chatbot
+//        Surface(
+//            modifier = Modifier
+//                .align(Alignment.BottomEnd)
+//                .padding(bottom = 20.dp, end = 20.dp)
+//                .clickable {
+//                    ComposeViewUtils.showToast(context, workUnderProgress)
+//                },
+//            shape = CircleShape,
+//            color = customColors.secondaryBackground,
+//            shadowElevation = 4.dp
+//        ) {
+//            Row(
+//                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.spacedBy(8.dp)
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.SmartToy,
+//                    contentDescription = null,
+//                    tint = Color.White,
+//                    modifier = Modifier.size(20.dp)
+//                )
+//            }
+//        }
     }
 }
 
