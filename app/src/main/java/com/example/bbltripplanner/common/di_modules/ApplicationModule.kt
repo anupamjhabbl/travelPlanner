@@ -95,7 +95,7 @@ val appModule = module {
     single<Gson> { Gson() }
 
     // main
-    viewModel { MainActivityViewModel(get(), get()) }
+    viewModel { MainActivityViewModel(get(), get(), get()) }
 
     // Database
     single {
@@ -197,7 +197,7 @@ val appModule = module {
 
     // Account
     viewModel { HelpSupportViewModel() }
-    viewModel { UserSettingsViewModel(get(), get()) }
+    viewModel { UserSettingsViewModel(get(), get(), get()) }
 
     // Vault
     single<VaultUseCase> { VaultUseCase(get()) }

@@ -6,11 +6,19 @@ import com.example.bbltripplanner.common.utils.SafeIOUtil
 import com.example.bbltripplanner.screens.user.auth.usecases.AuthPreferencesUseCase
 import com.example.bbltripplanner.screens.user.profile.usecases.ProfileUseCase
 import kotlinx.coroutines.launch
+import com.example.bbltripplanner.common.infra.PreferenceManager
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 
 class MainActivityViewModel(
     private val profileUseCase: ProfileUseCase,
-    private val authPreferencesUseCase: AuthPreferencesUseCase
+    private val authPreferencesUseCase: AuthPreferencesUseCase,
+    preferenceManager: PreferenceManager
 ): BaseMVIVViewModel<MainActivityIntent.ViewEvent>() {
+    val appTheme: StateFlow<String> = preferenceManager.getAppThemeFlow()
+        .stateIn(viewModelScope, SharingStarted.Lazily, preferenceManager.getAppTheme())
+    
     override fun processEvent(viewEvent: MainActivityIntent.ViewEvent) {
         when (viewEvent) {
             MainActivityIntent.ViewEvent.Init -> initialize()

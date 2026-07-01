@@ -331,4 +331,9 @@
     <string name="not_authorized_title">Permission Required</string>
     <string name="review_sub_title">Revisit your shared threads and stories.</string>
     <string name="review_title">Your Stories</string>
+    <string name="select_theme">Select Theme</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="apply">Apply</string>
+    <string name="language_unavailable_toast">Currently only English is available, but we will very soon be adding other languages.</string>
 </resources>

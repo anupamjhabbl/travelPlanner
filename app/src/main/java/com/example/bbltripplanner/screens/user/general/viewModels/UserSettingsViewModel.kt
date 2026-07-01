@@ -11,16 +11,26 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import com.example.bbltripplanner.common.infra.PreferenceManager
+
 class UserSettingsViewModel(
     private val authPreferencesUseCase: AuthPreferencesUseCase,
-    private val profileUseCase: ProfileUseCase
+    private val profileUseCase: ProfileUseCase,
+    private val preferenceManager: PreferenceManager
 ): BaseMVIVViewModel<UserSettingsIntent.ViewEvent>() {
     private val _logOutResultState: MutableSharedFlow<LogOutState> = MutableSharedFlow()
     val logOutResultState: SharedFlow<LogOutState> = _logOutResultState.asSharedFlow()
 
+    val appTheme: StateFlow<String> = preferenceManager.getAppThemeFlow()
+        .stateIn(viewModelScope, SharingStarted.Lazily, preferenceManager.getAppTheme())
+
     override fun processEvent(viewEvent: UserSettingsIntent.ViewEvent) {
         when (viewEvent) {
             UserSettingsIntent.ViewEvent.LogoutUser -> logOutUser()
+            is UserSettingsIntent.ViewEvent.ChangeTheme -> preferenceManager.setAppTheme(viewEvent.theme)
         }
     }
 
@@ -52,5 +62,6 @@ enum class LogOutState {
 class UserSettingsIntent {
     sealed interface ViewEvent {
         data object LogoutUser: ViewEvent
+        data class ChangeTheme(val theme: String): ViewEvent
     }
 }

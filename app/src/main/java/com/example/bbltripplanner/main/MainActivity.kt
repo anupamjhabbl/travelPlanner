@@ -16,6 +16,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -71,7 +73,15 @@ class MainActivity : AppCompatActivity() {
         checkAndRequestNotificationPermission()
 
         setContent {
-            TripPlannerTheme {
+            val appTheme by mainActivityViewModel.appTheme.collectAsState()
+            val isSystemDark = androidx.compose.foundation.isSystemInDarkTheme()
+            val darkTheme = when (appTheme) {
+                com.example.bbltripplanner.common.infra.PreferenceManager.ThemeType.LIGHT -> false
+                com.example.bbltripplanner.common.infra.PreferenceManager.ThemeType.DARK -> true
+                else -> isSystemDark
+            }
+
+            TripPlannerTheme(darkTheme = darkTheme) {
                 Surface (
                     modifier = Modifier
                         .fillMaxSize()

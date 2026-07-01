@@ -1,6 +1,7 @@
 package com.example.bbltripplanner.screens.user.general.composables
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -35,12 +36,23 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import com.example.bbltripplanner.common.infra.PreferenceManager.ThemeType
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,6 +93,14 @@ fun UserSettingsScreen() {
     var logOutConfirmDialogVisibility by remember {
         mutableStateOf(false)
     }
+    var showThemeBottomSheet by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    val appTheme by viewModel.appTheme.collectAsState()
+    var tempSelectedTheme by remember { mutableStateOf(appTheme) }
+
+    LaunchedEffect(appTheme) {
+        tempSelectedTheme = appTheme
+    }
 
     CommonLifecycleAwareLaunchedEffect(
         viewModel.logOutResultState
@@ -112,6 +132,84 @@ fun UserSettingsScreen() {
             onDismiss = { logOutConfirmDialogVisibility = false },
             isConfirmPositive = false
         )
+    }
+
+    if (showLanguageDialog) {
+        ComposeViewUtils.ConfirmationDialog(
+            title = stringResource(R.string.language_region_title),
+            message = stringResource(R.string.language_unavailable_toast),
+            confirmButtonText = stringResource(R.string.ok),
+            onConfirm = { showLanguageDialog = false },
+            onDismiss = { showLanguageDialog = false },
+            showDismissButton = false,
+            isConfirmPositive = true
+        )
+    }
+
+    if (showThemeBottomSheet) {
+        @OptIn(ExperimentalMaterial3Api::class)
+        ModalBottomSheet(
+            onDismissRequest = { showThemeBottomSheet = false },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            containerColor = customColors.primaryBackground
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                ComposeTextView.TitleTextView(
+                    text = stringResource(R.string.select_theme),
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                val themes = listOf(
+                    ThemeType.SYSTEM to stringResource(R.string.system_default),
+                    ThemeType.LIGHT to stringResource(R.string.light),
+                    ThemeType.DARK to stringResource(R.string.dark)
+                )
+
+                themes.forEach { (themeValue, themeName) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { tempSelectedTheme = themeValue }
+                            .padding(vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (tempSelectedTheme == themeValue),
+                            onClick = { tempSelectedTheme = themeValue },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = customColors.secondaryBackground,
+                                unselectedColor = customColors.hintTextColor
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        ComposeTextView.TextView(
+                            text = themeName,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        viewModel.processEvent(UserSettingsIntent.ViewEvent.ChangeTheme(tempSelectedTheme))
+                        showThemeBottomSheet = false
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = customColors.primaryButtonBg)
+                ) {
+                    Text(stringResource(R.string.apply), color = customColors.primaryButtonText, fontSize = 16.sp)
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
     }
 
     Column(
@@ -267,20 +365,26 @@ fun UserSettingsScreen() {
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         ComposeTextView.TextView(
-                            text = stringResource(R.string.system_default),
+                            text = when(appTheme) {
+                                ThemeType.LIGHT -> stringResource(R.string.light)
+                                ThemeType.DARK -> stringResource(R.string.dark)
+                                else -> stringResource(R.string.system_default)
+                            },
                             textColor = customColors.success,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 },
-                onClick = { /* Handle Click */ }
+                onClick = { showThemeBottomSheet = true }
             )
             SettingsItem(
                 icon = Icons.Default.Language,
                 title = stringResource(R.string.language_region_title),
                 subtitle = stringResource(R.string.language_region_subtitle),
-                onClick = { /* Handle Click */ }
+                onClick = { 
+                    showLanguageDialog = true
+                }
             )
             SettingsItem(
                 icon = Icons.AutoMirrored.Filled.HelpOutline,
