@@ -51,6 +51,8 @@ sealed class AppNavigationScreen(
         fun createRoute(userId: String) ="${Constants.NavigationScreen.PROFILE_SCREEN}/$userId"
     }
     data object BlockedUsersScreen: AppNavigationScreen(route = Constants.NavigationScreen.BLOCKED_USERS_SCREEN)
+    data object TermsOfUseScreen: AppNavigationScreen(route = Constants.NavigationScreen.TERMS_OF_USE_SCREEN)
+    data object PrivacyPolicyScreen: AppNavigationScreen(route = Constants.NavigationScreen.PRIVACY_POLICY_SCREEN)
 
     // User Trip And Posting Screens
     data object AddScreen: AppNavigationScreen(route = Constants.NavigationScreen.ADD_SCREEN)
@@ -122,6 +124,8 @@ fun NavDestination?.toAppNavigationScreen(): AppNavigationScreen? {
         route.startsWith(Constants.NavigationScreen.HELP_SUPPORT_SCREEN) -> AppNavigationScreen.HelpSupportScreen
         route.startsWith(Constants.NavigationScreen.PROFILE_SOCIAL_SCREEN) -> AppNavigationScreen.ProfileSocialScreen
         route.startsWith(Constants.NavigationScreen.BLOCKED_USERS_SCREEN) -> AppNavigationScreen.BlockedUsersScreen
+        route.startsWith(Constants.NavigationScreen.TERMS_OF_USE_SCREEN) -> AppNavigationScreen.TermsOfUseScreen
+        route.startsWith(Constants.NavigationScreen.PRIVACY_POLICY_SCREEN) -> AppNavigationScreen.PrivacyPolicyScreen
 
         // Home Screens
         route.startsWith(Constants.NavigationScreen.HOME_NAV_GRAPH) -> AppNavigationScreen.HomeNavGraph

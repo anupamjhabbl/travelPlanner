@@ -1,7 +1,6 @@
 package com.example.bbltripplanner.screens.user.general.composables
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -33,12 +32,12 @@ import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Security
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -52,7 +51,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import com.example.bbltripplanner.common.infra.PreferenceManager.ThemeType
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,6 +66,7 @@ import com.example.bbltripplanner.common.composables.CommonLifecycleAwareLaunche
 import com.example.bbltripplanner.common.composables.ComposeImageView
 import com.example.bbltripplanner.common.composables.ComposeTextView
 import com.example.bbltripplanner.common.composables.ComposeViewUtils
+import com.example.bbltripplanner.common.infra.PreferenceManager.ThemeType
 import com.example.bbltripplanner.navigation.AppNavigationScreen
 import com.example.bbltripplanner.navigation.CommonNavigationChannel
 import com.example.bbltripplanner.navigation.NavigationAction
@@ -412,13 +411,21 @@ fun UserSettingsScreen() {
                 icon = Icons.Default.Description,
                 title = stringResource(R.string.terms_of_use_title),
                 subtitle = stringResource(R.string.terms_of_use_subtitle),
-                onClick = { /* Handle Click */ }
+                onClick = { 
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(NavigationAction.Navigate(AppNavigationScreen.TermsOfUseScreen.route))
+                    }
+                }
             )
             SettingsItem(
                 icon = Icons.Default.Security,
                 title = stringResource(R.string.privacy_policy_title),
                 subtitle = stringResource(R.string.privacy_policy_subtitle),
-                onClick = { /* Handle Click */ }
+                onClick = { 
+                    scope.launch {
+                        CommonNavigationChannel.navigateTo(NavigationAction.Navigate(AppNavigationScreen.PrivacyPolicyScreen.route))
+                    }
+                }
             )
         }
 

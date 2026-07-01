@@ -46,4 +46,26 @@ object ProfileActionResourceMapper {
             VaultMenuItem(Constants.BUZZ_PAGE, Icons.Default.Forum,R.string.vault_buzz_title, R.string.vault_buzz_sub_title)
         )
     }
+
+    fun getTermsOfUseSections(): List<LegalSectionItem> {
+        return listOf(
+            LegalSectionItem(R.string.terms_acceptance_title, R.string.terms_acceptance_body),
+            LegalSectionItem(R.string.terms_user_accounts_title, R.string.terms_user_accounts_body),
+            LegalSectionItem(R.string.terms_user_conduct_title, R.string.terms_user_conduct_body),
+            LegalSectionItem(R.string.terms_itinerary_booking_title, R.string.terms_itinerary_booking_body),
+            LegalSectionItem(R.string.terms_termination_title, R.string.terms_termination_body),
+            LegalSectionItem(R.string.terms_changes_title, R.string.terms_changes_body)
+        )
+    }
+
+    fun getPrivacyPolicySections(): List<LegalSectionItem> {
+        return listOf(
+            LegalSectionItem(R.string.privacy_info_collect_title, R.string.privacy_info_collect_body),
+            LegalSectionItem(R.string.privacy_how_use_title, R.string.privacy_how_use_body),
+            LegalSectionItem(R.string.privacy_info_sharing_title, R.string.privacy_info_sharing_body),
+            LegalSectionItem(R.string.privacy_data_security_title, R.string.privacy_data_security_body),
+            LegalSectionItem(R.string.privacy_your_rights_title, R.string.privacy_your_rights_body),
+            LegalSectionItem(R.string.privacy_changes_title, R.string.privacy_changes_body)
+        )
+    }
 }

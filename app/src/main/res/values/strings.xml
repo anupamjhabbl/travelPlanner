@@ -208,7 +208,7 @@
     <string name="manage_followers_description">Manage your followings and followers</string>
     <string name="manage_followers_title"><![CDATA[Followers & Following]]></string>
     <string name="privacy_visbility_title"><![CDATA[Privacy & Visibility]]></string>
-    <string name="privacy_visibility_description">Control who can see your trips and profile</string>
+    <string name="privacy_visibility_description">Who can see your trips and profile</string>
     <string name="privacy_social_header"><![CDATA[PRIVACY & SOCIAL]]></string>
     <string name="account">ACCOUNT</string>
     <string name="trip_app_preferences_header">TRIP &amp; APP PREFERENCES</string>
@@ -336,4 +336,34 @@
     <string name="dark">Dark</string>
     <string name="apply">Apply</string>
     <string name="language_unavailable_toast">Currently only English is available, but we will very soon be adding other languages.</string>
+
+    <!-- Terms of Use -->
+    <string name="terms_last_updated">Last Updated: July 2026</string>
+    <string name="terms_acceptance_title">1. Acceptance of Terms</string>
+    <string name="terms_acceptance_body">By accessing and using the TripPlanner application, you accept and agree to be bound by the terms and provision of this agreement. In addition, when using these particular services, you shall be subject to any posted guidelines or rules applicable to such services.</string>
+    <string name="terms_user_accounts_title">2. User Accounts</string>
+    <string name="terms_user_accounts_body">To access certain features of the Service, you must register for an account. You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete.</string>
+    <string name="terms_user_conduct_title">3. User Conduct</string>
+    <string name="terms_user_conduct_body">You are responsible for all your activities in connection with the Service. You agree not to post any content that is offensive, unlawful, or violates the rights of third parties. This includes respecting the privacy of others and avoiding spam.</string>
+    <string name="terms_itinerary_booking_title">4. Itinerary and Booking</string>
+    <string name="terms_itinerary_booking_body">TripPlanner provides tools to organize travel. We do not guarantee the availability, prices, or conditions of third-party services like flights, hotels, or activities. All bookings are subject to the terms of the respective service providers.</string>
+    <string name="terms_termination_title">5. Termination</string>
+    <string name="terms_termination_body">We may terminate or suspend access to our Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.</string>
+    <string name="terms_changes_title">6. Changes to Terms</string>
+    <string name="terms_changes_body">We reserve the right, at our sole discretion, to modify or replace these Terms at any time. It is your responsibility to check these Terms periodically for changes.</string>
+
+    <!-- Privacy Policy -->
+    <string name="privacy_last_updated">Last Updated: July 2026</string>
+    <string name="privacy_info_collect_title">1. Information We Collect</string>
+    <string name="privacy_info_collect_body">We collect information to provide better services to all our users. This includes personal information such as your name, email address, and profile picture provided during registration. We also collect travel-related data, like itineraries and preferences, that you input into the app.</string>
+    <string name="privacy_how_use_title">2. How We Use Your Information</string>
+    <string name="privacy_how_use_body">The information we collect is used to personalize your experience, provide customer support, and improve our services. Your travel data helps us suggest relevant destinations and optimize your trip planning.</string>
+    <string name="privacy_info_sharing_title">3. Information Sharing</string>
+    <string name="privacy_info_sharing_body">We do not share your personal information with companies, organizations, or individuals outside of TripPlanner except when we have your consent, for external processing by trusted partners, or for legal reasons.</string>
+    <string name="privacy_data_security_title">4. Data Security</string>
+    <string name="privacy_data_security_body">We work hard to protect TripPlanner and our users from unauthorized access to or unauthorized alteration, disclosure or destruction of information we hold. We use encryption to keep your data private while in transit.</string>
+    <string name="privacy_your_rights_title">5. Your Rights</string>
+    <string name="privacy_your_rights_body">You have the right to access, update, or delete your personal information at any time. You can manage your account settings and preferences directly within the app.</string>
+    <string name="privacy_changes_title">6. Changes to this Policy</string>
+    <string name="privacy_changes_body">Our Privacy Policy may change from time to time. We will post any privacy policy changes on this page and, if the changes are significant, we will provide a more prominent notice.</string>
 </resources>
